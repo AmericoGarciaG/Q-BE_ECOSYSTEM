@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ titulo }}</title>
+  <link rel="stylesheet" href="/static/css/theme.css">
+</head>
+<body>
+  {% set resumen = reporte.resumen_temporada %}
+  <header class="header-container">
+    <div class="header-brand">Q-BE <span>Observatory</span></div>
+    <nav class="header-nav">
+      <a class="tab-btn" href="/">Inicio</a>
+      <a class="tab-btn active" href="/visor">Visor de Calibración</a>
+    </nav>
+  </header>
+
+  <main style="max-width: 1100px; margin: 2rem auto; padding: 0 1rem;">
+    <h1 style="margin-top: 0;">Visor de Calibración</h1>
+    <p>
+      Liga: <strong>{{ reporte.liga }}</strong> ·
+      Temporada: <strong>{{ reporte.temporada or 'N/D' }}</strong> ·
+      Partidos evaluados: <strong>{{ resumen.n_partidos_qbe }}</strong> ·
+      Fuente: <code>{{ resumen.fuente_qbe }}</code>
+    </p>
+
+    <form method="get" action="/visor" style="margin: 1rem 0;">
+      <label for="jornada">Filtrar jornada:</label>
+      <input id="jornada" name="jornada" type="number" min="1" step="1"
+             value="{{ jornada if jornada is not none else '' }}"
+             style="width: 8rem; padding: 0.35rem; margin: 0 0.5rem;">
+      <button class="btn-primary" type="submit">Ver</button>
+      {% if jornada is not none %}
+        <a class="tab-btn" href="/visor" style="margin-left: 0.5rem;">Quitar filtro</a>
+      {% endif %}
+    </form>
+
+    <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+      <article class="card">
+        <h2 style="margin-top: 0;">Brier QBE</h2>
+        <p style="font-size: 1.8rem; margin: 0;">{{ "%.4f"|format(resumen.brier_qbe) }}</p>
+        <p style="color: var(--text-muted); margin-bottom: 0;">Multicategórico 1X2 · qbe_core</p>
+      </article>
+
+      <article class="card">
+        <h2 style="margin-top: 0;">Brier Mercado</h2>
+        <p style="font-size: 1.8rem; margin: 0;">
+          {% if resumen.brier_mercado is none %}N/D{% else %}{{ "%.4f"|format(resumen.brier_mercado) }}{% endif %}
+        </p>
+        <p style="color: var(--text-muted); margin-bottom: 0;">{{ resumen.fuente_mercado }}</p>
+      </article>
+
+      <article class="card">
+        <h2 style="margin-top: 0;">Alpha de Calibración</h2>
+        <p style="font-size: 1.8rem; margin: 0;">
+          {% if resumen.alpha_calibracion_pct is none %}N/D{% else %}{{ "%.2f"|format(resumen.alpha_calibracion_pct) }}%{% endif %}
+        </p>
+        <p style="color: var(--text-muted); margin-bottom: 0;">
+          {% if resumen.mercado_disponible %}Mercado disponible{% else %}Mercado no disponible{% endif %}
+        </p>
+      </article>
+    </section>
+
+    {% if resumen.nota_metodologica %}
+      <p style="margin-top: 1rem; color: var(--text-muted);">{{ resumen.nota_metodologica }}</p>
+    {% endif %}
+
+    <section class="card" style="margin-top: 1.5rem; overflow-x: auto;">
+      <h2 style="margin-top: 0;">
+        Desglose por jornada
+        {% if jornada is not none %}· Jornada {{ jornada }}{% endif %}
+      </h2>
+      <table class="fintech-table">
+        <thead>
+          <tr>
+            <th>Jornada</th>
+            <th>Partidos</th>
+            <th>Brier QBE</th>
+            <th>Brier Mercado</th>
+            <th>Alpha</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for fila in jornadas %}
+            <tr>
+              <td>{{ fila.jornada }}</td>
+              <td>{{ fila.n_partidos }}</td>
+              <td>{{ "%.4f"|format(fila.brier_qbe) }}</td>
+              <td>{% if fila.brier_mercado is none %}N/D{% else %}{{ "%.4f"|format(fila.brier_mercado) }}{% endif %}</td>
+              <td>{% if fila.alpha_calibracion_pct is none %}N/D{% else %}{{ "%.2f"|format(fila.alpha_calibracion_pct) }}%{% endif %}</td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="5">Sin jornadas para el filtro solicitado.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

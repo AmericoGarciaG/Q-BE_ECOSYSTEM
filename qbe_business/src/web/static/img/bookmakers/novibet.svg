@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- [ARCH-1.5.10-B] Emblema de respaldo local. Cero hotlinking. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="164" height="38" viewBox="0 0 164 38" role="img" aria-label="Novibet.MX">
+  <rect x="0" y="0" width="164" height="38" rx="6.08" fill="#0f172a"/>
+  <circle cx="13.68" cy="19" r="6.84" fill="none" stroke="#38BDF8" stroke-width="3.42"/>
+  <circle cx="13.68" cy="19" r="1.71" fill="#38BDF8"/>
+  <text x="26.6" y="25.46" font-family="Segoe UI, Arial, sans-serif" font-size="12.92" font-weight="700" fill="#ffffff">Novibet.MX</text>
+</svg>

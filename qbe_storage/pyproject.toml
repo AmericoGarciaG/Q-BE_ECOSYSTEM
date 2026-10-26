@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qbe_storage"
+version = "0.1.0"
+description = "Q-BE shared persistence infrastructure (gateway + 3NF models)"
+requires-python = ">=3.12"
+dependencies = [
+    "sqlalchemy>=2.0",
+    "pydantic-settings>=2.2",
+]
+
+[tool.setuptools]
+packages = ["qbe_storage", "src.storage", "src.config"]
+
+[tool.setuptools.package-dir]
+"" = "."

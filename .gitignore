@@ -1,0 +1,19 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.bt_run/
+
+# Bases de datos y artefactos generados en pruebas
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+qbe_business/data/
+qbe_observatory/data/
+
+# Salidas locales (PDFs, reportes)
+data/output/

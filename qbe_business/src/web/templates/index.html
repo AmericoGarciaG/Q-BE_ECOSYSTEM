@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q-BE Casino Deportes — Quantitative Betting Engine</title>
+    <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg?v=2026QBE">
+    <link rel="stylesheet" href="/static/css/theme.css?v=2026QBE_V5">
+    <!-- [DES-QBE-068] Chart.js pineado (UMD, sin `@latest`): sólo pinta la curva de capital que
+         certifica el motor. `defer` mantiene el arranque de la SPA independiente del CDN; si el
+         activo no llega, el visor financiero degrada a la tabla meso (cero curvas sintéticas). -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+    <!-- Header Fino de Un Solo Piso (Max-Height 45px, Fondo #0B132B) -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="header-brand">
+                <span style="font-size: 1rem;">🏛️</span>
+                <span>Q-BE · Casino Deportes</span>
+            </div>
+            
+            <nav class="header-nav">
+                <button class="tab-btn active" data-tab="view-leagues-hub">🌐 Ligas y Torneos</button>
+                <button class="tab-btn" data-tab="view-matchday-selection" id="btn-tab-split">📊 Equipos y Partidos</button>
+                <button class="tab-btn" data-tab="tab-portfolio">💼 Mesa de Apuestas</button>
+                <button class="tab-btn" id="tab-visor-backtesting" data-tab="panel-visor-backtesting">🔬 Visor de Backtesting</button>
+                <button class="tab-btn" data-tab="view-control-center" id="btn-tab-control">⚙️ Centro de Control</button>
+            </nav>
+
+            <div class="status-badge-slim">
+                <span class="status-dot"></span>
+                <span>Sistema en Línea</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="content">
+        <!-- VISTA 1: HUB DE LIGAS -->
+        <section id="view-leagues-hub" class="view-section active">
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <h3>🏆 Ligas y Torneos de Alta Liquidez</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.9rem;">
+                    Seleccione el Torneo o Liga para conocer sus estadísticas y probabilidades 1X2 en tiempo real.
+                </p>
+                <div class="leagues-grid">
+                    <!-- Se inyecta dinámicamente vía cargarLigasDesdeBD() -->
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA 2: SPLIT-VIEW LIVE BOARD (DES-QBE-016) -->
+        <section id="view-matchday-selection" class="view-section">
+            <div class="split-view">
+                <!-- Panel Izquierdo: Tabla de 18 Clubes con 3 Pestañas -->
+                <div class="card table-panel-left">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <h3 style="margin: 0;">🛡️ <span id="lbl-nombre-tabla">Liga MX</span></h3>
+                        <div style="display: flex; gap: 6px;">
+                            <button id="btn-tab-general" class="subtab-btn active" onclick="switchTableTab('general')">📋 General</button>
+                            <button id="btn-tab-forma" class="subtab-btn" onclick="switchTableTab('forma')">📈 Forma</button>
+                            <button id="btn-tab-xg" class="subtab-btn" onclick="switchTableTab('xg')">🎯 xG Opta</button>
+                        </div>
+                    </div>
+
+                    <div style="font-size: 7.2pt; color: #94A3B8; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <span id="lbl-timestamp-tabla">🕒 Tabla Oficial: Sincronizada en vivo desde la FMF y FotMob</span>
+                        <button id="btn-force-refresh" onclick="refrescarTablaEnVivo()" style="background: transparent; border: none; color: #38BDF8; font-size: 7.2pt; cursor: pointer; text-decoration: underline;">🔄 Refrescar Tabla</button>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table id="table-standings" class="fintech-table">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center;">POS</th>
+                                    <th>EQUIPO</th>
+                                    <th style="text-align: center;">PTS</th>
+                                    <!-- General -->
+                                    <th class="col-gen" style="text-align: center;">PJ</th>
+                                    <th class="col-gen" style="text-align: center;">G</th>
+                                    <th class="col-gen" style="text-align: center;">E</th>
+                                    <th class="col-gen" style="text-align: center;">P</th>
+                                    <th class="col-gen" style="text-align: center;">GF:GC</th>
+                                    <th class="col-gen" style="text-align: center;">DIF</th>
+                                    <!-- Forma -->
+                                    <th class="col-forma" style="text-align: center; white-space: nowrap !important; display: none;">FORMA (5P)</th>
+                                    <th class="col-forma" style="text-align: center; white-space: nowrap !important; display: none;">PRÓX. RIVAL</th>
+                                    <!-- xG Opta -->
+                                    <th class="col-xg" style="text-align: center; display: none;">xG</th>
+                                    <th class="col-xg" style="text-align: center; display: none;">xGA</th>
+                                    <th class="col-xg" style="text-align: center; display: none;">xPTS</th>
+                                    <th class="col-xg" style="text-align: center; display: none;">DIF xG</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Inyectado dinámicamente con renderizarTabla18Clubes -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PANEL DERECHO: CARTELERA SOBERANA [VAULT-UI-001] -->
+                <div class="cartelera-panel card card-clean">
+                    <div class="cartelera-header flex-between" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div class="flex-align-center gap-10" style="display: flex; align-items: center; gap: 10px;">
+                            <span class="icon-header" style="font-size: 1.05rem;">⚽</span>
+                            <h3 id="lbl-nombre-jornada" class="m-0" style="margin: 0; font-size: 1.05rem; font-weight: 700; color: #FFFFFF;">Jornada Activa</h3>
+                            
+                            <!-- [DES-QBE-040] Botón de Alternancia de Tabla -->
+                            <button id="btn-toggle-standings" class="btn-toggle-standings" onclick="toggleTablaPosiciones()" title="Alternar visibilidad de la tabla de posiciones">
+                                <span id="btn-toggle-icon">◨</span> <span id="btn-toggle-txt">Ocultar Tabla</span>
+                            </button>
+                        </div>
+                    </div>
+
+
+                    <!-- Carrusel Horizontal Continuo de Temporada Completa [VAULT-UI-003] -->
+                    <div class="carousel-wrapper" style="display: flex; align-items: center; gap: 6px; margin-bottom: 12px;">
+                        <button id="btn-carousel-prev" class="carousel-arrow-btn" onclick="navegarCarruselTemporal(-1)">◄</button>
+                        <div id="matchday-pill-selector" data-legacy-track-id="season-matchdays-track" class="carousel-track-single-row">
+                            <!-- id="season-matchdays-track" -->
+                            <!-- Píldoras J1 a J17 en una sola fila continua -->
+                        </div>
+                        <button id="btn-carousel-next" class="carousel-arrow-btn" onclick="navegarCarruselTemporal(1)">►</button>
+                    </div>
+
+
+                    <!-- Lista de Partidos Soberanos (Cero Checkboxes, Cero Botón Portafolio) -->
+                    <div id="fixtures-container" class="fixtures-scroll-container">
+                        <!-- Tarjetas inyectadas dinámicamente -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- VISTA 3: CARTERA CUANTITATIVA INDUSTRIAL -->
+        <section id="tab-portfolio" class="view-section">
+            <!-- [DES-QBE-046] Sub-Navegación de Segundo Piso de la Mesa de Apuestas -->
+            <div class="subnav-portfolio">
+                <button type="button" id="btn-subtab-sportsbook" class="subtab-btn active" onclick="conmutarSubvistaMercados('sportsbook')">🎰 Sportsbook Casino 1X2</button>
+                <button type="button" id="btn-subtab-progol" class="subtab-btn" onclick="conmutarSubvistaMercados('progol')">🎟️ Quinielas Progol #2352</button>
+            </div>
+
+            <!-- CONTENEDOR SPORTSBOOK (SUB-VISTA ACTIVA POR DEFECTO) [DES-QBE-046] -->
+            <!-- Nota de ingeniería: los bloques internos 1-5 se conservan VERBATIM (cero refactor, cero renombrado de IDs). -->
+            <div id="contenedor-sportsbook" class="subview-content active">
+            <!-- BLOQUE 1: CONFIGURACIÓN DEL ROUTER [DES-QBE-039] -->
+            <div id="configuracion-cartera" class="card" style="margin-bottom: 1rem; padding: 14px 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h2 style="margin: 0; font-size: 1.15rem; color: #fff;">⚙️ Mesa de Apuestas — Configuración de Cartera</h2>
+                        <span style="font-size: 7.5pt; color: #94A3B8;">Cálculos integrados: Kelly fraccional, Coberturas Sintéticas (V=0) y Descarte Temprano de Ineficiencia (+EV Gate)</span>
+                        <!-- [UI-REFINEMENT-5-POINTS / 2026-10-11] La píldora del Ledger (Comprados)
+                             migra a la CABECERA de #panel-resumen-asignacion: es un agregado de la
+                             cartera completa, no un atributo del Router de Configuración. -->
+                    </div>
+                    <div style="display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap;">
+                        <label style="font-size: 8.5pt; color: #cbd5e1; font-weight: 600;">Casino:</label>
+                        <select id="casino-operator-select" style="padding: 6px 10px; background: #0f172a; border: 1px solid #38BDF8; color: white; border-radius: 6px; font-weight: 700; font-size: 8.5pt;">
+                            <!-- [DES-QBE-052] Mejor Combinación Cross-Market por defecto: el motor elige la casa máxima por pierna. -->
+                            <option value="mejor_combinacion" selected>⚡ Mejor Combinación (Cross-Market)</option>
+                            <option value="caliente">Caliente_Deportes.MX</option>
+                            <!-- [DES-QBE-057] Tercer operador del terceto: sensor Feed-First
+                                 ([ARCH-1.4.6-F], /spt/feed/marketviews/location/v2/) que persiste
+                                 en momios_operadores["novibet"]. -->
+                            <option value="novibet">Novibet.MX</option>
+                            <!-- [DES-QBE-047] Operador certificado en backend ([LN-QBE-007], markets.py:332 momios_operadores) -->
+                            <option value="betway">Betway.MX</option>
+                        </select>
+                        <label style="font-size: 8.5pt; color: #cbd5e1; font-weight: 600;">Bankroll: $</label>
+                        <input type="number" id="input-bankroll" value="100" style="padding: 6px 10px; background: #0f172a; border: 1px solid #38BDF8; color: white; border-radius: 6px; width: 85px; font-weight: 700;">
+                        <label style="font-size: 8.5pt; color: #cbd5e1; font-weight: 600;">Certeza:</label>
+                        <input type="range" id="slider-risk-certainty" min="70" max="90" value="80" style="width: 75px; accent-color: #38BDF8;" oninput="document.getElementById('certainty-val').textContent = this.value + '%'">
+                        <span id="certainty-val" style="font-size: 8.5pt; color: #38BDF8; font-weight: 700;">80%</span>
+                        <!-- [ARCH-1.4.30] Selector Interactivo tri-estado de Concentración de Masa Γ (Capa 0: 67% | 70% | 75%) -->
+                        <div class="d-inline-flex align-items-center" style="display: inline-flex; align-items: center; gap: 6px; margin: 0 8px;">
+                            <!-- [DICTAMEN DIRECTOR 2026-10-11] Denominación canónica «Concentración de Masa (Γ)».
+                                 Default soberano sellado: Γ = 70% (0.70). -->
+                            <span class="text-muted small" style="font-size: 8.5pt; color: #cbd5e1; font-weight: 600;">Concentración de Masa (Γ):</span>
+                            <div class="btn-group btn-group-sm" role="group" id="grupo-selector-gamma">
+                                <input type="radio" class="btn-check" name="opcion_gamma" id="gamma_67" value="0.67" autocomplete="off">
+                                <label class="btn btn-outline-info px-2 py-0" for="gamma_67" style="font-size: 0.78rem;">67%</label>
+
+                                <input type="radio" class="btn-check" name="opcion_gamma" id="gamma_70" value="0.70" checked autocomplete="off">
+                                <label class="btn btn-outline-info px-2 py-0" for="gamma_70" style="font-size: 0.78rem;">70%</label>
+
+                                <input type="radio" class="btn-check" name="opcion_gamma" id="gamma_75" value="0.75" autocomplete="off">
+                                <label class="btn btn-outline-info px-2 py-0" for="gamma_75" style="font-size: 0.78rem;">75%</label>
+                            </div>
+                        </div>
+                        <!-- [ARCH-1.4.35 / DOBLE SEGURO DEL DIRECTOR] Conmutador de Slates con candado.
+                             🔒 (locked)   = ventanilla VIVA: el backend resuelve la jornada dinámicamente
+                                             ([ARCH-1.6.15]) y el payload NO ancla jornada alguna.
+                             🔓 (unlocked) = BACKTESTING: el payload ancla la jornada elegida y cada orden
+                                             se liquida contra el marcador REAL de la bóveda 3NF
+                                             (Real vs. Predicho, [LN-QBE-025-B]).
+                             [GOVERNANCE-01] El cliente sólo EXHIBE: cero fechas, marcadores o cuotas
+                             inventadas. El detalle fáctico lo hidrata el backend. -->
+                        <div class="control-group" id="grupo-conmutador-jornada" style="display:inline-flex; align-items:center; gap:8px; margin-left:12px;">
+                            <label style="font-family:monospace; font-size:12px; color:#94A3B8;">Jornada:</label>
+                            <button type="button" id="btn-lock-jornada" class="btn-lock locked" title="Click para desbloquear modo simulación histórica" style="background:#1E293B; border:1px solid #475569; color:#F59E0B; border-radius:6px; padding:4px 8px; cursor:pointer;">
+                                🔒
+                            </button>
+                            <select id="select-jornada" disabled style="background:#0F172A; border:1px solid #475569; color:#94A3B8; border-radius:6px; padding:4px 8px; font-family:monospace; font-size:12px;">
+                                <option value="">— hidratando bóveda 3NF —</option>
+                            </select>
+                        </div>
+                        <!-- [DES-QBE-069 / LN-QBE-114] FILTROS FIDUCIARIOS DEL MODO LABORATORIO.
+                             Sólo visibles con el candado abierto (🔓). La casilla viaja como
+                             `excluir_estrategias: ["QBE-R1","QBE-R2"]` al motor [LN-QBE-113]: el
+                             veto se ejecuta en el sandbox, jamás en el pintor. -->
+                        <div id="filtros-backtest-container" style="display: none; width: 100%; margin-top: 10px; align-items: center; gap: 14px; flex-wrap: wrap;">
+                            <label class="bt-filtro-vetados" for="chk-excluir-familia-r" style="margin-top: 0;">
+                                <input type="checkbox" id="chk-excluir-familia-r">
+                                <span>📉 Excluir Familia R (Underdogs · veto fiduciario)</span>
+                            </label>
+                            <span id="txt-alcance-simulacion" class="bt-alcance-simulacion">Alcance: jornada seleccionada</span>
+                        </div>
+                        <!-- [ARCH-1.4.37 / LN-QBE-077-B / ARCH-1.4.12-C] Tríptico de Cobertura (δ):
+                             la ventanilla declara el modo de partición del capital. `DEF` (V=0) subsiste
+                             como contrato sellado; `BAL` y `AGR` activan la ley general del Dutching
+                             Dinámico (δ*). DEFAULT LEGISLADO = `BAL` (Balanceado +15%), modo de cobertura
+                             por omisión de la Mesa de Apuestas según [ARCH-1.4.12-C]: la clase `active`
+                             y los estilos se RE-DERIVAN de `state.modo_cobertura` en app.js (cero estado
+                             duplicado). El cliente sólo EXHIBE: las cifras las certifica el motor
+                             ([GOVERNANCE-01] paridad estricta backend↔pantalla). -->
+                        <div class="control-group" id="grupo-modo-cobertura" style="display:inline-flex; align-items:center; gap:8px; margin-left:12px;">
+                            <label style="font-family:monospace; font-size:12px; color:#94A3B8;">Cobertura:</label>
+                            <div class="btn-group-toggle" id="toggle-modo-cobertura">
+                                <button type="button" class="btn-cobertura" data-modo="DEF" title="Preservación Pura (V=0, PnL Empate = $0.00)" style="background:#0F172A; border:1px solid #334155; color:#94A3B8; border-radius:6px; padding:4px 8px; font-family:monospace; font-size:11px; cursor:pointer;">
+                                    🛡️ Defensivo (V=0)
+                                </button>
+                                <button type="button" class="btn-cobertura active" data-modo="BAL" title="Crecimiento Balanceado (Empate genera beneficio neto) — MODO POR OMISIÓN [ARCH-1.4.12-C]" style="background:#1E293B; border:1px solid #38BDF8; color:#38BDF8; border-radius:6px; padding:4px 8px; font-family:monospace; font-size:11px; cursor:pointer;">
+                                    ⚡ Balanceado (+15%)
+                                </button>
+                                <button type="button" class="btn-cobertura" data-modo="AGR" title="Isorrendimiento de Doble Cosecha (Misma ganancia en favorito y empate)" style="background:#0F172A; border:1px solid #334155; color:#94A3B8; border-radius:6px; padding:4px 8px; font-family:monospace; font-size:11px; cursor:pointer;">
+                                    👑 Isorrendimiento (δ*)
+                                </button>
+                            </div>
+                        </div>
+                        <button id="btn-calcular-cartera" class="btn-primary" onclick="iniciarSimulacionRentabilidad()" style="padding: 7px 16px; font-size: 8.5pt; font-weight: 700;"> ⚡ Calcular Cartera </button>
+                        <button id="export-pdf-btn" class="btn-primary" style="background: rgba(56,189,248,0.15); border: 1px solid #38BDF8; color: #38BDF8; padding: 7px 16px; font-size: 8.5pt; font-weight: 700; margin-left: 4px;">📄 Exportar PDF A4</button>
+                    </div>
+                    <!-- [ARCH-1.4.35 / CONMUTADOR DE SLATES] Banner factual del Modo Backtesting:
+                         visible SOLO con el candado abierto (🔓), se oculta al re-bloquear (🔒). La
+                         leyenda base es la legislada; el detalle fáctico (jornada congelada, cuotas
+                         capturadas, marcadores reales, PnL Real) lo hidrata el backend con datos de
+                         la bóveda ([GOVERNANCE-01] paridad estricta backend↔pantalla). -->
+                    <div id="banner-backtesting-jornada" style="display: none; margin-top: 14px; background: rgba(245, 158, 11, 0.10); border: 1px solid rgba(245, 158, 11, 0.45); border-radius: 8px; padding: 10px 14px;">
+                        <div style="font-family: monospace; font-size: 8.5pt; font-weight: 800; color: #F59E0B;">
+                            ⚠️ MODO BACKTESTING ACTIVO: Simulando sobre datos históricos congelados
+                        </div>
+                        <div id="txt-detalle-backtesting" style="font-size: 7.8pt; color: #cbd5e1; margin-top: 4px;">Selecciona una jornada histórica y pulsa ⚡ Calcular Cartera.</div>
+                        <!-- Cartelera del slate congelado (GET /api/markets/sportsbook/live-board?jornada=N) -->
+                        <div id="slate-cartelera-jornada" style="display: none; margin-top: 10px; overflow-x: auto;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOQUE 2: ENCABEZADO MACRO & ANÁLISIS DE RESILIENCIA -->
+            <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #1C2541 0%, #0B132B 100%); border: 1px solid rgba(56,189,248,0.2);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
+                    <div>
+                        <span style="font-size: 7.2pt; color: #38BDF8; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;">Visión Global: Inversión, Rentabilidad y Riesgo </span>
+                        <h1 style="margin: 2px 0 0 0; font-size: 1.4rem; color: #fff;" id="hdr-torneo-portfolio">Liga MX — Apertura 2026</h1>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="badge-status-live" style="background: rgba(0,230,118,0.15); color: #00E676; border-color: #00E676; font-size: 7.2pt;">Q-BE  CASINO DEPORTES v3.0</span>
+                        <!-- [DES-QBE-047] Header dinámico: hidratado por renderizarResultadosPortafolio(data.metadata) -->
+                        <div style="font-size: 7.2pt; color: #94A3B8; margin-top: 4px;" id="hdr-fechas-portfolio">Jornada Activa</div>
+                    </div>
+                </div>
+
+                <!-- 5 Macro KPIs con distinción de Ganancia Potencial y Esperada -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 10px; margin-bottom: 1rem;">
+                    <div style="background: #0f172a; padding: 10px 14px; border-radius: 6px; border-left: 3px solid #38BDF8;">
+                        <span style="font-size: 7pt; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Capital en Juego</span>
+                        <div id="kpi-inversion-total" style="font-size: 1.15rem; font-weight: 800; color: #fff; margin-top: 2px;">$0.00 MXN</div>
+                        <span id="kpi-pct-caja" style="font-size: 6.8pt; color: #64748B;">(0.0% de la caja)</span>
+                    </div>
+                    <div style="background: #0f172a; padding: 10px 14px; border-radius: 6px; border-left: 3px solid #00E676;">
+                        <span style="font-size: 7pt; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Ganancia Neta Potencial</span>
+                        <div id="kpi-ganancia-potencial" style="font-size: 1.15rem; font-weight: 800; color: #00E676; margin-top: 2px;">+$0.00 MXN</div>
+                        <span id="kpi-roi-potencial" style="font-size: 6.8pt; color: #64748B;">Techo Máximo Pleno</span>
+                    </div>
+                    <div style="background: #0f172a; padding: 10px 14px; border-radius: 6px; border-left: 3px solid #38BDF8;">
+                        <span style="font-size: 7pt; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Ganancia Neta Esperada</span>
+                        <div id="kpi-ganancia-esperada" style="font-size: 1.15rem; font-weight: 800; color: #38BDF8; margin-top: 2px;">+$0.00 MXN</div>
+                        <span id="kpi-roi-global" style="font-size: 6.8pt; color: #64748B;">Esperanza Matemática (+EV)</span>
+                    </div>
+                    <div style="background: #0f172a; padding: 10px 14px; border-radius: 6px; border-left: 3px solid #38BDF8;">
+                        <span style="font-size: 7pt; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Blindaje de Capital</span>
+                        <div id="kpi-blindaje-global" style="font-size: 1.15rem; font-weight: 800; color: #38BDF8; margin-top: 2px;">99.9%</div>
+                        <span id="kpi-prob-ruina" style="font-size: 6.8pt; color: #64748B;">Probabilidad Ruina: 0.1%</span>
+                    </div>
+                    <div style="background: #0f172a; padding: 10px 14px; border-radius: 6px; border-left: 3px solid #e2e8f0;">
+                        <span style="font-size: 7pt; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Posiciones del Total</span>
+                        <div id="kpi-posiciones-core" style="font-size: 1.15rem; font-weight: 800; color: #fff; margin-top: 2px;">0 / 0</div>
+                        <span style="font-size: 6.8pt; color: #64748B;">Partidos con Valor (+EV)</span>
+                    </div>
+                </div>
+
+                <!-- Banner de Cascada de Resiliencia a Reveses -->
+                <div id="banner-cascada-resiliencia" style="background: rgba(56,189,248,0.06); border: 1px solid rgba(56,189,248,0.25); border-radius: 6px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <div>
+                        <strong style="color: #38BDF8; font-size: 8pt;">🛡️ Tolerancia al Riesgo (Stress-Testing de Cartera):</strong>
+                        <span id="txt-cascada-resumen" style="color: #cbd5e1; font-size: 8pt; margin-left: 6px;">Evaluando absorción de reveses...</span>
+                    </div>
+                    <div id="pildoras-cascada" style="display: flex; gap: 6px;"></div>
+                </div>
+            </div>
+
+            <!-- BLOQUE 3: TABLA SINTÉTICA DE ASIGNACIÓN -->
+            <!-- [UI-REFINEMENT-5-POINTS / 2026-10-11] La píldora del Ledger de comprados reside en la
+                 CABECERA de este panel, inmediatamente debajo del título y por encima de la tabla
+                 #tabla-resumen-asignacion (ordenanza expresa del Director). -->
+            <div id="panel-resumen-asignacion" class="card" style="margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 0.8rem;">
+                    <h3 style="margin: 0; font-size: 1rem;">📊 Resumen de Asignación</h3>
+                    <span id="badge-boletos-comprados" class="badge ms-2" style="background: rgba(0, 230, 118, 0.15); color: #00E676; border: 1px solid #00E676; font-size: 0.75rem; padding: 3px 8px; border-radius: 12px;">
+                        🎟️ Comprados: 0 ($0.00 MXN)
+                    </span>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="fintech-table" id="tabla-resumen-asignacion">
+                        <thead>
+                            <tr>
+                                <th>PARTIDO</th>
+                                <th style="text-align: center;">ESTRATEGIA</th>
+                                <th style="text-align: right;">INVERSIÓN</th>
+                                <th style="text-align: right;">GANANCIA NETA</th>
+                                <th style="text-align: right;">ROI %</th>
+                                <th>ESCENARIO COBERTURA</th>
+                                <!-- [ARCH-1.4.35 / LN-QBE-025-B] Columna de Liquidación REAL del
+                                     Backtesting. En la ventanilla VIVA degrada a "—" (jornada sin
+                                     marcador publicado en la bóveda 3NF). La celda SÓLO exhibe el
+                                     veredicto sellado del oráculo: cero cálculos en el cliente. -->
+                                <th style="text-align: center;">LIQUIDACIÓN REAL</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpo-resumen-asignacion"></tbody>
+                        <tfoot id="pie-resumen-asignacion" style="border-top: 2px solid #38BDF8; font-weight: 700; color: #fff;"></tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- BLOQUE 4: ÓRDENES DE EJECUCIÓN DE BOLETOS (SPLIT TICKETS EN DETALLE) -->
+            <div style="margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="margin: 0; font-size: 1.1rem; color: #fff;">🟢 Órdenes de Ejecución de Boletos </h3>
+                    <span style="font-size: 7.5pt; color: #94A3B8;">Boletos split en pesos ($) con cobertura exacta en tablas ($0.00 pérdida)</span>
+                </div>
+                <div id="contenedor-tarjetas-split" style="display: flex; flex-direction: column; gap: 14px;"></div>
+            </div>
+
+            <!-- BLOQUE 5: CENTRO DE MANDO TÁCTICO & RADAR DE DESCARTES -->
+            <div class="card" style="border-top: 3px solid #ef4444;">
+                <h3 style="color: #ef4444; font-size: 1rem; margin-bottom: 0.8rem;">🚫 Partidos Vetados (QBE-00 Sin rentabilidad)</h3>
+                <div id="contenedor-descartes" style="display: flex; flex-direction: column; gap: 8px;"></div>
+            </div>
+
+            </div>
+            <!-- /CONTENEDOR SPORTSBOOK -->
+
+            <!-- [DES-QBE-046] SUB-VISTA QUINIELAS PROGOL — MESA DE APUESTAS -->
+            <!-- Token canónico: #contenedor-progol (dictamen Q9). Alias de compatibilidad CSS: .progol-slate-container (D-1). -->
+            <div id="contenedor-progol" class="subview-content progol-slate-container" style="display: none;">
+                <!-- ENCABEZADO DEL CONCURSO: hidratado íntegramente desde GET /api/markets/progol/slates/active -->
+                <div class="card" style="margin-bottom: 1.2rem; background: linear-gradient(135deg, #1C2541 0%, #0B132B 100%); border: 1px solid rgba(56,189,248,0.2);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+                        <div>
+                            <span style="font-size: 7.2pt; color: #38BDF8; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;">Quiniela Progol — Concurso de la Bóveda 3NF</span>
+                            <h1 id="progol-slate-nombre" style="margin: 2px 0 0 0; font-size: 1.25rem; color: #fff;">Consultando concurso activo...</h1>
+                            <div id="progol-slate-casillas" style="font-size: 7.5pt; color: #94A3B8; margin-top: 4px;">—</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="font-size: 7pt; color: #94A3B8; text-transform: uppercase; font-weight: 700;">Bolsa Garantizada</span>
+                            <div id="progol-slate-bolsa" style="font-size: 1.15rem; font-weight: 900; color: #00E676;">—</div>
+                            <div id="progol-slate-cierre" style="font-size: 7.2pt; color: #94A3B8; margin-top: 4px;">Tiempo límite: —</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06);">
+                        <label for="input-progol-presupuesto" style="font-size: 8.5pt; color: #cbd5e1; font-weight: 600;">Presupuesto MXN: $</label>
+                        <input type="number" id="input-progol-presupuesto" value="360" min="15" step="15" style="padding: 6px 10px; background: #0f172a; border: 1px solid #38BDF8; color: white; border-radius: 6px; width: 100px; font-weight: 700;">
+                        <button type="button" id="btn-optimizar-progol" class="btn-primary" onclick="ejecutarOptimizadorProgol()" style="padding: 7px 16px; font-size: 8.5pt; font-weight: 700;">⚡ Optimizar Presupuesto</button>
+                        <span id="progol-sesgo-fuente" style="font-size: 7.5pt; color: #94A3B8;"></span>
+                    </div>
+                </div>
+
+                <!-- RESULTADO DEL OPTIMIZADOR (Matriz de 14 casillas con 2^D × 3^T) -->
+                <div id="progol-resultado-optimizador" class="card" style="margin-bottom: 1.2rem; display: none;"></div>
+
+                <!-- RETÍCULO DE CASILLAS: 14 PROGOL REGULAR + 7 REVANCHA -->
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 0.8rem;">
+                        <h3 style="margin: 0; font-size: 1rem; color: #fff;">🎟️ Retículo de Casillas del Concurso</h3>
+                        <button type="button" class="subtab-btn" onclick="cargarSlateProgolActivo()" style="cursor: pointer;">↻ Recargar bóveda</button>
+                    </div>
+                    <div id="progol-reticulo-container" style="overflow-x: auto; display: flex; flex-direction: column; gap: 8px;">
+                        <div style="font-size: 8.5pt; color: #94A3B8;">Consultando bóveda 3NF…</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal / Vista Administrativa de Curación HITL -->
+    <div id="modal-curador-hitl" style="display: none; position: fixed; inset: 0; background: rgba(11, 19, 43, 0.95); z-index: 10000; overflow-y: auto; padding: 24px;">
+        <div style="max-width: 1100px; margin: 0 auto; background: #1C2541; border: 1px solid #38BDF8; border-radius: 8px; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div>
+                    <h2 style="color: #ffffff; margin: 0; font-size: 13pt;">🛠️ Panel de Curación Agéntica de Catálogos (HITL)</h2>
+                    <span style="color: #94A3B8; font-size: 8pt;">Revise y confirme los 18 clubes prospectados antes de sellar en la base de datos</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="cerrarModalCurador()" style="background: #0f172a; color: #cbd5e1; border: 1px solid #334155; padding: 8px 14px; border-radius: 6px; cursor: pointer;">Cerrar</button>
+                    <button onclick="sellarCatalogoCompleto()" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #fff; font-weight: 700; border: 1px solid #38BDF8; padding: 8px 18px; border-radius: 6px; cursor: pointer;">🔒 Sellar Catálogo en BD</button>
+                </div>
+            </div>
+            <!-- Grid de Tarjetas de Curación -->
+            <div id="grid-curacion-clubes" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px;"></div>
+        </div>
+    </div>
+
+    <!-- MODAL: RADIOGRAFÍA FORENSE DE PARTIDO (REBORN) [LN-QBE-098 / ARCH-1.4.31 / DES-QBE-063] -->
+    <div id="modal-radiografia-forense" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 940px; width: 95%; max-height: 90vh; overflow-y: auto; background: #0b1120; border: 1px solid #1e293b; border-radius: 12px; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);">
+
+            <!-- CABECERA DEL MODAL -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 14px; margin-bottom: 18px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span id="rad-estrategia-badge" class="badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid #38bdf8; font-size: 0.85rem; padding: 4px 8px; border-radius: 6px; font-weight: 700;">QBE-00</span>
+                    <h3 id="rad-titulo-partido" style="margin: 0; color: #f8fafc; font-size: 1.3rem; font-weight: 700;">Partido vs Rival</h3>
+                    <span id="rad-horario" style="color: #94a3b8; font-size: 0.85rem; margin-left: 8px;"></span>
+                </div>
+                <button class="btn btn-outline-secondary btn-sm" onclick="cerrarRadiografiaForense()" style="color: #94a3b8; border-color: #334155; font-size: 0.85rem; padding: 4px 12px; border-radius: 6px; cursor: pointer;">
+                    Cerrar
+                </button>
+            </div>
+
+            <!-- COMPARADOR GRÁFICO DE BARRAS DUALES Y TOP MARCADORES (REEMPLAZO DE GEMINI) -->
+            <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; margin-bottom: 20px;">
+
+                <!-- TARJETA 1: COMPARADOR GRÁFICO DE BARRAS DUALES (HEAD-TO-HEAD) -->
+                <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 14px;">
+                    <!-- Encabezado con Leyenda Apilada (Local arriba / Visitante abajo) -->
+                    <div style="margin-bottom: 12px; border-bottom: 1px solid #1e293b; padding-bottom: 8px;">
+                        <div style="color: #f8fafc; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+                            📊 Balance Gráfico de Fuerzas
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 3px; font-size: 0.74rem; font-weight: 700;">
+                            <span style="color: #38bdf8; display: inline-flex; align-items: center; gap: 6px;">
+                                <span style="width: 8px; height: 8px; background: #38bdf8; border-radius: 2px; display: inline-block;"></span>
+                                <span id="rad-legend-local">Local</span>
+                            </span>
+                            <span style="color: #00e676; display: inline-flex; align-items: center; gap: 6px;">
+                                <span style="width: 8px; height: 8px; background: #00e676; border-radius: 2px; display: inline-block;"></span>
+                                <span id="rad-legend-visita">Visitante</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- MÉTRICA 1: Peligro Ofensivo (xG de partido soberano) -->
+                        <div>
+                            <div style="color: #e2e8f0; font-size: 0.72rem; font-weight: 700; margin-bottom: 4px;">
+                                🎯 Peligro Ofensivo (xG de Partido)
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
+                                <div style="flex: 1; height: 6px; background: #1e293b; border-radius: 2px; overflow: hidden;">
+                                    <div id="rad-bar-xg-loc" style="width: 50%; height: 100%; background: #38bdf8; transition: width 0.3s;"></div>
+                                </div>
+                                <span id="rad-val-xg-loc" style="color: #38bdf8; font-size: 0.72rem; font-weight: 700; min-width: 95px; text-align: right; font-family: monospace;">--</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="flex: 1; height: 6px; background: #1e293b; border-radius: 2px; overflow: hidden;">
+                                    <div id="rad-bar-xg-vis" style="width: 50%; height: 100%; background: #00e676; transition: width 0.3s;"></div>
+                                </div>
+                                <span id="rad-val-xg-vis" style="color: #00e676; font-size: 0.72rem; font-weight: 700; min-width: 95px; text-align: right; font-family: monospace;">--</span>
+                            </div>
+                        </div>
+
+                        <!-- MÉTRICA 2: Producción en Temporada (GF por partido soberano) -->
+                        <div>
+                            <div style="color: #e2e8f0; font-size: 0.72rem; font-weight: 700; margin-bottom: 4px;">
+                                🏹 Producción en Temporada (GF / Partido)
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
+                                <div style="flex: 1; height: 6px; background: #1e293b; border-radius: 2px; overflow: hidden;">
+                                    <div id="rad-bar-sot-loc" style="width: 50%; height: 100%; background: #38bdf8; transition: width 0.3s;"></div>
+                                </div>
+                                <span id="rad-val-sot-loc" style="color: #38bdf8; font-size: 0.72rem; font-weight: 700; min-width: 95px; text-align: right; font-family: monospace;">--</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="flex: 1; height: 6px; background: #1e293b; border-radius: 2px; overflow: hidden;">
+                                    <div id="rad-bar-sot-vis" style="width: 50%; height: 100%; background: #00e676; transition: width 0.3s;"></div>
+                                </div>
+                                <span id="rad-val-sot-vis" style="color: #00e676; font-size: 0.72rem; font-weight: 700; min-width: 95px; text-align: right; font-family: monospace;">--</span>
+                            </div>
+                        </div>
+
+                        <!-- MÉTRICA 3: Solidez Defensiva (GC por partido; menos es mejor, barra inversa) -->
+                        <div>
+                            <div style="color: #e2e8f0; font-size: 0.72rem; font-weight: 700; margin-bottom: 4px;">
+                                🛡️ Solidez Defensiva (Goles Concedidos GC / PJ)
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
+                                <div style="flex: 1; height: 6px; background: #1e293b; border-radius: 2px; overflow: hidden;">
+                                    <div id="rad-bar-def-loc" style="width: 50%; height: 100%; background: #38bdf8; transition: width 0.3s;"></div>
+                                </div>
+                                <span id="rad-val-def-loc" style="color: #38bdf8; font-size: 0.72rem; font-weight: 700; min-width: 95px; text-align: right; font-family: monospace;">--</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="flex: 1; height: 6px; background: #1e293b; border-radius: 2px; overflow: hidden;">
+                                    <div id="rad-bar-def-vis" style="width: 50%; height: 100%; background: #00e676; transition: width 0.3s;"></div>
+                                </div>
+                                <span id="rad-val-def-vis" style="color: #00e676; font-size: 0.72rem; font-weight: 700; min-width: 95px; text-align: right; font-family: monospace;">--</span>
+                            </div>
+                        </div>
+
+                        <!-- MÉTRICA 4: Ritmo Competitivo (Puntos por partido soberano) -->
+                        <div>
+                            <div style="color: #e2e8f0; font-size: 0.72rem; font-weight: 700; margin-bottom: 4px;">
+                                📈 Ritmo Competitivo (Puntos por Partido PTS/PJ)
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 2px;">
+                                <div style="flex: 1; height: 6px; background: #1e293b; border-radius: 2px; overflow: hidden;">
+                                    <div id="rad-bar-pos-loc" style="width: 50%; height: 100%; background: #38bdf8; transition: width 0.3s;"></div>
+                                </div>
+                                <span id="rad-val-pos-loc" style="color: #38bdf8; font-size: 0.72rem; font-weight: 700; min-width: 95px; text-align: right; font-family: monospace;">--</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="flex: 1; height: 6px; background: #1e293b; border-radius: 2px; overflow: hidden;">
+                                    <div id="rad-bar-pos-vis" style="width: 50%; height: 100%; background: #00e676; transition: width 0.3s;"></div>
+                                </div>
+                                <span id="rad-val-pos-vis" style="color: #00e676; font-size: 0.72rem; font-weight: 700; min-width: 95px; text-align: right; font-family: monospace;">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TARJETA 2: MICRO-MATRIZ DE MARCADORES MÁS PROBABLES (POISSON) -->
+                <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="color: #f8fafc; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">🎲 Marcadores más Probables (Poisson)</span>
+                        <span style="color: #94a3b8; font-size: 0.72rem;">Top-4 en M*xy</span>
+                    </div>
+                    <div id="rad-top-marcadores" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <!-- Se inyecta dinámicamente: e.g. 2-0 (14.2%) -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLA PRINCIPAL: PROBABILIDADES REALES VS CASAS DE APUESTAS (CERO MOMIOS) -->
+            <div style="margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <h4 style="color: #f8fafc; font-size: 0.95rem; font-weight: 700; margin: 0;">⚖️ Probabilidades Reales vs. Casas de Apuestas</h4>
+                    <span style="color: #94a3b8; font-size: 0.75rem;">(Momios excluidos: Comparación pura de probabilidades)</span>
+                </div>
+
+                <table class="fintech-table" style="width: 100%; border-collapse: collapse; background: #0f172a; border-radius: 8px; overflow: hidden; font-size: 0.82rem;">
+                    <thead>
+                        <tr style="background: #1e293b; color: #94a3b8; text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.5px;">
+                            <th style="padding: 10px 14px; text-align: left;">RESULTADO</th>
+                            <th style="padding: 10px 10px; text-align: center;" title="Probabilidad castigada por el modelo para proteger tu dinero ante incertidumbre. Es la que se usa para apostar.">P' (PRUDENTE)<br><span style="font-size: 0.65rem; color: #64748b;">Fiduciaria ℹ️</span></th>
+                            <th style="padding: 10px 10px; text-align: center;" title="Probabilidad pura según los goles esperados y el rendimiento táctico de los equipos.">P̂ (DEPORTIVA)<br><span style="font-size: 0.65rem; color: #64748b;">Soberana ℹ️</span></th>
+                            <th style="padding: 10px 10px; text-align: center;" title="Probabilidad promedio de todos los casinos neutralizada sin su comisión (Vig-Free).">CONSENSO MERCADO<br><span style="font-size: 0.65rem; color: #64748b;">Sin Comisión ℹ️</span></th>
+                            <th style="padding: 10px 10px; text-align: center;" title="Probabilidad que te cobra el casino en ventanilla (incluye el margen de la casa).">PROB. CASINO<br><span style="font-size: 0.65rem; color: #64748b;">Con Comisión ℹ️</span></th>
+                            <th style="padding: 10px 10px; text-align: center;" title="Operador comercial que ofrece la cuota más alta y rentable para este desenlace.">CASINO SELECCIONADO ℹ️</th>
+                            <th style="padding: 10px 14px; text-align: right;" title="Rendimiento matemático neto sobre el casino (Alpha Edge). Solo compramos cuando este valor es verde y positivo.">VENTAJA (+EV)<br><span style="font-size: 0.65rem; color: #64748b;">Sobre Casino ℹ️</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="rad-cuerpo-pronostico">
+                        <!-- Filas inyectadas por app.js con colorimetría de boletos -->
+                    </tbody>
+                </table>
+
+                <div id="rad-footer-comisiones" style="margin-top: 6px; font-size: 0.72rem; color: #64748b; text-align: right;">
+                    <!-- Margen comercial del casino informado -->
+                </div>
+            </div>
+
+            <!-- KPI TILES: INTENSIDADES DE GOL Y PAGO ANTICIPADO -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px;">
+                <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 10px; text-align: center;">
+                    <div style="color: #94a3b8; font-size: 0.72rem;">xG LOCAL (λ)</div>
+                    <div id="rad-kpi-lambda" style="color: #38bdf8; font-size: 1.25rem; font-weight: 700; margin-top: 2px;">--</div>
+                </div>
+                <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 10px; text-align: center;">
+                    <div style="color: #94a3b8; font-size: 0.72rem;">xG VISITA (μ)</div>
+                    <div id="rad-kpi-mu" style="color: #38bdf8; font-size: 1.25rem; font-weight: 700; margin-top: 2px;">--</div>
+                </div>
+                <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 10px; text-align: center;">
+                    <div style="color: #94a3b8; font-size: 0.72rem;">GOLES TOTALES (λ+μ)</div>
+                    <div id="rad-kpi-totales" style="color: #f8fafc; font-size: 1.25rem; font-weight: 700; margin-top: 2px;">--</div>
+                </div>
+                <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 10px; text-align: center;">
+                    <div style="color: #94a3b8; font-size: 0.72rem;">PAGO ANTICIPADO (Φ)</div>
+                    <div id="rad-kpi-pa" style="color: #00e676; font-size: 1.25rem; font-weight: 700; margin-top: 2px;">--</div>
+                </div>
+            </div>
+
+            <!-- TABLA INFERIOR: RADIOGRAFÍA ESTRUCTURAL Y FORMA RECIENTE -->
+            <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 14px;">
+                <div style="color: #f8fafc; font-size: 0.82rem; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    📋 Radiografía Estructural y Forma Reciente
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="fintech-table" style="width: 100%; font-size: 0.78rem; border-collapse: collapse;">
+                        <thead>
+                            <tr style="color: #94a3b8; font-size: 0.7rem; background: #1e293b; text-transform: uppercase;">
+                                <th style="text-align: left; padding: 8px 12px;">EQUIPO</th>
+                                <th style="text-align: center; padding: 8px 8px;">PUESTO</th>
+                                <th style="text-align: center; padding: 8px 8px;">PTS</th>
+                                <th style="text-align: center; padding: 8px 8px;">RÉCORD (G-E-P)</th>
+                                <th style="text-align: center; padding: 8px 10px;" title="Diferencia de goles de la temporada (GF:GC) de la tabla de posiciones del Live Board.">DIF GOLES</th>
+                                <th style="text-align: center; padding: 8px 12px;" title="Últimos 5 resultados de liga del club (G = victoria, E = empate, P = derrota).">FORMA RECIENTE (5P)</th>
+                                <th style="text-align: center; padding: 8px 8px;" title="Puntos esperados acumulados del Live Board (métrica del proveedor; sin evidencia el rótulo degrada a '--').">xPTS OPTA</th>
+                                <th style="text-align: center; padding: 8px 8px;" title="Diferencia entre los xG y xGA acumulados del Live Board (métrica del proveedor; sin evidencia el rótulo degrada a '--').">DIF xG</th>
+                                <th style="text-align: center; padding: 8px 8px;" title="Modulador de riesgo del motor Q-BE (Q_MOD); si el partido no lo porta, el rótulo degrada a '--'.">Q_MOD</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rad-cuerpo-equipos"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+        <!-- VISTA 5: VISOR DE BACKTESTING (DES-QBE-064 / LN-QBE-100 / ARCH-1.4.38) -->
+        <section id="panel-visor-backtesting" class="view-section">
+            <!-- [DES-QBE-068] Píldoras internas del visor dual: la auditoría fáctica (por defecto) y
+                 la rentabilidad financiera coexisten en el DOM; ninguna destruye a la otra. -->
+            <nav class="bt-subtabs" role="tablist" aria-label="Paneles del Visor de Backtesting">
+                <button type="button" id="sub-tab-factico" class="bt-subtab-btn active" role="tab"
+                        aria-selected="true" data-bt-panel="panel-visor-factico">
+                    🎯 Calibración y Distribuciones
+                </button>
+                <button type="button" id="sub-tab-financiero" class="bt-subtab-btn" role="tab"
+                        aria-selected="false" data-bt-panel="panel-visor-financiero">
+                    📈 Rentabilidad y Curva de Capital
+                </button>
+            </nav>
+
+            <div id="panel-visor-factico">
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <h3 style="margin-top: 0;">🔬 Visor de Backtesting — Calibración Factual de Temporada</h3>
+                <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 14px;">
+                    Auditoría <strong>de solo lectura</strong> contra la bóveda 3NF (<code>matches</code> ·
+                    <code>fixtures_snapshots</code>): mide la <strong>Tasa de Acierto de Cobertura</strong>
+                    (factual ex-post de la temporada), el Brier Score Multicategórico de Q-BE contra el
+                    consenso del mercado y el Alpha de Calibración. Cero cifras fabricadas: sin captura
+                    sellada de P′ el partido se rotula <em>Pendiente de captura</em>
+                    <span style="opacity: 0.85;">[LN-QBE-100] / [ARCH-1.4.38] / [DES-QBE-072]</span>.
+                </p>
+
+                <!-- [LN-QBE-100 · REFACTOR-TRIADA-PMAX-PMID-PLOW] Cuatro métricas PURAS de la
+                     taxonomía de vértices del símplex Δ² (P_max ≥ P_mid ≥ P_low). Queda extirpada
+                     la falsa equivalencia «Empate = Cobertura» (H_fid / FAS · FES · FUS). -->
+                <!-- [DES-QBE-072 · ARCH-1.4.68] VISOR EN CUATRO CAPAS. Capa 0: el payload certificado se
+                     guarda inmutable (`window._calibracionPayloadOriginal`). Capa 1: ALCANCE declarado
+                     (muestra calibrada con Suficiencia de Datos ≠ 0 ↔ torneo completo). Capa 2: tres
+                     filtros fiduciarios combinables. Capa 3: una sola pasada propaga la selección a
+                     macro, meso y micro. Conmutar NO refetchea: se re-pinta la caché certificada. -->
+                <div class="visor-capas-container" id="visor-capas-container">
+                    <div class="visor-capa">
+                        <span class="visor-capa-titulo">Capa 1 · Alcance de la muestra</span>
+                        <div class="visor-segmentacion" id="visor-segmentacion" role="tablist"
+                             aria-label="Alcance de la muestra del visor de calibración">
+                            <button type="button" id="btn-alcance-calibrada"
+                                    class="visor-muestra-btn active" data-muestra="CALIBRADA"
+                                    role="tab" aria-selected="true"
+                                    onclick="conmutarAlcanceMuestra('CALIBRADA')">🎯 Muestra Calibrada (J4–J13)</button>
+                            <button type="button" id="btn-alcance-global"
+                                    class="visor-muestra-btn" data-muestra="GLOBAL"
+                                    role="tab" aria-selected="false"
+                                    onclick="conmutarAlcanceMuestra('GLOBAL')">🌐 Torneo Completo (J1–J13)</button>
+                        </div>
+                    </div>
+                    <div class="visor-capa">
+                        <span class="visor-capa-titulo">Capa 2 · Filtros fiduciarios combinables</span>
+                        <div class="visor-filtros-fiduciarios">
+                            <label class="bt-filtro-vetados" for="chk-filtro-epist">
+                                <input type="checkbox" id="chk-filtro-epist"
+                                       onchange="conmutarFiltrosVisorCalibracion()">
+                                <span>Alta Discrepancia (Δ_epist &gt; 0.12)</span>
+                            </label>
+                            <label class="bt-filtro-vetados" for="chk-filtro-altitud"
+                                   title="Filtro de INCLUSIÓN: muestra únicamente los partidos con Asedio Territorial Neto a favor del local (ΔAlt ≥ 1,000 m). No resta Masa Probabilística a quien goza de la ventaja física.">
+                                <input type="checkbox" id="chk-filtro-altitud"
+                                       onchange="conmutarFiltrosVisorCalibracion()">
+                                <span>Asedio Territorial Neto (sólo ΔAlt ≥ 1,000 m)</span>
+                            </label>
+                            <label class="bt-filtro-vetados" for="chk-filtro-fragil">
+                                <input type="checkbox" id="chk-filtro-fragil"
+                                       onchange="conmutarFiltrosVisorCalibracion()">
+                                <span>Favorito Frágil (P′ máx &lt; 0.50)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [DES-QBE-072 · R2] ESPEJO DE COMPATIBILIDAD: `#chk-excluir-vetados` es el ancla
+                     sellada por [DES-QBE-067] y la lee `_universoCalibracion`. Permanece en el DOM,
+                     OCULTO y sincronizado con `#chk-filtro-epist` (una sola verdad de estado). El
+                     filtro es de PRESENTACIÓN: jamás reescribe la bóveda. -->
+                <label class="bt-filtro-vetados visor-espejo-oculto" for="chk-excluir-vetados"
+                       aria-hidden="true">
+                    <input type="checkbox" id="chk-excluir-vetados" tabindex="-1">
+                    <span>Excluir partidos vetados (EPIST 🔴 · Δ_epist &gt; 0.12)</span>
+                </label>
+
+                <!-- [DES-QBE-072 §Denominador] Transparencia: X activos sobre N del alcance declarado. -->
+                <div class="visor-denominador" role="status" aria-live="polite">
+                    <span class="visor-filtro-activo-badge" id="visor-filtro-activo-badge">Línea Base Calibrada</span>
+                    <span class="visor-denominador-texto" id="visor-denominador-texto">Mostrando -- de -- partidos concluidos (0 excluidos por filtros activos) · N = --</span>
+                </div>
+
+                <!-- [DES-QBE-072] CUATRO INDICADORES MACRO con glosario autodescriptivo: la sigla
+                     derogada (P_max / P_mid / P_low) sólo sobrevive en la legislación [LN-QBE-100]. -->
+                <div class="bt-macro-grid">
+                    <div class="bt-kpi-card">
+                        <span class="bt-kpi-label">MASA PROBABILÍSTICA EX-ANTE</span>
+                        <span class="bt-kpi-value" id="kpi-bt-masa-cobertura">--</span>
+                        <span class="bt-kpi-sub" id="kpi-bt-masa-detalle">--</span>
+                    </div>
+                    <div class="bt-kpi-card">
+                        <span class="bt-kpi-label">ACIERTO PRIMARIO</span>
+                        <span class="bt-kpi-value" id="kpi-bt-pmax">--</span>
+                        <span class="bt-kpi-sub" id="kpi-bt-pmax-detalle">--</span>
+                    </div>
+                    <div class="bt-kpi-card">
+                        <span class="bt-kpi-label">RESCATE DE COBERTURA</span>
+                        <span class="bt-kpi-value" id="kpi-bt-pmid">--</span>
+                        <span class="bt-kpi-sub" id="kpi-bt-pmid-detalle">--</span>
+                    </div>
+                    <div class="bt-kpi-card">
+                        <span class="bt-kpi-label">RUPTURA RESIDUAL</span>
+                        <span class="bt-kpi-value" id="kpi-bt-plow">--</span>
+                        <span class="bt-kpi-sub" id="kpi-bt-plow-detalle">--</span>
+                    </div>
+                </div>
+
+                <div id="bt-estado" class="bt-estado">Lectura pendiente: abre la pestaña para consultar la bóveda.</div>
+            </div>
+
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <h4 style="margin-top: 0;">📅 Calibración por Jornada (Tabla Meso)</h4>
+                <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 12px;">
+                    🟢 <strong>Masa Probabilística Ex-Ante</strong> = Acierto Primario + Rescate de
+                    Cobertura (100 % − Ruptura Residual) · 🔴 <strong>Ruptura Residual</strong> = el
+                    desenlace real quedó fuera de la cobertura. El desglose porcentual
+                    (<em>Acierto Primario · Rescate de Cobertura · Ruptura Residual</em>) con sus
+                    conteos enteros es la lectura vigente; la sub-etiqueta
+                    <code>[Rescate: X Emp · Y Riv]</code> mide de dónde rescató la cobertura (empate o
+                    rival). La jornada cuya <strong>Suficiencia de Datos</strong> es 0 se declara con
+                    ❄️ <em>Cold Start</em> y permanece visible, jamás oculta. Glosario vinculante
+                    <code>[DES-QBE-072]</code>: la sigla derogada se archiva en la legislación
+                    (<code>[LN-QBE-100]</code>), jamás en la cartelera.
+                </p>
+                <div style="overflow-x: auto;">
+                    <table class="bt-table">
+                        <thead>
+                            <tr>
+                                <th>JORNADA</th>
+                                <th>PARTIDOS</th>
+                                <th>MASA PROBABILÍSTICA EX-ANTE</th>
+                                <th>DESGLOSE (Acierto Primario · Rescate de Cobertura · Ruptura Residual)</th>
+                                <th>BRIER Q-BE</th>
+                                <th>BRIER MERCADO</th>
+                                <th>ALPHA</th>
+                                <th>ACCIÓN</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpo-meso-jornadas"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h4 style="margin-top: 0;">🎯 Parrilla Micro por Partido (estilo BetExplorer)</h4>
+                <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 12px;">
+                    Cada casilla 1X2 contrasta la probabilidad fiduciaria <strong>P'</strong> contra el
+                    consenso desmarcado del mercado (<strong>q_mkt</strong>) y su momio de ventanilla.
+                    La casilla del desenlace real se ilumina con la colorimetría de cobertura.
+                </p>
+                <div id="contenedor-micro-partidos">
+                    <div class="bt-estado">
+                        Selecciona <strong>Ver partidos</strong> en la tabla meso para desplegar la parrilla micro 1X2.
+                    </div>
+                </div>
+            </div>
+            </div><!-- /#panel-visor-factico -->
+
+            <!-- [DES-QBE-068 / LN-QBE-114] PANEL FINANCIERO: espejo del estado de resultados que
+                 certifica el sandbox. Cero aritmética en el cliente: KPIs, curva y tabla meso se
+                 transcriben del payload de `POST /api/markets/backtesting/simulate`. -->
+            <div id="panel-visor-financiero" class="d-none">
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <h3 style="margin-top: 0;">📈 Rentabilidad y Curva de Capital</h3>
+                    <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 14px;">
+                        Estado de resultados retrospectivo del fondo sobre los marcadores <strong>consumados</strong>
+                        de la bóveda 3NF. La liquidación factual, la cota de cartera y el veto fiduciario se
+                        ejecutan en el motor sellado <span style="opacity:0.85;">[LN-QBE-107] / [LN-QBE-113]</span>;
+                        esta pantalla sólo <strong>exhibe</strong> su veredicto
+                        <span style="opacity:0.85;">[LN-QBE-114]</span>.
+                    </p>
+                    <div class="bt-macro-grid">
+                        <div class="bt-kpi-card">
+                            <span class="bt-kpi-label">BANKROLL FINAL</span>
+                            <span class="bt-kpi-value" id="kpi-fin-bankroll">--</span>
+                            <span class="bt-kpi-sub" id="kpi-fin-bankroll-detalle">--</span>
+                        </div>
+                        <div class="bt-kpi-card">
+                            <span class="bt-kpi-label">PnL ACUMULADO</span>
+                            <span class="bt-kpi-value" id="kpi-fin-pnl">--</span>
+                            <span class="bt-kpi-sub" id="kpi-fin-pnl-detalle">--</span>
+                        </div>
+                        <div class="bt-kpi-card">
+                            <span class="bt-kpi-label">ROI ACUMULADO</span>
+                            <span class="bt-kpi-value" id="kpi-fin-roi">--</span>
+                            <span class="bt-kpi-sub" id="kpi-fin-roi-detalle">--</span>
+                        </div>
+                        <div class="bt-kpi-card">
+                            <span class="bt-kpi-label">DRAWDOWN MÁXIMO</span>
+                            <span class="bt-kpi-value" id="kpi-fin-drawdown">--</span>
+                            <span class="bt-kpi-sub" id="kpi-fin-drawdown-detalle">--</span>
+                        </div>
+                    </div>
+                    <div id="bt-financiero-estado" class="bt-estado">
+                        Sin simulación: abre el candado de la Mesa y pulsa 📈 Simular Rentabilidad.
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <h4 style="margin-top: 0;">💹 Trayectoria del Capital por Jornada</h4>
+                    <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 12px;">
+                        El punto <strong>J0</strong> es el patrimonio inicial declarado en la ventanilla; cada punto
+                        posterior es el <code>bankroll_final</code> certificado por el motor para esa jornada.
+                        Sin Chart.js disponible la curva no se dibuja: se consulta la tabla meso (jamás se
+                        inventa una serie).
+                    </p>
+                    <div class="bt-chart-wrap">
+                        <canvas id="equity-chart" aria-label="Curva de capital del fondo por jornada"></canvas>
+                        <div id="equity-chart-fallback" class="equity-fallback" style="display: none;">
+                            Chart.js no está disponible en este navegador: la trayectoria del capital permanece
+                            íntegra en la tabla meso financiera.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h4 style="margin-top: 0;">🧾 Liquidación Meso por Jornada</h4>
+                    <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 12px;">
+                        Lectura jornada a jornada del estado de resultados: capital desplegado, PnL, ROI y
+                        bankroll de cierre. Los vetos fiduciarios se declaran en su propia columna.
+                    </p>
+                    <div style="overflow-x: auto;">
+                        <table class="bt-table">
+                            <thead>
+                                <tr>
+                                    <th>JORNADA</th>
+                                    <th>POSICIONES</th>
+                                    <th>CAPITAL DESPLEGADO</th>
+                                    <th>PnL JORNADA</th>
+                                    <th>ROI JORNADA</th>
+                                    <th>BANKROLL FINAL</th>
+                                    <th>VETOS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpo-meso-financiero">
+                                <tr>
+                                    <td colspan="7" style="text-align:center; padding:18px; color:var(--text-muted);">
+                                        Sin simulación registrada: el candado de la Mesa debe estar abierto.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><!-- /#panel-visor-financiero -->
+        </section>
+
+
+        <!-- VISTA 4: CENTRO DE CONTROL ADMINISTRATIVO (DES-QBE-048 / ARCH-1.4.12) -->
+        <section id="view-control-center" class="view-section">
+            <div class="card" style="margin-bottom: 1.5rem;">
+                <h3 style="margin-top: 0;">⚙️ Centro de Control Industrial</h3>
+                <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 14px;">
+                    Despacho gobernado de daemons y auditorías certificadas. Toda tarea atraviesa la
+                    whitelist estricta de seguridad <strong>[ARCH-1.4.12]</strong>: el servidor jamás
+                    ejecuta texto libre del cliente (cero inyección de comandos).
+                </p>
+
+                <!-- [ARCH-1.4.12-B] SEMÁFORO DE DERIVA Y FRESCURA DE FUENTES (cuatro luces, SOLO
+                     LECTURA): el veredicto emana de `GET /api/admin/status/drift`; la pantalla sólo
+                     EXHIBE el veredicto del motor ([GOVERNANCE-01] cero cifra inventada en el cliente).
+                     Iconografía Universal (Decreto VAR-2026-DRIFT-STREAM-MAP): glifos ⏳ (en sondeo) y
+                     🟢 / 🟡 / 🔴 / ⚪ (veredicto); PROHIBIDO el emoji de bandera regional. -->
+                <div class="cc-drift-panel" id="cc-drift-panel">
+                    <div class="cc-drift-head">
+                        <span class="cc-drift-title">🚦 Semáforo de Deriva · Jornada <span id="drift-jornada">—</span></span>
+                        <span class="cc-drift-regimen" id="drift-regimen">solo lectura</span>
+                    </div>
+                    <div class="cc-drift-luces" id="cc-drift-luces">
+                        <div class="cc-drift-luz" id="drift-luz-mercado" data-dimension="mercado">
+                            <span class="cc-drift-glifo" id="drift-glifo-mercado">⏳</span>
+                            <span class="cc-drift-etiqueta">Mercado</span>
+                            <span class="cc-drift-detalle" id="drift-detalle-mercado">Sondeando frescura de cuotas…</span>
+                        </div>
+                        <div class="cc-drift-luz" id="drift-luz-deportivo" data-dimension="deportivo">
+                            <span class="cc-drift-glifo" id="drift-glifo-deportivo">⏳</span>
+                            <span class="cc-drift-etiqueta">Deportivo</span>
+                            <span class="cc-drift-detalle" id="drift-detalle-deportivo">Sondeando estado deportivo…</span>
+                        </div>
+                        <div class="cc-drift-luz" id="drift-luz-progol" data-dimension="progol">
+                            <span class="cc-drift-glifo" id="drift-glifo-progol">⏳</span>
+                            <span class="cc-drift-etiqueta">Quiniela</span>
+                            <span class="cc-drift-detalle" id="drift-detalle-progol">Sondeando concurso vigente…</span>
+                        </div>
+                        <div class="cc-drift-luz" id="drift-luz-integridad" data-dimension="integridad">
+                            <span class="cc-drift-glifo" id="drift-glifo-integridad">⏳</span>
+                            <span class="cc-drift-etiqueta">Integridad</span>
+                            <span class="cc-drift-detalle" id="drift-detalle-integridad">Auditando coherencia de cartelera…</span>
+                        </div>
+                    </div>
+                    <div class="cc-drift-accion" id="cc-drift-accion">
+                        <span class="cc-drift-accion-texto" id="drift-accion-texto">[SISTEMA] Evaluando deriva…</span>
+                        <button id="btn-drift-accion" class="cc-task-btn cc-drift-boton" style="display:none;" title="Ejecuta la tarea certificada que la sonda recomienda para cerrar la deriva detectada (siempre pertenece a la whitelist [ARCH-1.4.12]).">▶ Ejecutar Acción Recomendada</button>
+                        <button id="btn-drift-refresco" class="cc-drift-refresco" title="Vuelve a sondear el semáforo de deriva (solo lectura, cero mutación de la bóveda).">↻ Reevaluar Semáforo</button>
+                    </div>
+                </div>
+
+                <!-- [ARCH-1.4.12-C] TRES CADENAS TEMPORALES HOMOLOGADAS (derogan el botón maestro
+                     monolítico): pre-jornada (reparación integral Deportivo ➔ Mercado ➔ Pre-Vuelo),
+                     post-jornada (Tríada de Cierre: Histórico BetExplorer ➔ Homologación Opta+H2H ➔
+                     Pre-Vuelo) y quiniela (concurso vigente). Toda cadena se despacha por la
+                     whitelist certificada. -->
+                <div class="cc-master-bar">
+                    <button id="btn-tarea-pre-jornada" class="cc-btn-master" onclick="ejecutarTareaAdmin('cadena_pre_jornada')" title="Qué hace: Ejecuta en secuencia la cadena PRE-JORNADA certificada: Centinela Deportivo ➔ Centinela de Mercado ➔ Pre-Vuelo de Coherencia de Cartelera. Cuándo usar: Antes de exponer la jornada en la Mesa de Apuestas, tras una purga o cuando el semáforo detecte deriva deportiva/mercado/integridad.">🌅 Cadena Pre-Jornada · Deportivo ➔ Mercado ➔ Pre-Vuelo</button>
+                    <button id="btn-tarea-post-jornada" class="cc-btn-master" onclick="ejecutarTareaAdmin('cadena_post_jornada')" title="Qué hace: Ejecuta la cadena POST-JORNADA certificada (Tríada de Cierre [ARCH-1.4.12-C]): Ingesta Histórica BetExplorer ➔ Homologación Opta + H2H ➔ Pre-Vuelo de Coherencia de Cartelera. Cuándo usar: Al concluir la jornada, para sellar el histórico de cortes, homologar los insumos fácticos de cada partido y verificar la coherencia relacional de la cartelera liquidada.">🌇 Cadena Post-Jornada · BetExplorer ➔ Homologación ➔ Pre-Vuelo</button>
+                    <button id="btn-tarea-progol" class="cc-btn-master" onclick="ejecutarTareaAdmin('cadena_progol')" title="Qué hace: Ejecuta la cadena de QUINIELA certificada: Centinela Progol (concurso oficial vigente de miloteria.mx). Cuándo usar: Cada semana al publicarse el concurso o cuando el semáforo detecte cierre vencido.">🎟️ Cadena Quiniela · Centinela Progol</button>
+                    <span id="cc-estado" class="cc-badge cc-badge-idle">● En espera</span>
+                </div>
+
+                <div class="cc-groups">
+                    <div class="cc-group">
+                        <h4 class="cc-group-title">🧠 Recolección de Inteligencia</h4>
+                        <div class="cc-tasks">
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('centinela_deportivo')" title="Qué hace: Extrae la temporada completa (J1 a J17) desde FotMob y reconstruye tablas históricas. Cuándo usar: Al iniciar el sistema o tras disputarse una jornada para actualizar marcadores y clasificaciones.">🏟️ Centinela Deportivo · FotMob (J1-J17)</button>
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('centinela_mercado')" title="Qué hace: Escanea cuotas vivas en Caliente y Betway para la jornada activa, calculando arbitrajes y deltas. Cuándo usar: Previo a operar la Mesa de Apuestas.">💰 Centinela de Mercado · Caliente + Betway</button>
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('centinela_progol')" title="Qué hace: Descarga el concurso oficial vigente de miloteria.mx (21 casillas). Cuándo usar: Cada semana al publicarse la nueva quiniela.">🎟️ Centinela Progol · Concurso #2353</button>
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('ingestar_historico_betexplorer')" title="Qué hace: Reconstruye el histórico de cortes de jornada desde BetExplorer (marcadores y cuotas de cierre) para la paridad factual del backtesting. Cuándo usar: Tras concluir una jornada o al reconstruir la serie histórica de la temporada.">🛰️ Ingesta Histórica BetExplorer · Cortes de Jornada</button>
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('homologar_temporada_optah2h')" title="Qué hace: Reconstruye los insumos fácticos oficiales de la temporada completa (J1 a J17): goles esperados Opta y kernel H2H, sellando la telemetría de cada partido concluido. Cuándo usar: Tras la ingesta histórica de BetExplorer, al cerrar una jornada o cuando el semáforo de homologación marque rezago. Se ejecuta sin --forzar: jamás sobreescribe evidencia ya sellada.">🧬 Homologación Opta + H2H · Temporada Completa</button>
+                        </div>
+                    </div>
+
+                    <div class="cc-group">
+                        <h4 class="cc-group-title">🗄️ Activos y Mantenimiento 3NF</h4>
+                        <div class="cc-tasks">
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('sincronizar_activos')" title="Qué hace: Descarga y cachea los escudos y logos oficiales de los clubes. Cuándo usar: Tras una purga o al incorporar clubes nuevos; es idempotente y no altera datos deportivos.">🖼️ Sincronizar Escudos y Logos</button>
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('purgar_base_datos')" title="Qué hace: Purga atómica de snapshots, partidos y estados en SQLite. Qué implica: Deja la base de datos en blanco (preserva ligas y equipos). Cómo se restaura: Pulsando la cadena certificada 'Pre-Jornada' (Deportivo ➔ Mercado ➔ Pre-Vuelo).">🧹 Purga Selectiva de Snapshots</button>
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('purga_total_db')" title="Qué hace: Purga TOTAL de la bóveda 3NF [ARCH-1.4.29] bajo una única Unit of Work: vacía las 15 tablas (ligas, equipos, partidos, snapshots, distribuciones soberanas, slates y bitácoras) preservando intacto el libro mayor de tokens llm_token_ledger. Qué implica: Deja la base virgen, sin catálogo alguno. Cómo se restaura: Pulsando la cadena certificada 'Pre-Jornada' (Deportivo ➔ Mercado ➔ Pre-Vuelo) y, si la quiniela quedó vacía, la cadena 'Quiniela'.">🧨 Purga Total de la Bóveda 3NF</button>
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('exportar_dataset_investigacion')" title="Qué hace: Exporta el dataset de investigación de la temporada a CSV en data/output/ (una fila por partido con marcadores, cuotas de cierre, vector soberano e insumos fácticos). Cuándo usar: Para análisis externo o para congelar la evidencia de un experimento.">📤 Exportar Dataset de Investigación · CSV</button>
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('generar_matriz_investigacion')" title="Qué hace: Publica la matriz canónica de investigación (data/output/research_feature_matrix.csv) con cuatro zonas disjuntas: identidad del partido, 64 celdas fácticas PRE-KICKOFF del catálogo de 32 variables, distribución soberana PRE-KICKOFF y etiquetas consumadas al final (sin fuga). Cuándo usar: Antes de entrenar o auditar un modelo externo; es de sólo lectura y su universo es el MISMO que sirve el Visor de Calibración.">🛰️ Matriz Canónica de Investigación · 4 Zonas</button>
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('sembrar_prior_apertura2025')" title="Qué hace: Congela (o verifica, sin re-escribir) el artefacto data/cache_prior_apertura2025_liga_mx.json con el agregado físico REAL de la fase regular de Apertura 2025: partidos jugados, goles a favor y en contra y puntos factuales, más el xG calibrado declarado [ARCH-1.4.39]. Cuándo usar: Al abrir temporada o tras una purga total, para que las jornadas 1 a 3 dejen de ser ciegas (Suficiencia de Datos = 0) sin sustituir la probabilidad soberana por el mercado. Qué implica: la posesión y el xGA de 2025 no existen como medición y se declaran así; el artefacto es un dato congelado y su regeneración exige la bandera explícita --regen.">🧊 Prior Congelado · Apertura 2025</button>
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('mineria_factores_shannon')" title="Qué hace: Mide la información mutua de Shannon (en bits) de las 64 celdas fácticas pre-kickoff sobre la etiqueta consumada e induce, con un árbol de decisión esparso, reglas de veto para la Ruptura Residual (pureza mínima 60%, soporte mínimo 5, lift mínimo 2). Cuándo usar: Para descubrir interacciones que la razón de Fisher univariada no ve. Qué implica: es de sólo lectura, sus reglas están rotuladas 'SUGERIDA · NO EJECUTA TRIAJE' y publica data/output/mineria_shannon_reporte.json.">🧠 Minería de Shannon · Árbol de Veto</button>
+                        </div>
+                    </div>
+
+                    <div class="cc-group">
+                        <h4 class="cc-group-title">🛡️ Auditoría y Diagnóstico</h4>
+                        <div class="cc-tasks">
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('auditar_pureza_vol1')" title="Qué hace: Audita las invarianzas matemáticas del Tratado I (Poisson, André, Kelly). Cuándo usar: Antes de certificar cualquier cambio en src/core/.">📐 Pureza Matemática · Tratado I</button>
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('auditar_cartera_shield')" title="Qué hace: Verifica las invarianzas financieras de cartera (hard caps 8% individual / 25% jornada, piso de boleto). Cuándo usar: Tras modificar reglas de capital o estrategias.">🔍 Invarianzas de Cartera · Shield</button>
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('auditar_coherencia_cartelera')" title="Qué hace: Ejecuta el pre-vuelo diagnóstico de coherencia relacional de la cartelera activa (paridad de vector p, overround, piso/techo, coherencia Capa 0 y divergencia de mercado). Cuándo usar: Antes de exponer la jornada en la Mesa de Apuestas o cuando el semáforo marque integridad en rojo.">🧭 Coherencia de Cartelera · Pre-Vuelo</button>
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('auditar_pipeline_backtesting')" title="Qué hace: Audita de punta a punta el pipeline de calibración histórica (cortes anti-leakage, Brier multicategórico y paridad de la evidencia sellada). Cuándo usar: Antes de certificar cambios en el motor de calibración o al validar la temporada homologada.">🧪 Auditoría E2E · Pipeline de Backtesting</button>
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('auditar_completitud_visor')" title="Qué hace: Barre la salida REAL del Visor de Calibración (Pydantic validado) jornada por jornada y certifica la completitud fáctica del catálogo de 32 variables: cero «0 de 0», cotas físicas de SoT por partido (≤ 15) y posesión (0-100), coherencia de los badges del acordeón y sincronía de las jornadas publicadas. Cuándo usar: Tras homologar una jornada nueva o cuando un badge del acordeón marque SIN EVALUAR con evidencia sellada.">🔍 Auditoría de Completitud Fáctica (32V)</button>
+                            <button class="cc-task-btn" onclick="ejecutarTareaAdmin('consultar_uso_llm')" title="Qué hace: Reporta el consumo de tokens y la salud del pool de llaves Gemini. Cuándo usar: Antes de lanzar la cadena de ingesta o ante errores de cuota.">🔑 Salud de Llaves Gemini y Tokens</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cc-terminal-shell">
+                    <div class="cc-terminal-head">
+                        <span>📡 Terminal de Streaming</span>
+                        <span id="cc-terminal-meta">tarea: — · exit: — · duración: —</span>
+                    </div>
+                    <div id="terminal-stream-output">[SISTEMA] Consola lista. Seleccione una tarea certificada de la whitelist para iniciar el despacho.</div>
+                </div>
+            </div>
+        </section>
+
+    <!-- MODAL HUD: PROCESAMIENTO CUANTITATIVO EN VIVO (DARK FINTECH) -->
+    <div id="modal-hud-procesamiento" style="display: none; position: fixed; inset: 0; background: rgba(11, 19, 43, 0.88); backdrop-filter: blur(5px); z-index: 20000; justify-content: center; align-items: center;">
+        <div style="background: #1C2541; border: 1px solid #38BDF8; border-radius: 10px; width: 500px; max-width: 90%; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <h3 style="margin: 0; color: #fff; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #00E676; display: inline-block;"></span>
+                    Motor Cuantitativo Q-BE en Ejecución
+                </h3>
+                <button onclick="cancelarDespachoPortafolio()" style="background: transparent; border: none; color: #94A3B8; font-size: 1.1rem; cursor: pointer;">✕</button>
+            </div>
+            
+            <div style="margin-bottom: 16px;">
+                <div style="height: 4px; background: #0f172a; border-radius: 2px; overflow: hidden;">
+                    <div id="hud-barra-fill" style="width: 15%; height: 100%; background: linear-gradient(90deg, #38BDF8, #00E676); transition: width 0.3s ease;"></div>
+                </div>
+            </div>
+
+            <div id="hud-pasos-lista" style="display: flex; flex-direction: column; gap: 99px; font-size: 8pt; color: #cbd5e1; display: flex; flex-direction: column; gap: 9px;">
+                <div id="hud-p1" style="color: #94A3B8;">⏳ [1/6] Sanitizando contexto y anclaje a tabla maestra...</div>
+                <div id="hud-p2" style="color: #94A3B8;">⏳ [2/6] Proyectando Poisson Bivariado 6x6 con calibración Opta xG...</div>
+                <div id="hud-p3" style="color: #94A3B8;">⏳ [3/6] Derivando umbrales analíticos de equilibrio continuo (θ* Breakeven)...</div>
+                <div id="hud-p4" style="color: #94A3B8;">⏳ [4/6] Evaluando catálogo de 9 estrategias y Triple Candado Fáctico...</div>
+                <div id="hud-p5" style="color: #94A3B8;">⏳ [5/6] Optimizando asignación de capital (Kelly & Dutching V=0) y redactando Tesis IA...</div>
+                <div id="hud-p6" style="color: #94A3B8;">⏳ [6/6] Verificando compuertas de The Shield (8 Invarianzas Numéricas)...</div>
+            </div>
+
+            <div style="margin-top: 18px; display: flex; justify-content: flex-end;">
+                <button onclick="cancelarDespachoPortafolio()" style="background: #0f172a; border: 1px solid #334155; color: #94A3B8; padding: 5px 14px; border-radius: 4px; font-size: 7.5pt; cursor: pointer;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: INSPECCIÓN FORENSE DEL CATÁLOGO DE 32 VARIABLES [LN-QBE-101 / ARCH-1.4.42 / DES-QBE-064 / DES-QBE-070-B]
+         Régimen DBBD-FUNGIBLE. El cuerpo `#vars44-cuerpo` lo hidrata app.js
+         (`abrirModal44Variables`) transcribiendo el bloque `atribucion_factorial`
+         servido por `/api/markets/backtesting/calibration-report`. Cierre por
+         botón `Cerrar` o tecla `Escape`. -->
+    <div id="modal-44-variables" class="modal-overlay" style="display: none;">
+        <div class="modal-content vars44-modal" style="max-width: 980px; width: 96%; max-height: 90vh; overflow-y: auto; background: #0F172A; border: 1px solid #334155; border-radius: 12px; padding: 22px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);">
+            <div class="vars44-cabecera">
+                <div>
+                    <h3 id="vars44-titulo" class="vars44-titulo">🔬 Inspección forense · catálogo de 32 variables</h3>
+                    <span class="vars44-subtitulo">
+                        Descomposición Δη = ln(λ_H/λ_A) ≡ Δ Ofensiva + Δ Defensiva + Δ Contexto ·
+                        catálogo canónico de 32 variables en 6 dimensiones canónicas · [LN-QBE-101]
+                    </span>
+                    <!-- [LN-QBE-102 / DES-QBE-065] Sello de procedencia de la evidencia.
+                         Lo hidrata `abrirModal44Variables` con `createElement`/`textContent`:
+                         `🔴 EN VIVO` ⇒ ventanilla blindada · `🏛️ HISTÓRICO` ⇒ reconstrucción. -->
+                    <span id="vars44-origen" class="vars44-origen"></span>
+                </div>
+                <button type="button" class="btn-cerrar-44" onclick="cerrarModal44Variables()">Cerrar</button>
+            </div>
+            <div id="vars44-cuerpo"></div>
+        </div>
+    </div>
+
+
+    <script src="/static/js/app.js?v=2026QBE_V7"></script>
+    <script src="/static/js/features.js?v=2026QBE_F1"></script>
+</body>
+</html>

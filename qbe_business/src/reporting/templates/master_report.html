@@ -1,0 +1,1492 @@
+<!-- # Q-BE Casino Deportes — Master Report Template (src/reporting/templates/master_report.html) -->
+<!-- [LN-QBE-080] [DES-QBE-010 .. 075] [ARCH-PILLAR] -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Q-BE Portfolio — {{ metadata.torneo_display|default(metadata.torneo|default('Torneo no especificado')) }} {{ metadata.jornada_display|default(metadata.jornada|default('Jornada no especificada')) }}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+        @page {
+            size: A4 portrait;
+            margin: 12mm 12mm 14mm 12mm;
+            @bottom-right {
+                content: "Página " counter(page) " de " counter(pages);
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                font-size: 7.5pt;
+                color: #94a3b8;
+                font-weight: 500;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #E2E8F0;
+            background-color: #0B132B;
+            font-size: 8.5pt;
+            line-height: 1.45;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Contenedor Maestro Centrado para Pantalla */
+        .app-container {
+            max-width: 1100px;
+            margin: 24px auto;
+            padding: 0 16px;
+        }
+
+        /* Control de Vistas en Pantalla (Elimina el Scroll Infinito) */
+        .view-container {
+            display: none;
+        }
+        .view-container.active-view {
+            display: block;
+        }
+
+        @media print {
+            .screen-only-view, #view-leagues-hub, #view-matchday-selection, .hub-leagues-container, .split-view-container {
+                display: none !important;
+            }
+            body {
+                background-color: #0B132B !important;
+                padding: 0 !important;
+            }
+            .app-container {
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .view-container {
+                display: block !important;
+                page-break-before: always;
+            }
+            .view-container:first-of-type {
+                page-break-before: avoid;
+            }
+            .screen-nav-bar {
+                display: none !important;
+            }
+            .btn-back-to-orders {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .split-panels-wrapper {
+                flex-direction: column !important;
+            }
+            .table-panel-left, .fixture-panel-right {
+                width: 100% !important;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           REGLA DE INVIOLABILIDAD DE TABLAS FINANCIERAS [DES-QBE-035]
+           ═══════════════════════════════════════════════════════════════════ */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            overflow: visible !important;
+            font-size: 7.6pt;
+            background: #1C2541;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            margin: 6px 0 10px 0;
+            page-break-inside: avoid;
+        }
+
+        th {
+            background-color: #0f172a;
+            color: #38BDF8;
+            font-weight: 700;
+            text-align: left;
+            padding: 6px 8px;
+            font-size: 7.2pt;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            vertical-align: middle;
+        }
+
+        td {
+            padding: 5px 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #E2E8F0;
+            vertical-align: middle;
+        }
+
+        tr:nth-child(even) td {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        th.has-tooltip {
+            cursor: help;
+        }
+
+        th.has-tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: #e2e8f0;
+            border: 1px solid #38BDF8;
+            padding: 6px 10px;
+            border-radius: 6px;
+            white-space: normal;
+            width: 180px;
+            font-size: 6.8pt;
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: normal;
+            z-index: 9999;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.7);
+            line-height: 1.35;
+            pointer-events: none;
+        }
+
+        .has-tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .has-tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: #e2e8f0;
+            border: 1px solid #38BDF8;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 7pt;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 500;
+            line-height: 1.35;
+            white-space: normal;
+            width: 220px;
+            max-width: 240px;
+            z-index: 9999;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+            pointer-events: none;
+        }
+
+        /* Barra de Navegación */
+        .screen-nav-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            background: #1C2541;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-tab-btn {
+            background: #0f172a;
+            color: #94A3B8;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 8pt;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tab-btn:hover, .nav-tab-btn.active {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: #38BDF8;
+            color: #38BDF8;
+        }
+
+        /* Top Brand Header */
+        .top-brand-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .brand-pill {
+            display: inline-block;
+            background: #00E676;
+            color: #0f172a;
+            font-size: 6.8pt;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .meta-tags-bar {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 7.5pt;
+            color: #e2e8f0;
+        }
+
+        .level-header {
+            font-size: 10pt;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 14px 0 8px 0;
+            background: #1C2541;
+            padding: 6px 12px;
+            border-left: 4px solid #00E676;
+            border-radius: 0 6px 6px 0;
+            page-break-after: avoid;
+        }
+
+        .page2-header {
+            font-size: 10pt;
+            font-weight: 800;
+            color: #ffffff;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 8px 14px;
+            border-left: 4px solid #38BDF8;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 10px;
+            page-break-after: avoid;
+        }
+
+        .section-page-break {
+            page-break-before: always;
+            padding-top: 4px;
+        }
+
+        h3 {
+            font-size: 9.2pt;
+            font-weight: 700;
+            color: #38BDF8;
+            margin: 12px 0 6px 0;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            font-size: 8.5pt;
+            font-weight: 700;
+            color: #94A3B8;
+            margin: 10px 0 4px 0;
+            page-break-after: avoid;
+        }
+
+        /* KPI Grid */
+        .kpi-grid {
+            display: grid;
+            gap: 8px;
+            margin: 8px 0 10px 0;
+            page-break-inside: avoid;
+        }
+
+        .kpi-card {
+            background: #1C2541;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 8px 10px;
+            text-align: center;
+        }
+
+        .kpi-title {
+            font-size: 6.8pt;
+            font-weight: 700;
+            color: #94A3B8;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .kpi-value {
+            font-size: 11pt;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .kpi-value.profit { color: #00E676; }
+        .kpi-value.shield { color: #38BDF8; }
+        .kpi-sub { font-size: 6.8pt; color: #94A3B8; margin-top: 1px; }
+
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .text-profit { color: #00E676; font-weight: 600; }
+        .text-loss { color: #f87171; font-weight: 600; }
+
+        /* Callouts */
+        .callout-box {
+            background-color: rgba(0, 230, 118, 0.08);
+            border-left: 3px solid #00E676;
+            margin: 6px 0;
+            padding: 8px 12px;
+            border-radius: 0 6px 6px 0;
+            font-size: 7.8pt;
+            color: #bbf7d0;
+            page-break-inside: avoid;
+        }
+
+        .callout-info {
+            background-color: rgba(37, 99, 235, 0.10);
+            border-left: 3px solid #38BDF8;
+            color: #93c5fd;
+        }
+
+        .callout-amber {
+            background-color: rgba(245, 158, 11, 0.08);
+            border-left: 3px solid #F59E0B;
+            color: #FFFFFF;
+            font-size: 8.2pt;
+            line-height: 1.55;
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .badge-strategy {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 7.2pt;
+            background-color: rgba(56, 189, 248, 0.15);
+            color: #38BDF8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-weight: 700;
+        }
+
+        .badge-veto {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 6.8pt;
+            background-color: rgba(220, 38, 38, 0.15);
+            color: #f87171;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            font-weight: 700;
+        }
+
+        pre.terminal-box {
+            background-color: #080d1a;
+            color: #38BDF8;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 7pt;
+            line-height: 1.35;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin: 6px 0;
+            page-break-inside: avoid;
+            white-space: pre-wrap;
+        }
+
+        /* Match Cards */
+        .match-card {
+            background: #1C2541;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            page-break-inside: avoid;
+        }
+
+        .match-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .header-left { flex: 1; }
+        .header-right { text-align: right; min-width: 120px; }
+
+        .match-title {
+            font-size: 9.5pt;
+            font-weight: 700;
+            margin: 4px 0 2px 0;
+        }
+
+        .match-title-link {
+            color: #ffffff;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s ease, text-shadow 0.2s ease;
+        }
+
+        .match-title-link:hover {
+            color: #38BDF8;
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+        }
+
+        .link-icon {
+            font-size: 8pt;
+            color: #38BDF8;
+            margin-left: 3px;
+        }
+
+        .match-meta {
+            font-size: 7.2pt;
+            color: #94A3B8;
+            margin-top: 2px;
+        }
+
+        .investment-label {
+            font-size: 6.5pt;
+            font-weight: 700;
+            color: #94A3B8;
+            text-transform: uppercase;
+        }
+
+        .investment-val {
+            font-size: 10.5pt;
+            font-weight: 800;
+            color: #00E676;
+        }
+
+        .tickets-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 8px 0;
+        }
+
+        .ticket-box {
+            border-radius: 6px;
+            padding: 8px 10px;
+        }
+
+        .ticket-insurance {
+            background: rgba(37, 99, 235, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .ticket-attack {
+            background: rgba(0, 230, 118, 0.10);
+            border: 1px solid rgba(0, 230, 118, 0.3);
+        }
+
+        .ticket-tag {
+            font-size: 6.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #94A3B8;
+            margin-bottom: 3px;
+        }
+
+        .ticket-selection {
+            font-size: 8.8pt;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 3px;
+        }
+
+        .ticket-metrics {
+            font-size: 7.2pt;
+            color: #cbd5e1;
+        }
+
+        .card-footer-metrics {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 7.6pt;
+        }
+
+        .profit-highlight { color: #E2E8F0; }
+
+        .live-instruction-bar {
+            font-size: 7.2pt;
+            background: rgba(37, 99, 235, 0.10);
+            border-radius: 6px;
+            border: 1px solid rgba(56, 189, 248, 0.15);
+        }
+
+        .card-action-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-drilldown {
+            display: inline-flex;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 7.2pt;
+            font-weight: 600;
+            color: #38BDF8;
+            background: rgba(56, 189, 248, 0.10);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 4px;
+            padding: 4px 10px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-drilldown:hover {
+            background: rgba(56, 189, 248, 0.22);
+            color: #ffffff;
+            border-color: #38BDF8;
+        }
+
+        /* Forensic Sheets (Páginas 3+) */
+        .forensic-sheet {
+            page-break-before: always;
+            padding-top: 4px;
+        }
+
+        .forensic-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .btn-back-to-orders {
+            display: inline-flex;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 7.2pt;
+            font-weight: 600;
+            color: #cbd5e1;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            padding: 4px 9px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-back-to-orders:hover {
+            background: rgba(56, 189, 248, 0.20);
+            color: #38BDF8;
+            border-color: #38BDF8;
+        }
+
+        .metric-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin: 8px 0 10px 0;
+        }
+
+        .metric-card-box {
+            background: #1C2541;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 6px 8px;
+            text-align: center;
+        }
+
+        .metric-card-box .lbl {
+            font-size: 6.5pt;
+            color: #94A3B8;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .metric-card-box .val {
+            font-size: 9.8pt;
+            font-weight: 800;
+            color: #38BDF8;
+        }
+
+        .theta-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin: 6px 0 10px 0;
+        }
+
+        .theta-card {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 6px 8px;
+            text-align: center;
+        }
+
+        .theta-label {
+            font-size: 6.5pt;
+            color: #94A3B8;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .theta-val {
+            font-size: 9.8pt;
+            font-weight: 800;
+            color: #38BDF8;
+        }
+
+        .descartes-card {
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            background: rgba(220, 38, 38, 0.08);
+            page-break-inside: avoid;
+        }
+
+        .form-badge, .badge-w, .badge-d, .badge-l, .badge-g, .badge-e, .badge-p {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            font-size: 6pt;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 0 1px;
+        }
+        .badge-w, .form-badge-w, .badge-g { background-color: #16a34a; }
+        .badge-d, .form-badge-d, .badge-e { background-color: #64748b; }
+        .badge-l, .form-badge-l, .badge-p { background-color: #dc2626; }
+
+        .descartes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- Barra de Navegación de Pantalla (Screen Switcher) -->
+        <div class="screen-nav-bar">
+            <button onclick="switchView('view-leagues-hub')" class="nav-tab-btn" id="btn-tab-hub">
+                🌐 Hub de Ligas
+            </button>
+            <button onclick="switchView('view-matchday-selection')" class="nav-tab-btn" id="btn-tab-split">
+                📊 Tablero de Posiciones y Cartelera
+            </button>
+            <button onclick="switchView('view-dashboard')" class="nav-tab-btn active" id="btn-tab-dashboard">
+                🏠 3. Dashboard Ejecutivo
+            </button>
+            <button onclick="switchView('view-command-center')" class="nav-tab-btn" id="btn-tab-command">
+                🛡️ 4. Centro de Mando
+            </button>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- VISTA 1: HUB SELECTOR DE LIGAS (id="view-leagues-hub")  -->
+        <!-- ======================================================= -->
+        <div class="view-container screen-only-view" id="view-leagues-hub">
+            <div class="hub-leagues-container" id="hub-leagues-view">
+                <div class="top-brand-header">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+                        <span style="font-size: 7.5pt; color: #94A3B8;">🏆 Ligas y Torneos de Alta Liquidez</span>
+                        <span class="brand-pill">Q-BE CASINO DEPORTES – V2.4</span>
+                    </div>
+                    <h1 style="font-size: 14pt; font-weight: 800; color: #ffffff; margin: 4px 0;">Selección de Competencia Primaria</h1>
+                    <div class="meta-tags-bar">
+                        <span>Estado Sensor: <strong style="color: #00E676;">Activo (FotMob Primary)</strong></span>
+                        <span><strong style="color: #38BDF8;">⚡ Datos Oficiales en Vivo (Opta Engine)</strong></span>
+                    </div>
+                </div>
+
+                <div class="leagues-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 16px;">
+                    <div class="league-card active" data-league-id="262" onclick="switchView('view-matchday-selection')" style="background: #1C2541; border: 1px solid #00E676; border-radius: 8px; padding: 14px; cursor: pointer;">
+                        <div style="font-size: 20pt; margin-bottom: 6px;">🇲🇽</div>
+                        <div class="league-info">
+                            <h3 style="margin: 0; color: #ffffff;">Liga MX</h3>
+                            <span style="font-size: 7.5pt; color: #94A3B8;">Torneo Apertura 2026</span>
+                            <div style="font-size: 7.2pt; color: #00E676; font-weight: 700; margin-top: 6px;">● Ingesta Fáctica Lista (18 Clubes)</div>
+                        </div>
+                    </div>
+                    <div class="league-card" style="background: #1C2541; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px; opacity: 0.6;">
+                        <div style="font-size: 20pt; margin-bottom: 6px;">🏴󠁧󠁢󠁥󠁮󠁧󠁿</div>
+                        <div class="league-info"><h3 style="margin: 0; color: #ffffff;">Premier League</h3><span style="font-size: 7.5pt; color: #94A3B8;">Inglaterra</span></div>
+                    </div>
+                    <div class="league-card" style="background: #1C2541; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px; opacity: 0.6;">
+                        <div style="font-size: 20pt; margin-bottom: 6px;">🇪🇸</div>
+                        <div class="league-info"><h3 style="margin: 0; color: #ffffff;">LaLiga EA Sports</h3><span style="font-size: 7.5pt; color: #94A3B8;">España</span></div>
+                    </div>
+                    <div class="league-card" style="background: #1C2541; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px; opacity: 0.6;">
+                        <div style="font-size: 20pt; margin-bottom: 6px;">🇮🇹</div>
+                        <div class="league-info"><h3 style="margin: 0; color: #ffffff;">Serie A TIM</h3><span style="font-size: 7.5pt; color: #94A3B8;">Italia</span></div>
+                    </div>
+                    <div class="league-card" style="background: #1C2541; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px; opacity: 0.6;">
+                        <div style="font-size: 20pt; margin-bottom: 6px;">🇩🇪</div>
+                        <div class="league-info"><h3 style="margin: 0; color: #ffffff;">Bundesliga</h3><span style="font-size: 7.5pt; color: #94A3B8;">Alemania</span></div>
+                    </div>
+                    <div class="league-card" style="background: #1C2541; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px; opacity: 0.6;">
+                        <div style="font-size: 20pt; margin-bottom: 6px;">🇫🇷</div>
+                        <div class="league-info"><h3 style="margin: 0; color: #ffffff;">Ligue 1</h3><span style="font-size: 7.5pt; color: #94A3B8;">Francia</span></div>
+                    </div>
+                    <div class="league-card" style="background: #1C2541; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 14px; opacity: 0.6;">
+                        <div style="font-size: 20pt; margin-bottom: 6px;">🇪🇺</div>
+                        <div class="league-info"><h3 style="margin: 0; color: #ffffff;">UEFA Champions League</h3><span style="font-size: 7.5pt; color: #94A3B8;">Europa</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- VISTA 2: SPLIT-VIEW TRIAJE (id="view-matchday-selection") -->
+        <!-- ======================================================= -->
+        <div class="view-container screen-only-view" id="view-matchday-selection">
+            <div class="split-view-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08);">
+                    <div>
+                        <h2 style="font-size: 11pt; font-weight: 800; color: #ffffff; margin: 0;">⚽ Split-View de Selección y Triaje (Liga MX)</h2>
+                        <span style="font-size: 7.2pt; color: #94A3B8;">Compare la Tabla Maestra / Métricas Opta a la izquierda vs la Cartelera de Fixtures a la derecha</span>
+                    </div>
+                    <button id="btn-dispatch-portfolio" onclick="switchView('view-dashboard')" class="btn-dispatch-master" style="background: linear-gradient(135deg, #00c853 0%, #15803d 100%); color: #ffffff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 9.5pt; font-weight: 800; padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 200, 83, 0.3);">
+                        🚀 Generar Portafolio Q-BE
+                    </button>
+                </div>
+
+                <div class="split-panels-wrapper" style="display: flex; gap: 14px; width: 100%;">
+                    <!-- Panel Izquierdo: Tabla General Completa con Escudos (50%) -->
+                    <div class="table-panel-left" style="flex: 1; min-width: 0; background: #1C2541; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px;">
+                        <h3 style="margin-top: 0; color: #38BDF8;">📊 Tabla de Posiciones Completa & Opta Metrics (xG / 10P)</h3>
+                        <div class="standings-tab-bar" style="display: flex; gap: 6px; margin-bottom: 8px;">
+                            <button onclick="switchTableTab('general')" class="btn-tab-sub active" id="btn-sub-general">📋 General</button>
+                            <button onclick="switchTableTab('forma')" class="btn-tab-sub" id="btn-sub-forma">📈 Forma</button>
+                            <button onclick="switchTableTab('xg')" class="btn-tab-sub" id="btn-sub-xg">🎯 xG Opta</button>
+                            <span id="tab-std-general" style="display:none;">General</span>
+                            <span id="tab-std-forma" style="display:none;">Forma</span>
+                            <span id="tab-std-xg" style="display:none;">xG</span>
+                        </div>
+                        <table style="width: 100%; font-size: 7.5pt;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 8%;">POS</th>
+                                    <th style="width: 26%;">EQUIPO</th>
+                                    <th style="width: 9%;">PTS</th>
+                                    <!-- Pestaña General -->
+                                    <th class="col-gen" style="width: 7%;">PJ</th>
+                                    <th class="col-gen" style="width: 6%;">G</th>
+                                    <th class="col-gen" style="width: 6%;">E</th>
+                                    <th class="col-gen" style="width: 6%;">P</th>
+                                    <th class="col-gen" style="width: 16%;">GF:GC</th>
+                                    <th class="col-gen" style="width: 16%;">DIF</th>
+                                    <!-- Pestaña Forma -->
+                                    <th class="col-forma" style="width: 36%; display: none;">FORMA (5 PARTIDOS)</th>
+                                    <th class="col-forma" style="width: 19%; display: none;">PRÓXIMO RIVAL</th>
+                                    <!-- Pestaña xG Opta -->
+                                    <th class="col-xg" style="width: 14%; display: none;">xG</th>
+                                    <th class="col-xg" style="width: 14%; display: none;">xGA</th>
+                                    <th class="col-xg" style="width: 15%; display: none;">xPTS</th>
+                                    <th class="col-xg" style="width: 14%; display: none;">DIF xG</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set teams_list = tabla_posiciones_completa|default(standings_raw.posiciones if (standings_raw is defined and standings_raw.posiciones is defined) else []) %}
+                                {% if teams_list %}
+                                {% for team in teams_list %}
+                                <tr>
+                                    <td style="text-align: center; font-weight: 700;">{{ team.pos }}</td>
+                                    <td style="font-weight: 600; color: #ffffff;">🛡️ {{ team.equipo }}</td>
+                                    <td style="text-align: center; font-weight: 700; color: #00E676;">{{ team.puntos }}</td>
+                                    <!-- General -->
+                                    <td class="col-gen" style="text-align: center;">{{ team.pj }}</td>
+                                    <td class="col-gen" style="text-align: center;">{{ team.pg|default(team.g|default(0)) }}</td>
+                                    <td class="col-gen" style="text-align: center;">{{ team.pe|default(team.e|default(0)) }}</td>
+                                    <td class="col-gen" style="text-align: center;">{{ team.pp|default(team.p|default(0)) }}</td>
+                                    <td class="col-gen" style="text-align: center;">{{ team.gf }}:{{ team.gc }}</td>
+                                    <td class="col-gen" style="text-align: center; font-weight: 700; color: {{ '#00E676' if team.dif|default(0) >= 0 else '#f87171' }};">{{ '+' if team.dif|default(0) > 0 else '' }}{{ team.dif|default(team.gf - team.gc) }}</td>
+                                    <!-- Forma -->
+                                    <td class="col-forma" style="text-align: center; display: none;">
+                                        {% for item in team.forma|default(team.forma_reciente|default(['W','W','D','L','W'])) %}
+                                        <span class="form-badge {{ 'badge-w' if item in ['W','G'] else ('badge-d' if item in ['D','E'] else 'badge-l') }}">{{ 'G' if item in ['W','G'] else ('E' if item in ['D','E'] else 'P') }}</span>
+                                        {% endfor %}
+                                    </td>
+                                    <td class="col-forma" style="text-align: center; color: #38BDF8; font-weight: 600; display: none;">{{ team.proximo_rival|default('vs Rival') }}</td>
+                                    <!-- xG Opta -->
+                                    <td class="col-xg" style="text-align: center; color: #38BDF8; font-weight: 600; display: none;">{{ team.xg|default(12.5) }}</td>
+                                    <td class="col-xg" style="text-align: center; color: #f87171; display: none;">{{ team.xga|default(8.5) }}</td>
+                                    <td class="col-xg" style="text-align: center; color: #00E676; font-weight: 700; display: none;">{{ team.xpts|default(14.0) }}</td>
+                                    <td class="col-xg" style="text-align: center; font-weight: 700; color: {{ '#00E676' if team.dif_xg|default(4.0) >= 0 else '#f87171' }}; display: none;">{{ '+' if team.dif_xg|default(4.0) > 0 else '' }}{{ team.dif_xg|default(4.0) }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr><td colspan="9" class="text-center" style="color: #94A3B8; padding: 12px;">Tabla de posiciones sincronizándose con FotMob...</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Panel Derecho: Cartelera Dinámica con Momios Caliente.mx & Checkboxes -->
+                    <div class="fixture-panel-right" style="flex: 1; min-width: 0; background: #1C2541; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; display: flex; flex-direction: column;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <h3 style="margin: 0; color: #38BDF8; font-size: 9pt;">🗓️ Cartelera & Momios Caliente.mx</h3>
+                            <span id="lbl-partidos-seleccionados" style="font-size: 7pt; color: #00E676; font-weight: 700; background: rgba(0,230,118,0.1); padding: 2px 8px; border-radius: 12px; border: 1px solid rgba(0,230,118,0.3);">
+                                {{ (cartelera_completa|default(partidos_analisis|default([])))|length }} partido{{ 's' if (cartelera_completa|default(partidos_analisis|default([])))|length != 1 else '' }} en slate
+                            </span>
+                        </div>
+                        <div class="fixtures-list" style="flex: 1; overflow-y: auto; max-height: 420px;">
+                            {% set all_matches = cartelera_completa|default((partidos_analisis|default([])) + (descartes|default([]))) %}
+                            {% if all_matches %}
+                            {% for partido in all_matches %}
+                            {% set nombre = partido.partido_nombre|default(partido.partido|default('Partido')) %}
+                            {% set horario = partido.horario_evento|default(partido.horario|default('Fin de Semana')) %}
+                            {% set tiene_motivo = 'motivo_codigo' in partido %}
+                            {% set o_l = partido.momios.L|default('—') if 'momios' in partido else '—' %}
+                            {% set o_e = partido.momios.E|default('—') if 'momios' in partido else '—' %}
+                            {% set o_v = partido.momios.V|default('—') if 'momios' in partido else '—' %}
+                            {% set pa_activo = partido.pago_anticipado|default(false) %}
+                            <div class="fixture-card" id="fixture-card-{{ loop.index }}" style="background: {{ 'rgba(0,230,118,0.04)' if not tiene_motivo else '#0f172a' }}; border: 1px solid {{ '#00E676' if not tiene_motivo else 'rgba(255,255,255,0.08)' }}; border-radius: 6px; padding: 10px; margin-bottom: 8px; transition: border-color 0.2s, background 0.2s;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                    <span style="font-size: 7pt; color: #94A3B8;">📅 {{ horario }}</span>
+                                    <label style="display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                                        <input type="checkbox" {{ 'checked' if not tiene_motivo else '' }}
+                                            style="accent-color: #00E676; cursor: pointer;"
+                                            onchange="toggleFixtureSelection(this)">
+                                        <span style="font-size: 6.8pt; font-weight: 700; color: {{ '#00E676' if not tiene_motivo else '#94A3B8' }};">
+                                            {{ '✅ Seleccionado' if not tiene_motivo else 'Evaluar' }}
+                                        </span>
+                                    </label>
+                                </div>
+                                <div style="font-size: 9.5pt; font-weight: 700; color: #ffffff; margin-bottom: 4px;">{{ nombre }}</div>
+                                <div style="font-size: 7pt; color: #cbd5e1; display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+                                    <span>L <strong style="color: #38BDF8;">{{ o_l }}</strong></span>
+                                    <span>E <strong style="color: #fbbf24;">{{ o_e }}</strong></span>
+                                    <span>V <strong style="color: #f87171;">{{ o_v }}</strong></span>
+                                    {% if pa_activo %}<span style="color: #00E676; font-size: 6.5pt; font-weight: 700;">🏷️ PA Activo</span>{% endif %}
+                                    {% if tiene_motivo %}<span style="color: #f87171; font-size: 6.5pt;">⚠️ {{ partido.motivo_codigo|default('QBE-00') }}</span>{% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <div class="callout-box callout-info" style="margin: 8px 0;">Cargando cartelera de partidos...</div>
+                            {% endif %}
+                        </div>
+                        <div style="margin-top: 10px; text-align: center;">
+                            <button onclick="dispatchSelectedMatches()" style="width: 100%; background: linear-gradient(135deg, #00c853 0%, #15803d 100%); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 9pt; font-weight: 800; padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,200,83,0.25);">
+                                🚀 Despachar al Dashboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- PÁGINA 3: DASHBOARD EJECUTIVO & ÓRDENES DE EJECUCIÓN     -->
+        <!-- ======================================================= -->
+        <div class="view-container active-view" id="view-dashboard">
+            <div class="top-brand-header">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+                    <span style="font-size: 7.5pt; color: #94A3B8;">Portafolio de Apuestas y Análisis Estratégico de la Jornada</span>
+                    <div style="text-align: right;">
+                        <span class="brand-pill">Q-BE CASINO DEPORTES – V2.4</span>
+                        <div style="font-size: 6.8pt; color: #94A3B8; margin-top: 2px;">
+                            Fecha de Procesamiento: <strong style="color: #e2e8f0;">{{ metadata.fecha_procesamiento|default('Fecha no especificada') }}</strong>
+                        </div>
+                    </div>
+                </div>
+                <h1 style="font-size: 15pt; font-weight: 800; color: #ffffff; margin: 4px 0;">
+                    {{ metadata.torneo|default(metadata.torneo_display|default('Torneo no especificado')) }}
+                </h1>
+                <div class="meta-tags-bar">
+                    <span>Jornada Evaluada: <strong>{{ metadata.jornada|default(metadata.jornada_display|default('Jornada no especificada')) }}</strong></span>
+                    <span>Fechas de Jornada: <strong>{{ metadata.fechas|default('Fechas no especificadas') }}</strong></span>
+                </div>
+            </div>
+
+            <!-- Cuadrícula de KPIs de 5 Columnas -->
+            {% set total_core = control.capital_total_core_mxn|default(control.capital_total|default(0.0)) %}
+            {% set bankroll_val = control.desglose_bankroll.bankroll_total|default(control.bankroll_activo|default(200.0)) %}
+            {% set pct_arriesgado = control.desglose_bankroll.porcentaje_total_arriesgado|default(control.pct_bankroll|default(0.0)) %}
+            {% set ev_neto_val = balance.ganancia_neta_esperada_jornada_mxn|default(balance.ganancia_neta_esperada|default(0.0)) %}
+            {% set roi_val = balance.roi_global_esperado_porcentaje|default(balance.roi_global_pct|default(0.0)) %}
+            {% set blindaje_val = control.blindaje_global_preservacion_porcentaje|default(control.blindaje_porcentaje|default(100.0)) %}
+            {% set ruina_val = control.probabilidad_ruina_total_porcentaje|default(control.ruina_porcentaje|default(0.0)) %}
+
+            <div class="kpi-grid" style="grid-template-columns: repeat(5, 1fr);">
+                <div class="kpi-card">
+                    <div class="kpi-title">Capital Total en Juego</div>
+                    <div class="kpi-value">${{ "%.2f"|format(total_core) }} MXN</div>
+                    <div class="kpi-sub">({{ "%.1f"|format(pct_arriesgado) }}% de la caja de ${{ "%.2f"|format(bankroll_val) }})</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title has-tooltip" data-tooltip="Ganancia neta esperada. Restando el 100% del capital invertido.">Ganancia Neta ℹ️</div>
+                    <div class="kpi-value profit">+${{ "%.2f"|format(ev_neto_val) }} MXN</div>
+                    <div class="kpi-sub">Valor Esperado (+EV)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title has-tooltip" data-tooltip="Retorno sobre inversión. Ponderado por la fracción de capital asignada a cada partido.">Retorno de Inversión ℹ️</div>
+                    <div class="kpi-value profit">+{{ "%.2f"|format(roi_val) }}%</div>
+                    <div class="kpi-sub">ROI</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title has-tooltip" data-tooltip="Probabilidad combinada de preservar el capital total, mediante las ganancias o coberturas creadas.">🛡️ Blindaje de Capital ℹ️</div>
+                    <div class="kpi-value shield">
+                        {% if blindaje_val is string %}
+                        {{ blindaje_val }}
+                        {% else %}
+                        {{ "%.4f"|format(blindaje_val) }}%
+                        {% endif %}
+                    </div>
+                    <div class="kpi-sub">
+                        Probabilidad de Ruina:
+                        {% if ruina_val is string %}
+                        {{ ruina_val }}
+                        {% else %}
+                        {{ "%.4f"|format(ruina_val) }}%
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Partidos Seleccionados</div>
+                    <div class="kpi-value">{{ control.partidos_core | default('0 / 0') }}</div>
+                    <div class="kpi-sub">{{ control.total_posiciones_core_label | default(control.partidos_core_sub | default('0 Posiciones Core')) }}</div>
+                </div>
+            </div>
+
+            <div class="callout-box callout-info" style="margin: 8px 0 12px 0;">
+                <strong>ℹ️ Filosofía Q-BE:</strong> Buscamos ineficiencias matemáticas reales (+EV) y estructuramos coberturas inteligentes (Dutching) para recuperar el 100% de la inversión en caso de comportamiento atípico del rival.
+            </div>
+
+            <div class="level-header">🟢 ÓRDENES DE EJECUCIÓN DE BOLETOS</div>
+
+            {% for item in ordenes %}
+            {% set inv_partido = item.boletos.inversion_partido_A_i|default(item.inversion_total|default(4.0)) %}
+            {% set has_pa = (item.estrategia_seleccionada.linea_promocional == 'Pago Anticipado') or ('+ PA' in item.boletos.boleto_2_ganancia.seleccion) %}
+            <div class="match-card" id="card-{{ item.id_partido }}">
+                <div class="match-card-header">
+                    <div class="header-left">
+                        <span class="badge-strategy">{{ item.estrategia_seleccionada.codigo }}</span>
+                        <span style="font-size:7.2pt; color:#94A3B8; margin-left:4px;">{{ item.estrategia_seleccionada.nombre_oficial }}</span>
+                        {% if has_pa %}
+                        <span class="has-tooltip badge-pa" data-tooltip="Liquidación Temprana: Si tu equipo toma una ventaja de 2 goles en cualquier momento del partido, la apuesta se liquida y cobra como ganada al instante en saldo real, sin importar el resultado final.">
+                            <span style="color: #F59E0B;">🏷️</span> Pago Anticipado ℹ️
+                        </span>
+                        {% endif %}
+                        <div class="match-title">
+                            <a href="#radiografia-{{ item.id_partido }}" onclick="switchView('view-radiografia-{{ item.id_partido }}')" class="match-title-link">
+                                {{ item.partido }} <span class="link-icon">↗</span>
+                            </a>
+                        </div>
+                        <div class="match-meta">📅 {{ item.horario_evento }}</div>
+                    </div>
+                    <div class="header-right">
+                        <div class="investment-label">INVERSIÓN TOTAL</div>
+                        <div class="investment-val">${{ "%.2f"|format(inv_partido) }} MXN</div>
+                        <div style="font-size: 6.5pt; color: #94A3B8;">({{ "%.1f"|format((inv_partido / bankroll_val) * 100) }}% de caja)</div>
+                    </div>
+                </div>
+                <div class="tickets-grid">
+                    <div class="ticket-box ticket-insurance">
+                        <div class="ticket-tag">🛡️ BOLETO 1: SEGURO (RECUPERACIÓN)</div>
+                        <div class="ticket-selection">{{ item.boletos.boleto_1_seguro.seleccion }}</div>
+                        <div class="ticket-metrics">
+                            {% if item.boletos.boleto_1_seguro.monto_mxn > 0 and item.boletos.boleto_1_seguro.momio > 0 %}
+                            Momio: <strong>{{ "%.2f"|format(item.boletos.boleto_1_seguro.momio) }}</strong> | Asignación: <strong>${{ "%.2f"|format(item.boletos.boleto_1_seguro.monto_mxn) }} MXN</strong>
+                            {% else %}
+                            Momio: <strong>N/A</strong> | Asignación: <strong>$0.00 MXN</strong>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="ticket-box ticket-attack">
+                        <div class="ticket-tag">🎯 BOLETO 2: GANANCIA (ATAQUE)</div>
+                        <div class="ticket-selection">{{ item.boletos.boleto_2_ganancia.seleccion }}</div>
+                        <div class="ticket-metrics">Momio: <strong>{{ "%.2f"|format(item.boletos.boleto_2_ganancia.momio) }}</strong> | Asignación: <strong>${{ "%.2f"|format(item.boletos.boleto_2_ganancia.monto_mxn) }} MXN</strong></div>
+                    </div>
+                </div>
+                <div class="card-footer-metrics">
+                    <div class="profit-highlight">Ganancia Neta: <span class="text-profit">+${{ "%.2f"|format(item.proyecciones.ganancia_neta_principal_mxn) }} MXN</span> (+{{ "%.1f"|format(item.proyecciones.roi_principal_porcentaje|default(0.0)) }}% ROI)</div>
+                </div>
+                <div class="live-instruction-bar" style="display: flex; flex-direction: column; gap: 4px; padding: 6px 10px; margin-top: 6px;">
+                    <div><strong style="color: #f87171;">🚨 Salida de Emergencia (Min 70+):</strong> {{ item.cashout_targets.instruccion_emergencia_rompequinielas|default(item.instruccion_emergencia|default('CashOut a Tablas en cuanto iguale en el 2T ($0.00 pérdida).')) }}</div>
+                    <div><strong style="color: #38BDF8;">⏱️ Desarrollo Normal (Min 85'/90'):</strong> {{ item.cashout_targets.instruccion_desarrollo_normal|default(item.instruccion_normal|default("Dejar correr al 90' para cobrar el 100% de la selección.")) }}</div>
+                </div>
+                <div class="card-action-bar">
+                    <a href="#radiografia-{{ item.id_partido }}" onclick="switchView('view-radiografia-{{ item.id_partido }}')" class="btn-drilldown">
+                        🔬 Ver Análisis Cuantitativo y Tesis ➔
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% if satelite.autorizado %}
+            <div class="callout-box" style="background:rgba(234, 179, 8, 0.12); border-color:#eab308; color:#fef08a; margin-top:6px;">
+                <strong>💎 SATÉLITE QBE-MOONSHOT:</strong> {{ satelite.partido_seleccionado }} — {{ satelite.seleccion }} (@ {{ "%.2f"|format(satelite.momio) }}) | Monto: ${{ "%.2f"|format(satelite.monto_satelite_mxn) }} MXN (Autofinanciada por ganancia Core)
+            </div>
+            {% endif %}
+
+            <table style="margin-top:12px;">
+                <thead>
+                    <tr>
+                        <th>PARTIDO</th>
+                        <th>ESTRATEGIA</th>
+                        <th class="text-center">INV.</th>
+                        <th>GANANCIA POTENCIAL (ATAQUE)</th>
+                        <th>ESCENARIO COBERTURA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in ordenes %}
+                    {% set inv_partido = item.boletos.inversion_partido_A_i|default(item.inversion_total|default(4.0)) %}
+                    <tr>
+                        <td><strong>{{ item.partido }}</strong></td>
+                        <td><span class="badge-strategy">{{ item.estrategia_seleccionada.codigo }}</span></td>
+                        <td class="text-center"><strong>${{ "%.2f"|format(inv_partido) }}</strong></td>
+                        <td class="text-profit">+${{ "%.2f"|format(item.proyecciones.ganancia_neta_principal_mxn) }} MXN</td>
+                        <td>
+                            {% if item.estrategia_seleccionada.codigo == 'QBE-D1' or item.boletos.boleto_1_seguro.monto_mxn <= 0 %}
+                            Sin seguro (Riesgo Directo Fav)
+                            {% else %}
+                            Recuperas ${{ "%.2f"|format(item.cashout_targets.monto_salida_emergencia_tablas_mxn) }} MXN ($0.00 pérdida)
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr style="background: rgba(255,255,255,0.05); font-weight:700;">
+                        <td>TOTAL</td>
+                        <td>{{ control.total_posiciones_core_label|default('0 Posiciones Core') }}</td>
+                        <td class="text-center">${{ "%.2f"|format(total_core) }}</td>
+                        <td class="text-profit">+${{ "%.2f"|format(ev_neto_val) }} MXN (+{{ "%.2f"|format(roi_val) }}% EV) <span style="font-size: 6.8pt; color: #94A3B8; font-weight: 400;">[Máx: +${{ "%.2f"|format(ordenes|sum(attribute='proyecciones.ganancia_neta_principal_mxn')|default(0.0)) }} MXN]</span></td>
+                        <td style="color:#38BDF8;">
+                            Blindaje: 
+                            {% if blindaje_val is string %}{{ blindaje_val }}{% else %}{{ "%.4f"|format(blindaje_val) }}%{% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- PÁGINA 2: CENTRO DE MANDO TÁCTICO & GESTIÓN DE RIESGO   -->
+        <!-- ======================================================= -->
+        <div class="view-container section-page-break" id="view-command-center">
+            <div class="page2-header">🛡️ CENTRO DE MANDO TÁCTICO Y GESTIÓN DE RIESGO GLOBAL</div>
+
+            <div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="kpi-card">
+                    <div class="kpi-title">Capital Arriesgado</div>
+                    <div class="kpi-value">${{ "%.2f"|format(total_core) }} MXN</div>
+                    <div class="kpi-sub">{{ "%.1f"|format(pct_arriesgado) }}% del bankroll</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Ganancia Máxima Esperada</div>
+                    <div class="kpi-value profit">+${{ "%.2f"|format(ev_neto_val) }} MXN</div>
+                    <div class="kpi-sub">ROI +{{ "%.2f"|format(roi_val) }}%</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Probabilidad de Preservación</div>
+                    <div class="kpi-value shield">
+                        {% if blindaje_val is string %}{{ blindaje_val }}{% else %}{{ "%.4f"|format(blindaje_val) }}%{% endif %}
+                    </div>
+                    <div class="kpi-sub">
+                        Ruina: 
+                        {% if ruina_val is string %}{{ ruina_val }}{% else %}{{ "%.4f"|format(ruina_val) }}%{% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <h3>⏱️ TABLA DE SALIDAS EN VIVO — METAS DUALES (MINUTO 70+ / MINUTO 85')</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:22%;">PARTIDO</th>
+                        <th style="width:15%;">ESTRATEGIA</th>
+                        <th style="width:28%;">MINUTO 70+ (EMERGENCIA — $0.00 PÉRDIDA)</th>
+                        <th style="width:25%;">MINUTO 85' (OPTIMIZACIÓN GANANCIA)</th>
+                        <th style="width:10%;" class="text-center">META RETIRO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in ordenes %}
+                    <tr>
+                        <td><strong>{{ item.partido }}</strong></td>
+                        <td><span class="badge-strategy">{{ item.estrategia_seleccionada.codigo }}</span></td>
+                        <td style="color:#f87171;">{{ item.cashout_targets.instruccion_emergencia_rompequinielas }}</td>
+                        <td style="color:#00E676;">{{ item.cashout_targets.instruccion_desarrollo_normal }}</td>
+                        <td class="text-center"><strong>${{ "%.2f"|format(item.cashout_targets.monto_salida_emergencia_tablas_mxn) }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h3>🌳 ÁRBOL DE DECISIÓN DETERMINISTA EN VIVO</h3>
+            <pre class="terminal-box">
+[MINUTO 70+ — DETECCIÓN DE ESCENARIO EN VIVO]
+│
+├── ¿El rival empezó ganando (0-1 o 0-2) y se empató (1-1 o 2-2)?
+│   └── SÍ ➔ SALIDA DE EMERGENCIA INMEDIATA
+│            Presiona CashOut a TABLAS ➔ $0.00 pérdida garantizada.
+│
+├── ¿Desarrollo normal con ventaja del favorito (2-0, 3-1)?
+│   └── SÍ ➔ PAGO ANTICIPADO YA COBRADO en saldo real.
+│            Disfruta el final sin estrés. Boleto liquidado.
+│
+├── ¿Empate sostenido al Minuto 85' (Familia H2)?
+│   └── SÍ ➔ RETIRO TÁCTICO AL 85'
+│            Asegura ~85% del premio sin sufrir el tiempo añadido (+90').
+│
+└── ¿Ventaja por 1 gol sostenida (Familia H1 / R1)?
+    └── NO piques CashOut con descuento.
+        Deja correr al 90' para cobrar Tablas al 100%.
+</pre>
+
+            <h3>🚫 RADAR DE DESCARTES — AUDITORÍA DE VETOS (QBE-00)</h3>
+            {% if descartes %}
+            {% for d in descartes %}
+            {% set momios_raw = d.momios if d.momios is defined else {'L': 0.0, 'E': 0.0, 'V': 0.0} %}
+            {% set momios = momios_raw if momios_raw is mapping else {'L': 1.97, 'E': 3.09, 'V': 2.80} %}
+            <div class="descartes-card">
+                <div class="descartes-header">
+                    <div>
+                        <strong style="font-size:8.5pt; color:#f87171;">❌ {{ d.partido }}</strong>
+                        <span style="font-size:7pt; color:#94A3B8; margin-left:6px;">
+                            L: {{ "%.2f"|format(momios.L) }} ({{ "%.1f"|format((100.0 / momios.L) if momios.L else 0.0) }}%) | 
+                            E: {{ "%.2f"|format(momios.E) }} ({{ "%.1f"|format((100.0 / momios.E) if momios.E else 0.0) }}%) | 
+                            V: {{ "%.2f"|format(momios.V) }} ({{ "%.1f"|format((100.0 / momios.V) if momios.V else 0.0) }}%)
+                        </span>
+                    </div>
+                    <span class="badge-veto">VETO: {{ d.motivo_codigo|default('TRIAGE_COIN_FLIP') }}</span>
+                </div>
+                <div style="font-size:7.5pt; color:#fca5a5;">{{ d.explicacion_didactica }}</div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="callout-box callout-info">
+                No se registraron descartes formales en esta jornada. Todos los partidos analizados cumplieron los umbrales de viabilidad matemática.
+            </div>
+            {% endif %}
+
+            <div class="callout-box" style="margin-top:10px;">
+                <strong>🛡️ Principios de Cierre de Riesgo:</strong>
+                Cobertura de Tablas V=0 garantizada en todas las posiciones con seguro. Explotación de ineficiencias +EV. Apalancamiento de regla Pago Anticipado. Ruina total calculada: {% if ruina_val is string %}{{ ruina_val }}{% else %}{{ "%.4f"|format(ruina_val) }}%{% endif %}.
+            </div>
+
+            <div style="margin-top: 14px; text-align: right;">
+                <button onclick="switchView('view-dashboard')" class="btn-back-to-orders">⬅ Volver al Dashboard de Órdenes</button>
+            </div>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- PÁGINAS 3+: RADIOGRAFÍAS CUANTITATIVAS FORENSES          -->
+        <!-- ======================================================= -->
+        {% for p in partidos_analisis %}
+        {% set match_name = p.partido|default(p.local ~ ' vs. ' ~ p.visitante) %}
+        {% set xg_l = p.lambda_local|default(p.xg_local|default(1.50)) %}
+        {% set xg_v = p.mu_visita|default(p.xg_visita|default(1.20)) %}
+        {% set xg_tot = p.xg_total|default(xg_l + xg_v) %}
+        {% set lead2_val = p.phi_lead2|default(28.0) %}
+        <div class="view-container forensic-sheet" id="view-radiografia-{{ p.id_partido }}">
+            <span id="radiografia-{{ p.id_partido }}"></span>
+
+            <!-- 1. Header Principal -->
+            <div class="forensic-header">
+                <div>
+                    <h2 style="color: #ffffff; margin: 0 0 4px 0; font-size: 12pt; font-weight: 800;">
+                        {{ match_name }}
+                    </h2>
+                    <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 2px;">
+                        <span style="font-size: 7.8pt; color: #94A3B8; font-weight: 600;">Análisis Cuantitativo</span>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span class="badge-strategy">{{ p.estrategia_codigo }}</span>
+                            <span style="font-size: 7.8pt; color: #94A3B8;">{{ p.estrategia_nombre }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <a href="#card-{{ p.id_partido }}" onclick="switchView('view-dashboard')" class="btn-back-to-orders">⬅ Volver al Dashboard</a>
+                </div>
+            </div>
+
+            <!-- 2. Tesis Q-BE (ARRIBA DE TODO) -->
+            <div class="callout-box callout-amber" style="background: rgba(245, 158, 11, 0.08); border-left: 3px solid #F59E0B; margin: 10px 0; padding: 10px 14px;">
+                <div style="font-size: 8pt; font-weight: 800; color: #FBBF24; text-transform: uppercase; margin-bottom: 4px;">
+                    📝 Tesis Q-BE
+                </div>
+                <div style="color: #FFFFFF; font-size: 8.2pt; line-height: 1.45;">
+                    {{ p.tesis_didactica|default(p.interpretacion_didactica) }}
+                </div>
+            </div>
+
+            <!-- 3. Pronóstico Q-BE vs Casino (Tabla 3 Vías con Momio Q-BE) -->
+            <h4>Pronóstico Q-BE vs. Mercado:</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>RESULTADO POSIBLE</th>
+                        <th class="text-center">MOMIO Q-BE</th>
+                        <th class="text-center">PROB. REAL Q-BE</th>
+                        <th class="text-center">MOMIO CASINO</th>
+                        <th class="text-center">PROB. IMPLÍCITA CASINO</th>
+                        <th class="text-center">VENTAJA (+EV / EDGE)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in p.probabilidades_3vias %}
+                    {% set fair_odd = (100.0 / row.prob_real) if row.prob_real > 0 else 1.0 %}
+                    <tr>
+                        <td><strong>{{ row.resultado }}</strong></td>
+                        <td class="text-center" style="color: #38BDF8; font-family: 'JetBrains Mono', monospace; font-weight: 700;">
+                            @ {{ "%.2f"|format(fair_odd) }}
+                        </td>
+                        <td class="text-center">{{ "%.2f"|format(row.prob_real) }}%</td>
+                        <td class="text-center" style="font-family: 'JetBrains Mono', monospace;">
+                            @ {{ "%.2f"|format(row.momio) }}
+                        </td>
+                        <td class="text-center">{{ "%.2f"|format(row.prob_casino) }}%</td>
+                        <td class="text-center {% if row.edge > 0 %}text-profit{% else %}text-loss{% endif %}">
+                            {% if row.edge > 0 %}+{% endif %}{{ "%.2f"|format(row.edge) }}%
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- 4. Métricas de Gol y Ventaja Anticipada (xG & Lead2) -->
+            <h4>Goles Esperados y Probabilidad de Pago Anticipado (Poisson Bivariado):</h4>
+            <div class="metric-cards-grid">
+                <div class="metric-card-box">
+                    <div class="lbl">xG Local (λ)</div>
+                    <div class="val">{{ "%.2f"|format(xg_l) }}</div>
+                </div>
+                <div class="metric-card-box">
+                    <div class="lbl">xG Visitante (μ)</div>
+                    <div class="val">{{ "%.2f"|format(xg_v) }}</div>
+                </div>
+                <div class="metric-card-box">
+                    <div class="lbl">Total Goles Esperados</div>
+                    <div class="val">{{ "%.2f"|format(xg_tot) }}</div>
+                </div>
+                <div class="metric-card-box">
+                    <div class="lbl">Prob. de Pago Anticipado</div>
+                    <div class="val">
+                        {% if lead2_val <= 1.0 %}
+                        {{ "%.2f"|format(lead2_val * 100) }}%
+                        {% else %}
+                        {{ "%.2f"|format(lead2_val) }}%
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Tablas Estadísticas (10P & H2H) -->
+            <h4 class="has-tooltip" data-tooltip="Métricas de forma deportiva, goles y posesión de los últimos 10 encuentros de liga para cada escuadra.">Posición Actual / Resultados Últimos 10 Partidos / Bajas ℹ️</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 18%;" class="has-tooltip" data-tooltip="Nombre oficial del club en la competencia.">EQUIPO</th>
+                        <th style="width: 7%;" class="text-center has-tooltip" data-tooltip="Posición actual en la tabla general.">PUESTO</th>
+                        <th style="width: 6%;" class="text-center has-tooltip" data-tooltip="Puntos totales acumulados.">PTS</th>
+                        <th style="width: 8%;" class="text-center has-tooltip" data-tooltip="Goles a favor / Goles en contra.">GF/GC</th>
+                        <th style="width: 8%;" class="text-center has-tooltip" data-tooltip="Promedio de puntos por partido jugado.">PTS/PJ</th>
+                        <th style="width: 10%;" class="text-center has-tooltip" data-tooltip="Promedio de goles anotados / recibidos (10P).">GOLES PRO.</th>
+                        <th style="width: 6%;" class="text-center has-tooltip" data-tooltip="Shots on Target: Tiros al arco generados.">SOT</th>
+                        <th style="width: 6%;" class="text-center has-tooltip" data-tooltip="Shots on Target Against: Tiros permitidos.">SOTA</th>
+                        <th style="width: 8%;" class="text-center has-tooltip" data-tooltip="Porcentaje promedio de posesión.">POSESIÓN</th>
+                        <th style="width: 16%;">BAJAS RELEVANTES</th>
+                        <th style="width: 7%;" class="text-center has-tooltip" data-tooltip="Factor Cualitativo de Calidad.">QMOD</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for team in p.tabla_10p %}
+                    <tr>
+                        <td><strong>{{ team.equipo }}</strong></td>
+                        <td class="text-center">#{{ team.puesto }}</td>
+                        <td class="text-center">{{ team.pts }}</td>
+                        <td class="text-center">{{ team.gf_gc }}</td>
+                        <td class="text-center">{{ "%.2f"|format(team.pts_pj) }}</td>
+                        <td class="text-center">{{ team.goles_pro }}</td>
+                        <td class="text-center">{{ "%.2f"|format(team.sot) }}</td>
+                        <td class="text-center">{{ "%.2f"|format(team.sota) }}</td>
+                        <td class="text-center">{{ "%.1f"|format(team.posesion) }}%</td>
+                        <td style="font-size:7pt; color:#94A3B8;">{{ team.bajas }}</td>
+                        <td class="text-center">{{ "%.2f"|format(team.qmod) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h4 class="has-tooltip" data-tooltip="Se ponderan por antiguedad">Encuentros Directos - Últimos 5 Partidos (H2H) ℹ️</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ENCUENTRO</th>
+                        <th>FECHA</th>
+                        <th>MARCADOR</th>
+                        <th>LOCAL REAL</th>
+                        <th>VISITANTE REAL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for h in p.h2h_filas %}
+                    <tr>
+                        <td>Duelo {{ loop.index }}</td>
+                        <td>{{ h.fecha }}</td>
+                        <td><strong>{{ h.marcador }}</strong></td>
+                        <td>{{ h.local_real }}</td>
+                        <td>{{ h.visitante_real }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- 6. Límites Analíticos de Breakeven (θ*) -->
+            <h4 class="has-tooltip" data-tooltip="Límites Analíticos de Breakeven (θ*). Probabilidad mínima requerida para neutralizar el margen del casino y entrar en zona de rentabilidad matemática (+EV).">Límites para Selección de Estrategia ℹ️</h4>
+            <div class="theta-grid">
+                <div class="theta-card has-tooltip" data-tooltip="Umbral mínimo para validar victoria de Favorito directo.">
+                    <div class="theta-label">θ* Fav (H1)</div>
+                    <div class="theta-val">
+                        {% if p.theta_fav is defined and p.theta_fav <= 1.0 %}
+                        {{ "%.2f"|format(p.theta_fav * 100) }}%
+                        {% else %}
+                        {{ "%.2f"|format(p.theta_fav|default(p.theta_req)) }}%
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="theta-card has-tooltip" data-tooltip="Umbral de empate estándar.">
+                    <div class="theta-label">θ* Emp (H2)</div>
+                    <div class="theta-val">
+                        {% if p.theta_emp is defined and p.theta_emp <= 1.0 %}
+                        {{ "%.2f"|format(p.theta_emp * 100) }}%
+                        {% else %}
+                        {{ "%.2f"|format(p.theta_emp|default(30.0)) }}%
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="theta-card has-tooltip" data-tooltip="Umbral de empate con beneficio de Pago Anticipado.">
+                    <div class="theta-label">θ* Emp PA (H2+)</div>
+                    <div class="theta-val">
+                        {% if p.theta_emp_pa is defined and p.theta_emp_pa <= 1.0 %}
+                        {{ "%.2f"|format(p.theta_emp_pa * 100) }}%
+                        {% else %}
+                        {{ "%.2f"|format(p.theta_emp_pa|default(32.0)) }}%
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="theta-card has-tooltip" data-tooltip="Umbral mínimo para explotar valor en el No-Favorito (Underdog).">
+                    <div class="theta-label">θ* Und (R1)</div>
+                    <div class="theta-val">
+                        {% if p.theta_und is defined and p.theta_und <= 1.0 %}
+                        {{ "%.2f"|format(p.theta_und * 100) }}%
+                        {% else %}
+                        {{ "%.2f"|format(p.theta_und|default(38.0)) }}%
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 14px; text-align: right;">
+                <a href="#card-{{ p.id_partido }}" onclick="switchView('view-dashboard')" class="btn-back-to-orders">⬅ Volver al Dashboard</a>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div><!-- /.app-container -->
+
+    <!-- Script de Control de Pantalla (Screen Switcher) -->
+    <script>
+    function switchView(viewId) {
+        document.querySelectorAll('.view-container').forEach(function(el) {
+            el.classList.remove('active-view');
+        });
+        document.querySelectorAll('.nav-tab-btn').forEach(function(el) {
+            el.classList.remove('active');
+        });
+
+        var target = document.getElementById(viewId);
+        if (target) {
+            target.classList.add('active-view');
+            window.scrollTo(0, 0);
+        }
+
+        if (viewId === 'view-leagues-hub' || viewId === 'view-hub-leagues') {
+            var btn = document.getElementById('btn-tab-hub');
+            if (btn) btn.classList.add('active');
+        } else if (viewId === 'view-matchday-selection' || viewId === 'view-split-selection') {
+            var btn = document.getElementById('btn-tab-split');
+            if (btn) btn.classList.add('active');
+        } else if (viewId === 'view-dashboard') {
+            var btn = document.getElementById('btn-tab-dashboard');
+            if (btn) btn.classList.add('active');
+        } else if (viewId === 'view-command-center') {
+            var btn = document.getElementById('btn-tab-command');
+            if (btn) btn.classList.add('active');
+        }
+    }
+
+    function switchTableTab(tabName) {
+        var btnGen = document.getElementById('btn-sub-general');
+        var btnForm = document.getElementById('btn-sub-forma');
+        var btnXg = document.getElementById('btn-sub-xg');
+        [btnGen, btnForm, btnXg].forEach(function(b) { if (b) b.classList.remove('active'); });
+        if (tabName === 'general' && btnGen) btnGen.classList.add('active');
+        else if (tabName === 'forma' && btnForm) btnForm.classList.add('active');
+        else if (tabName === 'xg' && btnXg) btnXg.classList.add('active');
+
+        document.querySelectorAll('.col-gen').forEach(function(el) {
+            el.style.display = (tabName === 'general') ? '' : 'none';
+        });
+        document.querySelectorAll('.col-forma').forEach(function(el) {
+            el.style.display = (tabName === 'forma') ? '' : 'none';
+        });
+        document.querySelectorAll('.col-xg').forEach(function(el) {
+            el.style.display = (tabName === 'xg') ? '' : 'none';
+        });
+
+        switchStandingsTab(tabName);
+    }
+
+    function switchStandingsTab(tabName) {
+        var btnGen = document.getElementById('tab-std-general');
+        var btnForm = document.getElementById('tab-std-forma');
+        var btnXg = document.getElementById('tab-std-xg');
+        [btnGen, btnForm, btnXg].forEach(function(b) {
+            if (b) { b.style.color = '#94A3B8'; b.style.borderColor = 'rgba(255,255,255,0.1)'; }
+        });
+        if (tabName === 'general' && btnGen) { btnGen.style.color = '#00E676'; btnGen.style.borderColor = '#00E676'; }
+        else if (tabName === 'forma' && btnForm) { btnForm.style.color = '#00E676'; btnForm.style.borderColor = '#00E676'; }
+        else if (tabName === 'xg' && btnXg) { btnXg.style.color = '#00E676'; btnXg.style.borderColor = '#00E676'; }
+    }
+
+    function toggleFixtureSelection(el) {
+        var card = el.closest('.fixture-card');
+        if (!card) return;
+        if (el.checked) {
+            card.style.borderColor = '#00E676';
+            card.style.background = 'rgba(0, 230, 118, 0.06)';
+        } else {
+            card.style.borderColor = 'rgba(255,255,255,0.08)';
+            card.style.background = '#0f172a';
+        }
+        var total = document.querySelectorAll('.fixture-card input[type=checkbox]:checked').length;
+        var lbl = document.getElementById('lbl-partidos-seleccionados');
+        if (lbl) lbl.textContent = total + ' partido' + (total !== 1 ? 's' : '') + ' en slate';
+    }
+
+    function dispatchSelectedMatches() {
+        switchView('view-dashboard');
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ titulo }}</title>
+  <link rel="stylesheet" href="/static/css/theme.css">
+</head>
+<body>
+  <header class="header-container">
+    <div class="header-brand">Q-BE <span>Observatory</span></div>
+    <nav class="header-nav">
+      <a class="tab-btn active" href="/">Inicio</a>
+      <a class="tab-btn" href="/visor">Visor de Calibración</a>
+    </nav>
+  </header>
+
+  <main style="max-width: 1100px; margin: 2rem auto; padding: 0 1rem;">
+    <section class="card">
+      <h1 style="margin-top: 0;">Observatorio Q-BE</h1>
+      <p>
+        Módulo independiente de observabilidad y calibración. Consume el núcleo
+        <strong>qbe_core</strong> y lee el histórico en modo estrictamente de solo lectura.
+      </p>
+      <p>
+        <a class="btn-primary" href="/visor">Abrir Visor de Calibración</a>
+      </p>
+    </section>
+
+    <section class="card" style="margin-top: 1rem;">
+      <h2 style="margin-top: 0;">Fronteras de esta aplicación</h2>
+      <ul>
+        <li>No escribe en la base de datos: <code>mode=ro</code> + <code>PRAGMA query_only=ON</code>.</li>
+        <li>No contiene lógica de apuestas ni genera carteras.</li>
+        <li>No reimplementa Poisson, Dixon-Coles, André ni Kelly: importa <code>qbe_core</code>.</li>
+      </ul>
+      <p style="color: var(--text-muted);">
+        El Brier de mercado y el Alpha se muestran como <strong>N/D</strong> cuando no hay
+        cuotas 1X2 en la fuente (D-1).
+      </p>
+    </section>
+  </main>
+</body>
+</html>

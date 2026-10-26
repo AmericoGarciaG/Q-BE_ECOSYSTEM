@@ -1,0 +1,179 @@
+{
+  "balance_global_portafolio": {
+    "capital_total_comprometido_mxn": 80.0,
+    "ganancia_neta_esperada_jornada_mxn": 10.97,
+    "roi_global_esperado_porcentaje": 13.71
+  },
+  "control_portafolio": {
+    "blindaje_global_preservacion_porcentaje": 95.0,
+    "capital_total_core_mxn": 80.0,
+    "desglose_bankroll": {
+      "activa": true,
+      "auditoria_kelly_atenuado": [
+        {
+          "capital_asignado_mxn": 80.0,
+          "cota_kelly_mxn": 31.9,
+          "excede_cota_kelly": true,
+          "f_kelly_atenuado": 0.0319,
+          "id_partido": "LIGAMX-J14-09",
+          "prob_exito_efectiva": 0.7943
+        }
+      ],
+      "bankroll_total": 1000.0,
+      "cascada_resiliencia": [
+        {
+          "escenario": "Pleno Éxito (0 Fallos)",
+          "estado": "PLENO_POSITIVO",
+          "nivel": 0,
+          "pnl_mxn": 38.45,
+          "probabilidad_pct": 80.0,
+          "reveses": 0,
+          "roi_pct": 48.1
+        },
+        {
+          "escenario": "1 Reveses (Ruina Total)",
+          "estado": "DEFICIT",
+          "nivel": 1,
+          "pnl_mxn": -80.0,
+          "probabilidad_pct": 5.0,
+          "reveses": 1,
+          "roi_pct": -100.0
+        }
+      ],
+      "porcentaje_total_arriesgado": 8.0,
+      "reveses_maximos_tolerados": 0,
+      "trinidad_resiliencia": {
+        "pleno_exito": {
+          "pnl_mxn": 38.45,
+          "probabilidad_pct": 55.5
+        },
+        "ruina_total": {
+          "pnl_mxn": -80.0,
+          "probabilidad_pct": 20.2
+        },
+        "tablas_o_ganancia": {
+          "probabilidad_pct": 79.8,
+          "umbral_pnl_mxn": 0.0
+        }
+      }
+    },
+    "desglose_vaquita": {
+      "activa": false,
+      "cuota_fija_por_partido_mxn": 10.0,
+      "numero_socios": 5
+    },
+    "modalidad": "BANKROLL",
+    "probabilidad_ruina_total_porcentaje": 5.0,
+    "total_partidos_core_aprobados": 1,
+    "total_partidos_escaneados": 9,
+    "total_partidos_jornada": 9
+  },
+  "descartes": [],
+  "modulo_satelite_asimetrico": {
+    "autorizado": false,
+    "ganancia_potencial_neta_mxn": 0.0,
+    "justificacion_financiamiento": "No se autoriza boleto satélite al no existir underdogs con ventaja extrema en cuotas >= 4.50.",
+    "momio": 0.0,
+    "monto_satelite_mxn": 0.0,
+    "partido_seleccionado": "N/A",
+    "promocion": "Pago Anticipado",
+    "roi_potencial_porcentaje": 0.0,
+    "seleccion": "N/A"
+  },
+  "operadores_disponibles": {
+    "betway": {
+      "capturas_validas": 1,
+      "disponible": true
+    },
+    "caliente": {
+      "capturas_validas": 0,
+      "disponible": false
+    },
+    "mejor_combinacion": {
+      "capturas_validas": 10,
+      "disponible": true
+    },
+    "novibet": {
+      "capturas_validas": 3,
+      "disponible": true
+    },
+    "snapshot": {
+      "capturas_validas": 6,
+      "disponible": true
+    }
+  },
+  "ordenes_ejecucion_partidos": [
+    {
+      "boletos": {
+        "boleto_1_seguro": {
+          "momio": 3.6,
+          "monto_mxn": 22.22,
+          "operador": "caliente",
+          "prob_qbe": 24.6,
+          "seleccion": "Empate"
+        },
+        "boleto_2_ganancia": {
+          "momio": 2.05,
+          "monto_mxn": 57.78,
+          "operador": "caliente",
+          "prob_qbe": 54.9,
+          "seleccion": "Gana Club Tijuana"
+        },
+        "inversion_partido_A_i": 80.0
+      },
+      "cashout_targets": {
+        "instruccion_desarrollo_normal": "Sin descuento. Dejar correr al 90' para cobrar 100% Tablas o cobro anticipado por ventaja de 2 goles.",
+        "instruccion_emergencia_rompequinielas": "CashOut en cuanto ofrezca Tablas ($80.0 MXN) al igualar en el 2T.",
+        "monto_salida_emergencia_tablas_mxn": 80.0,
+        "monto_salida_optima_min85": "Sin descuento. Dejar correr al 90' para cobrar 100% Tablas o cobro anticipado por ventaja de 2 goles."
+      },
+      "cobertura_dinamica": {
+        "cobro_bruto_empate_mxn": 0.0,
+        "delta_cobertura": 0.0,
+        "delta_efectivo": 0.0,
+        "modo": "DEF",
+        "pnl_neto_empate_mxn": 0.0,
+        "roi_empate_porcentaje": -0.01,
+        "roi_favorito_porcentaje": 48.06
+      },
+      "estrategia_seleccionada": {
+        "codigo": "QBE-H1",
+        "descripcion_ejecutiva": "Búsqueda de ganancia en el Favorito, con recuperación del 100% de la inversión (Tablas) si el juego empata",
+        "linea_promocional": "Estándar",
+        "nombre_oficial": "Híbrida Local + Empate V=0"
+      },
+      "forma_reciente_auditada": {
+        "fav_resumen": "Posición #1, 0 pts | Q_mod: 1.0",
+        "und_resumen": "Posición #18, 0 pts | Q_mod: 1.0"
+      },
+      "horario_evento": "25/10 21:10 hr",
+      "id_partido": "LIGAMX-J14-09",
+      "metricas_clave": {
+        "ev_neto_roi_porcentaje": 13.71,
+        "peso_portafolio_w_i": 1.0,
+        "phi_lead2_prob_ventaja_2_goles": 0.3809,
+        "psi_downside_riesgo": 0.05,
+        "score_calidad_S_i": 2.7427
+      },
+      "opcion_no_jugada": {
+        "momio": 3.25,
+        "nombre": "Santos Laguna",
+        "prob_qbe": 20.6
+      },
+      "partido": "Club Tijuana vs Santos Laguna",
+      "proyecciones": {
+        "freeroll_doble_ganancia_mxn": 0.0,
+        "freeroll_roi_porcentaje": 0.0,
+        "ganancia_neta_principal_mxn": 38.45,
+        "perdida_maxima_posible_mxn": 80.0,
+        "resultado_tablas_mxn": 80.0,
+        "roi_principal_porcentaje": 48.06
+      }
+    }
+  ],
+  "parametros_cartera": {
+    "certainty_slider": 0.8,
+    "gamma_threshold": 0.67,
+    "total_bankroll": 1000.0
+  }
+}

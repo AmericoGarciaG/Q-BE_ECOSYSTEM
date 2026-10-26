@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qbe_business"
+version = "0.1.0"
+description = "Q-BE Business — transactional betting desk and SPA"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.111",
+    "uvicorn[standard]>=0.30",
+    "jinja2>=3.1",
+    "pydantic>=2.7",
+    "sqlalchemy>=2.0",
+]
+
+[tool.setuptools]
+packages = ["src.web", "src.web.routes"]
+
+[tool.setuptools.package-data]
+"src.web" = ["templates/*.html", "static/**/*"]

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- [ARCH-1.5.10-B] Emblema de respaldo local. Cero hotlinking. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="55" height="20" viewBox="0 -2 55 20" role="img" aria-label="Betway.MX">
+  <rect x="0" y="-2" width="55" height="20" rx="3.2" fill="#0f172a"/>
+  <circle cx="7.2" cy="8" r="3.6" fill="none" stroke="#38BDF8" stroke-width="1.8"/>
+  <circle cx="7.2" cy="8" r="0.9" fill="#38BDF8"/>
+  <text x="14" y="11.4" font-family="Segoe UI, Arial, sans-serif" font-size="6.8" font-weight="700" fill="#ffffff">Betway.MX</text>
+</svg>
