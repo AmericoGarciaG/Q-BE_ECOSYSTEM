@@ -18,4 +18,11 @@ LIVE_SNAPSHOT = Path(
     os.getenv("OBS_LIVE_SNAPSHOT", str(PROJECT_ROOT / "data" / "live_snapshot.db"))
 ).resolve()
 
+BACKTESTING_SNAPSHOT = Path(
+    os.getenv(
+        "OBS_BACKTESTING_SNAPSHOT",
+        str(PROJECT_ROOT / "data" / "observatory_snapshot.db"),
+    )
+).resolve()
+
 API_TOKEN = os.getenv("OBS_API_TOKEN", "").strip()

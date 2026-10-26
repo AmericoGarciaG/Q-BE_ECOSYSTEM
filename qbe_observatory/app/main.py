@@ -13,6 +13,7 @@ from fastapi.templating import Jinja2Templates
 from src.core.contracts.portfolio_math import calcular_brier_multicategorico
 
 from app.routes.calibration import construir_reporte, router as calibration_router
+from app.routes.backtesting import router as backtesting_router
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -21,6 +22,7 @@ app = FastAPI(title="Q-BE Observatory")
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app.include_router(calibration_router)
+app.include_router(backtesting_router)
 
 
 @app.get("/", response_class=HTMLResponse)
