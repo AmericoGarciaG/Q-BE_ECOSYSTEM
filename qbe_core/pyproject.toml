@@ -14,7 +14,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["src.core", "src.core.contracts", "src.core.normalization", "src.models"]
+packages = ["src.core", "src.core.contracts", "src.core.normalization", "src.core.sovereign", "src.models"]
 
 [tool.setuptools.package-dir]
 "" = "."

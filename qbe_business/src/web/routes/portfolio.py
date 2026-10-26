@@ -91,12 +91,8 @@ class MatchThesisRequest(BaseModel):
 
 @router.post("/match-thesis")
 def generate_match_thesis_endpoint(req: MatchThesisRequest):
-    """
-    [ARCH-1.3.4 / ARCH-1.6.10] Invocación real de Gemini 3.6 Flash bajo demanda.
-    """
-    logger.info(f"🧠 [ON-DEMAND] Redactando Tesis con Gemini para partido {req.partido_id}...")
-    print(f"🧠 [ON-DEMAND] Redactando Tesis con Gemini para partido {req.partido_id}...")
-    from src.services.gemini_gateway import GeminiCognitiveGateway
-    gateway = GeminiCognitiveGateway()
-    tesis_html = gateway.generate_thesis(req.partido_data)
+    """Tesis LLM delegada a la fachada local; sin llaves responde 503 limpio."""
+    logger.info(f"[ON-DEMAND] Redactando Tesis para partido {req.partido_id}...")
+    from src.services.llm_gateway import generar_tesis_partido
+    tesis_html = generar_tesis_partido(req.partido_data)
     return {"partido_id": req.partido_id, "tesis_html": tesis_html}

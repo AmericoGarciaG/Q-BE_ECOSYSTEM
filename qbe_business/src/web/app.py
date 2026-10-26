@@ -23,6 +23,10 @@ from src.web.routes.markets import router as markets_router
 from src.web.routes.portfolio import router as portfolio_router
 from src.web.routes.leagues import router as leagues_router
 from src.web.routes.export import router as export_router
+from src.web.routes.sovereign import router as sovereign_router
+from src.web.routes.admin import router as admin_router, llm_router
+from src.web.routes.admin_status import router as admin_status_router
+from src.web.routes.admin_tasks import router as admin_tasks_router
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -34,6 +38,11 @@ app.include_router(markets_router)
 app.include_router(portfolio_router)
 app.include_router(leagues_router)
 app.include_router(export_router)
+app.include_router(sovereign_router)
+app.include_router(admin_router)
+app.include_router(llm_router)
+app.include_router(admin_status_router)
+app.include_router(admin_tasks_router)
 
 
 def _flag(nombre: str, default: bool = False) -> bool:
@@ -79,13 +88,6 @@ def backtesting_no_disponible() -> None:
     if not _flags()["backtesting"]:
         raise HTTPException(status_code=503, detail="Módulo no disponible en Business")
     raise HTTPException(status_code=503, detail="Backtesting se sirve desde qbe_observatory")
-
-
-@app.get("/api/admin/status/drift")
-def admin_no_disponible() -> None:
-    if not _flags()["admin"]:
-        raise HTTPException(status_code=503, detail="Módulo no disponible en Business")
-    raise HTTPException(status_code=503, detail="Admin se sirve desde qbe_ingestion")
 
 
 @app.get("/", response_class=HTMLResponse)

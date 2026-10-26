@@ -17,3 +17,4 @@ qbe_observatory/data/
 
 # Salidas locales (PDFs, reportes)
 data/output/
+qbe_storage/data/
