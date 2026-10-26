@@ -25,8 +25,10 @@ constante de negocio se inventa aquí:
 
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Sequence, Tuple
+import os
 
-from fastapi import APIRouter
+import httpx
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
@@ -473,42 +475,28 @@ def _fixtures_jornada(
 
 @router.get(
     "/drift",
-    response_model=ReporteDeriva,
-    summary="[ARCH-1.4.12-B] Semáforo de deriva y frescura de fuentes (solo lectura)",
+    summary="[ARCH-1.4.12-B] Semáforo de deriva y frescura de fuentes (vía Ingesta)",
 )
-def consultar_deriva_centro_control() -> ReporteDeriva:
-    """Sonda read-only del Centro de Control: cuatro luces + homologación + acción recomendada."""
-    gateway = PersistenceGateway()
-    with gateway.read_session() as session:
-        liga = _liga_3nf(session)
-        jornada = resolver_jornada_actual_dinamica(session, liga.id) if liga else None
-        fixtures = _fixtures_jornada(session, liga.id, jornada) if liga else []
-        dimensiones = {
-            "mercado": _status_mercado(fixtures),
-            "deportivo": _status_deportivo(fixtures),
-            "progol": _status_progol(session),
-            "integridad": _status_integridad(fixtures),
-        }
-        status_homologacion, homologacion_pendiente = _status_homologacion(session)
-        liga_id = liga.id if liga else None
-
-    return ReporteDeriva(
-        evaluado_en_utc=datetime.now(timezone.utc).isoformat(),
-        jornada_activa=jornada,
-        liga_3nf=liga_id,
-        status_mercado=dimensiones["mercado"],
-        status_deportivo=dimensiones["deportivo"],
-        status_progol=dimensiones["progol"],
-        status_integridad=dimensiones["integridad"],
-        status_homologacion=status_homologacion,
-        accion_recomendada=_accion_recomendada(dimensiones, homologacion_pendiente),
-    )
+def consultar_deriva_centro_control() -> Dict[str, Any]:
+    """Consume el estado de deriva de `qbe_ingestion`; 503 si el servicio no está en línea."""
+    base = os.getenv("QBE_INGESTION_URL", "http://127.0.0.1:8002").rstrip("/")
+    try:
+        respuesta = httpx.get(
+            f"{base}/api/ingestion/status/drift",
+            timeout=5.0,
+        )
+        respuesta.raise_for_status()
+        return respuesta.json()
+    except Exception as exc:
+        raise HTTPException(
+            status_code=503,
+            detail="Servicio de Ingesta no disponible para el semáforo de deriva",
+        ) from exc
 
 
 def auditar_deriva_sistema() -> Dict[str, Any]:
     """
     [ARCH-1.4.12-C] Fachada programática del semáforo: publica el MISMO veredicto que el contrato
-    REST `GET /api/admin/status/drift` como diccionario plano, sin abrir un segundo camino de
-    lectura ni reimplementar sonda alguna ([GOVERNANCE-01]).
+    REST `GET /api/admin/status/drift` como diccionario plano.
     """
-    return consultar_deriva_centro_control().model_dump()
+    return consultar_deriva_centro_control()

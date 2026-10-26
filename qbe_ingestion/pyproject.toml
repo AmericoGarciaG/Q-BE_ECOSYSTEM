@@ -18,7 +18,9 @@ dependencies = [
     "sqlalchemy>=2.0",
     "pydantic>=2.7",
     "pydantic-settings>=2.2",
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
 ]
 
 [tool.setuptools]
-packages = ["src.ingestion", "src.ingestion.providers", "src.ingestion.daemons"]
+packages = ["src.ingestion", "src.ingestion.providers", "src.ingestion.daemons", "src.ingestion.lab"]
