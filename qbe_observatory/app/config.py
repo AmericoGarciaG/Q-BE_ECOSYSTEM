@@ -26,3 +26,6 @@ BACKTESTING_SNAPSHOT = Path(
 ).resolve()
 
 API_TOKEN = os.getenv("OBS_API_TOKEN", "").strip()
+
+OBS_HOST = os.getenv("OBS_HOST", "127.0.0.1")
+OBS_PORT = int(os.getenv("OBS_PORT", "8001"))

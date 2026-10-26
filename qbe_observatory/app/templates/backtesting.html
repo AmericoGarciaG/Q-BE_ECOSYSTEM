@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ titulo }}</title>
+  <link rel="stylesheet" href="/static/css/theme.css">
+</head>
+<body>
+  <header class="header-container">
+    <div class="header-brand">Q-BE <span>Observatory</span></div>
+    <nav class="header-nav">
+      <a class="tab-btn" href="/">Inicio</a>
+      <a class="tab-btn" href="/visor">Calibración histórica</a>
+      <a class="tab-btn active" href="/backtesting">Backtesting</a>
+    </nav>
+  </header>
+
+  <main style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem;">
+    <h1 style="margin-top: 0;">Backtesting y Simulación</h1>
+
+    <section class="card" style="margin-bottom: 1rem;">
+      <strong>Snapshot:</strong> <code>{{ snapshot }}</code><br>
+      {% if snapshot_edad_min is none %}
+        <span style="color: var(--danger, #f87171);">Snapshot no disponible. Ejecute <code>python -m scripts.refresh_snapshot</code>.</span>
+      {% elif snapshot_fresco %}
+        <span style="color: var(--success, #4ade80);">Fresco</span> · edad {{ snapshot_edad_min }} min (límite 60 min).
+      {% else %}
+        <span style="color: var(--warning, #fbbf24);">Obsoleto</span> · edad {{ snapshot_edad_min }} min. Refrescar con <code>python -m scripts.refresh_snapshot</code>.
+      {% endif %}
+    </section>
+
+    {% if error %}
+      <section class="card" style="border-color: var(--danger, #f87171);">
+        <strong>No se pudo leer el snapshot:</strong> {{ error }}
+      </section>
+    {% endif %}
+
+    {% if reporte %}
+      {% set r = reporte.resumen_temporada %}
+      <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem;">
+        <article class="card">
+          <h2 style="margin-top: 0;">Partidos</h2>
+          <p style="font-size: 1.8rem; margin: 0;">{{ r.total_partidos }}</p>
+          <p style="color: var(--text-muted); margin-bottom: 0;">{{ reporte.jornadas|length }} jornadas</p>
+        </article>
+        <article class="card">
+          <h2 style="margin-top: 0;">Brier QBE</h2>
+          <p style="font-size: 1.8rem; margin: 0;">{{ "%.4f"|format(r.brier_score_qbe) }}</p>
+        </article>
+        <article class="card">
+          <h2 style="margin-top: 0;">Brier Mercado</h2>
+          <p style="font-size: 1.8rem; margin: 0;">{{ "%.4f"|format(r.brier_score_mercado) }}</p>
+        </article>
+        <article class="card">
+          <h2 style="margin-top: 0;">Alpha</h2>
+          <p style="font-size: 1.8rem; margin: 0;">{{ "%.2f"|format(r.alpha_calibracion_pct) }}%</p>
+        </article>
+      </section>
+
+      <section class="card" style="margin-top: 1.5rem; overflow-x: auto;">
+        <h2 style="margin-top: 0;">Calibración por jornada</h2>
+        <table class="fintech-table">
+          <thead>
+            <tr><th>Jornada</th><th>Partidos</th><th>Brier QBE</th><th>Brier Mercado</th><th>Alpha</th><th>Cobertura</th></tr>
+          </thead>
+          <tbody>
+            {% for fila in reporte.jornadas %}
+              <tr>
+                <td>{{ fila.jornada }}</td>
+                <td>{{ fila.total_partidos }}</td>
+                <td>{{ "%.4f"|format(fila.brier_score_qbe) }}</td>
+                <td>{{ "%.4f"|format(fila.brier_score_mercado) }}</td>
+                <td>{{ "%.2f"|format(fila.alpha_calibracion_pct) }}%</td>
+                <td>{{ "%.1f"|format(fila.tasa_cobertura_pct) }}%</td>
+              </tr>
+            {% else %}
+              <tr><td colspan="6">Sin jornadas concluidas.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    {% endif %}
+
+    <section class="card" style="margin-top: 1.5rem;">
+      <h2 style="margin-top: 0;">Simulación de cartera</h2>
+      <form method="post" action="/backtesting/simulate" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem;">
+        <label>Bankroll
+          <input name="bankroll_inicial" type="number" step="0.01" min="0.01" value="{{ form.bankroll_inicial if form else 10000 }}" style="width: 100%;">
+        </label>
+        <label>Rango de jornadas
+          <input name="rango_jornadas" type="text" value="{{ form.rango_jornadas if form else '1-2' }}" style="width: 100%;">
+        </label>
+        <label>Modo
+          <select name="modo_interes" style="width: 100%;">
+            <option value="plano" {% if not form or form.modo_interes == 'plano' %}selected{% endif %}>Plano</option>
+            <option value="compuesto" {% if form and form.modo_interes == 'compuesto' %}selected{% endif %}>Compuesto</option>
+          </select>
+        </label>
+        <label>Γ
+          <input name="gamma_slider" type="number" step="0.01" min="0.67" max="0.75" value="{{ form.gamma_slider if form else 0.67 }}" style="width: 100%;">
+        </label>
+        <label>Certeza %
+          <input name="target_certeza_pct" type="number" step="1" min="0" max="100" value="{{ form.target_certeza_pct if form else 0 }}" style="width: 100%;">
+        </label>
+        <label>Cobertura
+          <select name="modo_cobertura" style="width: 100%;">
+            <option value="DEF" {% if not form or form.modo_cobertura == 'DEF' %}selected{% endif %}>DEF</option>
+            <option value="BAL" {% if form and form.modo_cobertura == 'BAL' %}selected{% endif %}>BAL</option>
+            <option value="AGR" {% if form and form.modo_cobertura == 'AGR' %}selected{% endif %}>AGR</option>
+          </select>
+        </label>
+        <div style="display: flex; align-items: end;">
+          <button class="btn-primary" type="submit">Simular</button>
+        </div>
+      </form>
+      {% if sim_error %}
+        <p style="color: var(--danger, #f87171);">Simulación rechazada: {{ sim_error }}</p>
+      {% endif %}
+    </section>
+
+    {% if resultado %}
+      <section class="card" style="margin-top: 1.5rem;">
+        <h2 style="margin-top: 0;">Resultado · {{ resultado.modo_descripcion }}</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+          <div><small>Bankroll final</small><p style="font-size: 1.4rem; margin: 0;">{{ "%.2f"|format(resultado.bankroll_final) }}</p></div>
+          <div><small>PnL</small><p style="font-size: 1.4rem; margin: 0;">{{ "%.2f"|format(resultado.pnl_acumulado) }}</p></div>
+          <div><small>ROI</small><p style="font-size: 1.4rem; margin: 0;">{{ "%.2f"|format(resultado.roi_acumulado_pct) }}%</p></div>
+          <div><small>Drawdown máx.</small><p style="font-size: 1.4rem; margin: 0;">{{ "%.2f"|format(resultado.drawdown_maximo_pct) }}%</p></div>
+        </div>
+
+        <h3>Curva de capital</h3>
+        <div style="display: flex; align-items: end; gap: 3px; height: 160px; padding: 0.5rem; background: rgba(255,255,255,0.02);">
+          {% for punto in curva %}
+            <div title="{{ '%.2f'|format(punto.valor) }}" style="flex: 1; min-width: 4px; height: {{ punto.pct }}%; background: linear-gradient(180deg, #38bdf8, #1d4ed8); border-radius: 2px 2px 0 0;"></div>
+          {% endfor %}
+        </div>
+        <p style="color: var(--text-muted);">Serie: {{ resultado.curva_bankroll|join(', ') }}</p>
+      </section>
+    {% endif %}
+
+    <section class="card" style="margin-top: 1.5rem;">
+      <h2 style="margin-top: 0;">Modelos Manus (A/B/C)</h2>
+      <table class="fintech-table">
+        <thead><tr><th>Tarea</th><th>Descripción</th><th>Artefacto</th><th>Disponible</th></tr></thead>
+        <tbody>
+          {% for modelo in modelos_manus %}
+            <tr>
+              <td>{{ modelo.task }}</td>
+              <td>{{ modelo.descripcion }}</td>
+              <td><code>{{ modelo.artefacto }}</code></td>
+              <td>{% if modelo.disponible %}Sí{% else %}No{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p style="color: var(--text-muted);">Los endpoints de predicción devuelven 503 mientras el artefacto no exista.</p>
+    </section>
+  </main>
+</body>
+</html>

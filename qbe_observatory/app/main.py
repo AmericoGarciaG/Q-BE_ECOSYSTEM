@@ -12,8 +12,12 @@ from fastapi.templating import Jinja2Templates
 
 from src.core.contracts.portfolio_math import calcular_brier_multicategorico
 
+from app import config
 from app.routes.calibration import construir_reporte, router as calibration_router
 from app.routes.backtesting import router as backtesting_router
+from app.routes.backtesting_ui import router as backtesting_ui_router
+from app.routes.manus import router as manus_router
+from app.routes.snapshot import router as snapshot_router
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -23,6 +27,9 @@ app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="stat
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app.include_router(calibration_router)
 app.include_router(backtesting_router)
+app.include_router(backtesting_ui_router)
+app.include_router(manus_router)
+app.include_router(snapshot_router)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -55,3 +62,9 @@ def visor(request: Request, jornada: Optional[int] = None) -> HTMLResponse:
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ONLINE", "db": "READ_ONLY"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host=config.OBS_HOST, port=config.OBS_PORT)

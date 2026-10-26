@@ -15,6 +15,7 @@ dependencies = [
     "sqlalchemy>=2.0",
     "pandas>=2.2",
     "scikit-learn>=1.4",
+    "python-multipart>=0.0.9",
 ]
 
 [project.optional-dependencies]
@@ -24,7 +25,7 @@ test = [
 ]
 
 [tool.setuptools]
-packages = ["app", "app.adapters", "app.routes", "src.observatory", "src.observatory.core"]
+packages = ["app", "app.adapters", "app.routes", "app.services", "src.observatory", "src.observatory.core"]
 
 [tool.setuptools.package-data]
 app = ["templates/*.html", "static/css/*.css"]
