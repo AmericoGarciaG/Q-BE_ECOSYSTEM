@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qbe_ingestion"
+version = "0.1.0"
+description = "Q-BE Data Nexus — providers, scrapers and daemons"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.27",
+    "requests>=2.31",
+    "beautifulsoup4>=4.12",
+    "pillow>=10.3",
+    "pytesseract>=0.3.10",
+    "google-generativeai>=0.8",
+    "playwright>=1.44",
+    "sqlalchemy>=2.0",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.2",
+]
+
+[tool.setuptools]
+packages = ["src.ingestion", "src.ingestion.providers", "src.ingestion.daemons"]
