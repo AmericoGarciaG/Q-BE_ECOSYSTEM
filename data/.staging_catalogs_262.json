@@ -1,0 +1,300 @@
+[
+  {
+    "id_candidato": "CAND-01",
+    "name": "Club América",
+    "short_name": "América",
+    "canonical_slug": "club-america",
+    "fotmob_id": 6576,
+    "stadium": "Ciudad de los Deportes",
+    "city": "Ciudad de México",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/1/1.png",
+    "crest_url": "/static/img/crests/club-america.png",
+    "aliases": [
+      "america",
+      "aguilas"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-02",
+    "name": "Atlas FC",
+    "short_name": "Atlas",
+    "canonical_slug": "atlas-fc",
+    "fotmob_id": 6577,
+    "stadium": "Jalisco",
+    "city": "Guadalajara",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/10445/10445.png",
+    "crest_url": "/static/img/crests/atlas-fc.png",
+    "aliases": [
+      "atlas",
+      "zorros",
+      "rojinegros"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-03",
+    "name": "Club Tijuana",
+    "short_name": "Tijuana",
+    "canonical_slug": "club-tijuana",
+    "fotmob_id": 162418,
+    "stadium": "Caliente",
+    "city": "Tijuana",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/5/5.png",
+    "crest_url": "/static/img/crests/club-tijuana.png",
+    "aliases": [
+      "tijuana",
+      "xolos"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-04",
+    "name": "Cruz Azul",
+    "short_name": "Cruz Azul",
+    "canonical_slug": "cruz-azul",
+    "fotmob_id": 6578,
+    "stadium": "Ciudad de los Deportes",
+    "city": "Ciudad de México",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/6/6.png",
+    "crest_url": "/static/img/crests/cruz-azul.png",
+    "aliases": [
+      "cruzazul",
+      "la-maquina",
+      "cementeros"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-05",
+    "name": "Chivas Guadalajara",
+    "short_name": "Chivas",
+    "canonical_slug": "chivas-guadalajara",
+    "fotmob_id": 7807,
+    "stadium": "Akron",
+    "city": "Zapopan",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/7/7.png",
+    "crest_url": "/static/img/crests/chivas-guadalajara.png",
+    "aliases": [
+      "guadalajara",
+      "chivas"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-06",
+    "name": "Club León",
+    "short_name": "León",
+    "canonical_slug": "club-leon",
+    "fotmob_id": 1841,
+    "stadium": "León",
+    "city": "León",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/9/9.png",
+    "crest_url": "/static/img/crests/club-leon.png",
+    "aliases": [
+      "leon",
+      "la-fiera",
+      "panzas-verdes"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-07",
+    "name": "Club Pachuca",
+    "short_name": "Pachuca",
+    "canonical_slug": "club-pachuca",
+    "fotmob_id": 7848,
+    "stadium": "Hidalgo",
+    "city": "Pachuca",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/11/11.png",
+    "crest_url": "/static/img/crests/club-pachuca.png",
+    "aliases": [
+      "pachuca",
+      "tuzos"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-08",
+    "name": "Club Puebla",
+    "short_name": "Puebla",
+    "canonical_slug": "club-puebla",
+    "fotmob_id": 7847,
+    "stadium": "Cuauhtémoc",
+    "city": "Puebla",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/12/12.png",
+    "crest_url": "/static/img/crests/club-puebla.png",
+    "aliases": [
+      "puebla",
+      "la-franja",
+      "camoteros"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-09",
+    "name": "Rayados de Monterrey",
+    "short_name": "Monterrey",
+    "canonical_slug": "rayados-de-monterrey",
+    "fotmob_id": 7849,
+    "stadium": "BBVA",
+    "city": "Guadalupe",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/14/14.png",
+    "crest_url": "/static/img/crests/rayados-de-monterrey.png",
+    "aliases": [
+      "monterrey",
+      "rayados"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-10",
+    "name": "Santos Laguna",
+    "short_name": "Santos",
+    "canonical_slug": "santos-laguna",
+    "fotmob_id": 7857,
+    "stadium": "Corona",
+    "city": "Torreón",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/15/15.png",
+    "crest_url": "/static/img/crests/santos-laguna.png",
+    "aliases": [
+      "santos",
+      "guerreros",
+      "laguneros"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-11",
+    "name": "Tigres UANL",
+    "short_name": "Tigres",
+    "canonical_slug": "tigres-uanl",
+    "fotmob_id": 8561,
+    "stadium": "Universitario",
+    "city": "San Nicolás de los Garza",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/16/16.png",
+    "crest_url": "/static/img/crests/tigres-uanl.png",
+    "aliases": [
+      "tigres",
+      "felinos",
+      "uanl"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-12",
+    "name": "Deportivo Toluca",
+    "short_name": "Toluca",
+    "canonical_slug": "deportivo-toluca",
+    "fotmob_id": 6618,
+    "stadium": "Nemesio Díez",
+    "city": "Toluca",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/17/17.png",
+    "crest_url": "/static/img/crests/deportivo-toluca.png",
+    "aliases": [
+      "toluca",
+      "diablos-rojos"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-13",
+    "name": "Pumas UNAM",
+    "short_name": "Pumas",
+    "canonical_slug": "pumas-unam",
+    "fotmob_id": 1946,
+    "stadium": "Olímpico Universitario",
+    "city": "Ciudad de México",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/18/18.png",
+    "crest_url": "/static/img/crests/pumas-unam.png",
+    "aliases": [
+      "pumas",
+      "unam",
+      "univ-nacional",
+      "universitarios"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-14",
+    "name": "Necaxa",
+    "short_name": "Necaxa",
+    "canonical_slug": "necaxa",
+    "fotmob_id": 1842,
+    "stadium": "Victoria",
+    "city": "Aguascalientes",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/29/29.png",
+    "crest_url": "/static/img/crests/necaxa.png",
+    "aliases": [
+      "rayos-necaxa",
+      "rayos"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-15",
+    "name": "Querétaro FC",
+    "short_name": "Querétaro",
+    "canonical_slug": "queretaro-fc",
+    "fotmob_id": 1943,
+    "stadium": "Corregidora",
+    "city": "Querétaro",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/13668/13668.png",
+    "crest_url": "/static/img/crests/queretaro-fc.png",
+    "aliases": [
+      "queretaro",
+      "gallos-blancos",
+      "qro-fc"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-16",
+    "name": "Atlético San Luis",
+    "short_name": "San Luis",
+    "canonical_slug": "atletico-san-luis",
+    "fotmob_id": 6358,
+    "stadium": "Alfonso Lastras",
+    "city": "San Luis Potosí",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/11220/11220.png",
+    "crest_url": "/static/img/crests/atletico-san-luis.png",
+    "aliases": [
+      "san-luis",
+      "atleti-san-luis",
+      "potosinos"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-17",
+    "name": "Mazatlán FC",
+    "short_name": "Mazatlán",
+    "canonical_slug": "mazatlan",
+    "fotmob_id": null,
+    "stadium": "El Encanto",
+    "city": "Mazatlán",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/12043/12043.png",
+    "crest_url": "/static/img/crests/mazatlan.png",
+    "aliases": [
+      "mazatlan-fc",
+      "canoneros"
+    ],
+    "status": "APPROVED"
+  },
+  {
+    "id_candidato": "CAND-18",
+    "name": "FC Juárez",
+    "short_name": "Juárez",
+    "canonical_slug": "fc-juarez",
+    "fotmob_id": 649424,
+    "stadium": "Benito Juárez",
+    "city": "Ciudad Juárez",
+    "crest_candidate_url": "https://cldrsrcs.apilmx.com/v1/docs/archdgtl/AfldDrct/logos/11790/11790.png",
+    "crest_url": "/static/img/crests/fc-juarez.png",
+    "aliases": [
+      "juarez",
+      "bravos"
+    ],
+    "status": "APPROVED"
+  }
+]

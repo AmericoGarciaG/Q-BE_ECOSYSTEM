@@ -1,20 +1,58 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Q-BE ECOSYSTEM — HIGIENE GLOBAL DE REPOSITORIO
+# Toda exclusión es deliberada. No se ignora `data/` completo: la evidencia
+# fáctica JSON/CSV de investigación se versiona; solo se excluyen artefactos
+# generados, bases SQLite y secretos.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Entornos virtuales y cachés de herramientas
 .venv/
+venv/
 __pycache__/
 *.py[cod]
-*.egg-info/
+*$py.class
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+*.egg-info/
 .bt_run/
 
-# Bases de datos y artefactos generados en pruebas
+# Logs y trazas
+*.log
+*.log.*
+logs/
+
+# Bases de datos SQLite y sus artefactos WAL/SHM
 *.db
-*.db-wal
 *.db-shm
+*.db-wal
 *.sqlite
-*.sqlite-wal
 *.sqlite-shm
+*.sqlite-wal
+*.sqlite3
+
+# Salidas generadas y artefactos de cobertura
+data/output/*
+!data/output/.gitkeep
+!data/output/research_feature_matrix.csv
+!data/output/Q-BE_Manus_Dataset_97_canonico.csv
 qbe_business/data/
 qbe_observatory/data/
-
-# Salidas locales (PDFs, reportes)
-data/output/
 qbe_storage/data/
+qbe_ingestion/data/
+htmlcov/
+.coverage
+coverage.xml
+
+# Secretos y configuración local
+.env
+.env.*
+!.env.example
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

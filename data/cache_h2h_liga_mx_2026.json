@@ -1,0 +1,6109 @@
+{
+ "sonda": "ARCH-1.4.44 Â· CACHE-H2H-LIGAMX",
+ "esquema": "h2h_corpus_v1",
+ "liga": "MEX_LIGAMX",
+ "fuente": "betexplorer.com Â· resultados oficiales de Liga MX (fases regulares y liguilla de las temporadas congeladas)",
+ "fuentes": [
+  "https://www.betexplorer.com/football/mexico/liga-mx-2025-2026/results/?stage=n5NRx9yA",
+  "https://www.betexplorer.com/football/mexico/liga-mx-2025-2026/results/?stage=UcOQknLF",
+  "https://www.betexplorer.com/football/mexico/liga-mx-2025-2026/results/?stage=nkuqym6M",
+  "https://www.betexplorer.com/football/mexico/liga-mx-2025-2026/results/?stage=rLQEVQTq",
+  "https://www.betexplorer.com/football/mexico/liga-mx-2025-2026/results/?stage=vmKNT4bd",
+  "https://www.betexplorer.com/football/mexico/liga-mx-2024-2025/results/?stage=fsa2oZKo",
+  "https://www.betexplorer.com/football/mexico/liga-mx-2024-2025/results/?stage=bmgyhZOh",
+  "https://www.betexplorer.com/football/mexico/liga-mx-2024-2025/results/?stage=8p36pgzh",
+  "https://www.betexplorer.com/football/mexico/liga-mx-2024-2025/results/?stage=j9hBqDkb",
+  "https://www.betexplorer.com/football/mexico/liga-mx-2024-2025/results/?stage=lMFijDg5",
+  "https://www.betexplorer.com/football/mexico/liga-mx-2024-2025/results/?stage=UaiFrX44"
+ ],
+ "generado_at": "2026-10-18T01:06:32.834197",
+ "temporadas": [
+  "2025-2026",
+  "2024-2025"
+ ],
+ "fases_por_temporada": {
+  "2025-2026": [
+   "Apertura",
+   "Apertura - Play In",
+   "Apertura - Play Offs",
+   "Clausura",
+   "Clausura - Play Offs"
+  ],
+  "2024-2025": [
+   "Apertura",
+   "Apertura - Play In",
+   "Apertura - Play Offs",
+   "Clausura",
+   "Clausura - Play In",
+   "Clausura - Play Offs"
+  ]
+ },
+ "ventana_tau_deep_dias": 540,
+ "resumen": {
+  "partidos_crudos": 674,
+  "partidos_resueltos": 606,
+  "identidades_descartadas": 68
+ },
+ "partidos": [
+  {
+   "fecha": "2024-07-05",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "Santos Laguna",
+   "local_slug": "club-puebla",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-07-06",
+   "fase": "Apertura",
+   "local": "FC Juárez",
+   "visitante": "Atlas FC",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-07-06",
+   "fase": "Apertura",
+   "local": "Querétaro FC",
+   "visitante": "Club Tijuana",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-07-07",
+   "fase": "Apertura",
+   "local": "Atlético San Luis",
+   "visitante": "Club América",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "club-america",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-07-07",
+   "fase": "Apertura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-07-07",
+   "fase": "Apertura",
+   "local": "Pumas UNAM",
+   "visitante": "Club León",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "club-leon",
+   "goles_local": 4,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-07-07",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "Necaxa",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "necaxa",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-07-08",
+   "fase": "Apertura",
+   "local": "Club Pachuca",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-07-13",
+   "fase": "Apertura",
+   "local": "Atlas FC",
+   "visitante": "Tigres UANL",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-07-13",
+   "fase": "Apertura",
+   "local": "Club América",
+   "visitante": "Querétaro FC",
+   "local_slug": "club-america",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-07-13",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 4,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-07-14",
+   "fase": "Apertura",
+   "local": "Club León",
+   "visitante": "Club Pachuca",
+   "local_slug": "club-leon",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-07-14",
+   "fase": "Apertura",
+   "local": "Deportivo Toluca",
+   "visitante": "FC Juárez",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-07-14",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "Club Puebla",
+   "local_slug": "necaxa",
+   "visitante_slug": "club-puebla",
+   "goles_local": 4,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-07-14",
+   "fase": "Apertura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Cruz Azul",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 0,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2024-07-14",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "Pumas UNAM",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-07-17",
+   "fase": "Apertura",
+   "local": "Atlas FC",
+   "visitante": "Santos Laguna",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-07-17",
+   "fase": "Apertura",
+   "local": "Club Pachuca",
+   "visitante": "Atlético San Luis",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-07-17",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "Club León",
+   "local_slug": "club-puebla",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-07-17",
+   "fase": "Apertura",
+   "local": "Cruz Azul",
+   "visitante": "Club Tijuana",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-07-17",
+   "fase": "Apertura",
+   "local": "Querétaro FC",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-07-18",
+   "fase": "Apertura",
+   "local": "FC Juárez",
+   "visitante": "Pumas UNAM",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-07-18",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "necaxa",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-07-18",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "Club América",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-07-20",
+   "fase": "Apertura",
+   "local": "Atlético San Luis",
+   "visitante": "Club Tijuana",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-07-20",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "Atlas FC",
+   "local_slug": "club-puebla",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-07-21",
+   "fase": "Apertura",
+   "local": "Cruz Azul",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-07-21",
+   "fase": "Apertura",
+   "local": "FC Juárez",
+   "visitante": "Club América",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-07-21",
+   "fase": "Apertura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Querétaro FC",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-07-21",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "Tigres UANL",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 0,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2024-07-22",
+   "fase": "Apertura",
+   "local": "Club León",
+   "visitante": "Necaxa",
+   "local_slug": "club-leon",
+   "visitante_slug": "necaxa",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-07-22",
+   "fase": "Apertura",
+   "local": "Pumas UNAM",
+   "visitante": "Club Pachuca",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-08-17",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "club-puebla",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-08-19",
+   "fase": "Apertura",
+   "local": "Atlético San Luis",
+   "visitante": "Querétaro FC",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 4,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-08-19",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "Santos Laguna",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-08-24",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-08-24",
+   "fase": "Apertura",
+   "local": "Querétaro FC",
+   "visitante": "Cruz Azul",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-08-25",
+   "fase": "Apertura",
+   "local": "Atlas FC",
+   "visitante": "Pumas UNAM",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-08-25",
+   "fase": "Apertura",
+   "local": "Club América",
+   "visitante": "Club Puebla",
+   "local_slug": "club-america",
+   "visitante_slug": "club-puebla",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-08-25",
+   "fase": "Apertura",
+   "local": "Club León",
+   "visitante": "Santos Laguna",
+   "local_slug": "club-leon",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-08-25",
+   "fase": "Apertura",
+   "local": "Deportivo Toluca",
+   "visitante": "Atlético San Luis",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-08-25",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "FC Juárez",
+   "local_slug": "necaxa",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-08-25",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-08-31",
+   "fase": "Apertura",
+   "local": "Atlético San Luis",
+   "visitante": "Atlas FC",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-08-31",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "Club León",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-09-01",
+   "fase": "Apertura",
+   "local": "Chivas Guadalajara",
+   "visitante": "FC Juárez",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 5,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-09-01",
+   "fase": "Apertura",
+   "local": "Club Pachuca",
+   "visitante": "Querétaro FC",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-09-01",
+   "fase": "Apertura",
+   "local": "Cruz Azul",
+   "visitante": "Club América",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "club-america",
+   "goles_local": 4,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-09-01",
+   "fase": "Apertura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-09-02",
+   "fase": "Apertura",
+   "local": "Pumas UNAM",
+   "visitante": "Tigres UANL",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2024-09-02",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "Necaxa",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "necaxa",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-09-14",
+   "fase": "Apertura",
+   "local": "Atlas FC",
+   "visitante": "Club Pachuca",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-09-14",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "Querétaro FC",
+   "local_slug": "club-puebla",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-09-14",
+   "fase": "Apertura",
+   "local": "Deportivo Toluca",
+   "visitante": "Club Tijuana",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 4,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-09-14",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "Pumas UNAM",
+   "local_slug": "necaxa",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-09-14",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "Atlético San Luis",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-09-15",
+   "fase": "Apertura",
+   "local": "Club América",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "club-america",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-09-15",
+   "fase": "Apertura",
+   "local": "Club León",
+   "visitante": "Cruz Azul",
+   "local_slug": "club-leon",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-09-15",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-09-18",
+   "fase": "Apertura",
+   "local": "Atlético San Luis",
+   "visitante": "Cruz Azul",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-09-18",
+   "fase": "Apertura",
+   "local": "Club América",
+   "visitante": "Atlas FC",
+   "local_slug": "club-america",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-09-18",
+   "fase": "Apertura",
+   "local": "Club Pachuca",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-09-18",
+   "fase": "Apertura",
+   "local": "Pumas UNAM",
+   "visitante": "Club Puebla",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "club-puebla",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-09-18",
+   "fase": "Apertura",
+   "local": "Querétaro FC",
+   "visitante": "Tigres UANL",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-09-19",
+   "fase": "Apertura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Club León",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-09-19",
+   "fase": "Apertura",
+   "local": "Rayados de Monterrey",
+   "visitante": "FC Juárez",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-09-21",
+   "fase": "Apertura",
+   "local": "Atlas FC",
+   "visitante": "Querétaro FC",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-09-21",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "Club Pachuca",
+   "local_slug": "club-puebla",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2024-09-22",
+   "fase": "Apertura",
+   "local": "Club León",
+   "visitante": "Atlético San Luis",
+   "local_slug": "club-leon",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-09-22",
+   "fase": "Apertura",
+   "local": "Cruz Azul",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-09-22",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "Club América",
+   "local_slug": "necaxa",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-09-23",
+   "fase": "Apertura",
+   "local": "FC Juárez",
+   "visitante": "Tigres UANL",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-09-23",
+   "fase": "Apertura",
+   "local": "Pumas UNAM",
+   "visitante": "Club Tijuana",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-09-23",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-09-28",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "FC Juárez",
+   "local_slug": "club-puebla",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2024-09-28",
+   "fase": "Apertura",
+   "local": "Querétaro FC",
+   "visitante": "Necaxa",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "necaxa",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-09-28",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "Club León",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-09-29",
+   "fase": "Apertura",
+   "local": "Atlético San Luis",
+   "visitante": "Santos Laguna",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-09-29",
+   "fase": "Apertura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-09-29",
+   "fase": "Apertura",
+   "local": "Club Pachuca",
+   "visitante": "Cruz Azul",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 2,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2024-09-29",
+   "fase": "Apertura",
+   "local": "Deportivo Toluca",
+   "visitante": "Atlas FC",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 4,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-09-30",
+   "fase": "Apertura",
+   "local": "Club América",
+   "visitante": "Pumas UNAM",
+   "local_slug": "club-america",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-10-05",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "Club Pachuca",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-10-06",
+   "fase": "Apertura",
+   "local": "Atlético San Luis",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-10-06",
+   "fase": "Apertura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Atlas FC",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2024-10-06",
+   "fase": "Apertura",
+   "local": "Club León",
+   "visitante": "Club América",
+   "local_slug": "club-leon",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-10-06",
+   "fase": "Apertura",
+   "local": "Cruz Azul",
+   "visitante": "Necaxa",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "necaxa",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-10-06",
+   "fase": "Apertura",
+   "local": "Deportivo Toluca",
+   "visitante": "Pumas UNAM",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-10-06",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "Club Puebla",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "club-puebla",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-10-07",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "FC Juárez",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-10-19",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "Cruz Azul",
+   "local_slug": "club-puebla",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-10-19",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "Club Tijuana",
+   "local_slug": "necaxa",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-10-19",
+   "fase": "Apertura",
+   "local": "Querétaro FC",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-10-20",
+   "fase": "Apertura",
+   "local": "Club América",
+   "visitante": "Santos Laguna",
+   "local_slug": "club-america",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-10-20",
+   "fase": "Apertura",
+   "local": "Club Pachuca",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-10-20",
+   "fase": "Apertura",
+   "local": "FC Juárez",
+   "visitante": "Club León",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2024-10-20",
+   "fase": "Apertura",
+   "local": "Pumas UNAM",
+   "visitante": "Atlético San Luis",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-10-20",
+   "fase": "Apertura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Tigres UANL",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 4,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-10-23",
+   "fase": "Apertura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Necaxa",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "necaxa",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-10-23",
+   "fase": "Apertura",
+   "local": "Deportivo Toluca",
+   "visitante": "Club Puebla",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "club-puebla",
+   "goles_local": 5,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-10-23",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "Club Pachuca",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-10-24",
+   "fase": "Apertura",
+   "local": "Club León",
+   "visitante": "Atlas FC",
+   "local_slug": "club-leon",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-10-24",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "Club América",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "club-america",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-10-24",
+   "fase": "Apertura",
+   "local": "Cruz Azul",
+   "visitante": "FC Juárez",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 4,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-10-24",
+   "fase": "Apertura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Pumas UNAM",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-10-26",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "club-puebla",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-10-27",
+   "fase": "Apertura",
+   "local": "Atlas FC",
+   "visitante": "Club Tijuana",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-10-27",
+   "fase": "Apertura",
+   "local": "Club León",
+   "visitante": "Querétaro FC",
+   "local_slug": "club-leon",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 4,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-10-27",
+   "fase": "Apertura",
+   "local": "Pumas UNAM",
+   "visitante": "Cruz Azul",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-10-27",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "Club Pachuca",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-10-28",
+   "fase": "Apertura",
+   "local": "Club América",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "club-america",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-10-28",
+   "fase": "Apertura",
+   "local": "FC Juárez",
+   "visitante": "Atlético San Luis",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 2,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2024-10-28",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "necaxa",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 1,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2024-11-02",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "Tigres UANL",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 0,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2024-11-02",
+   "fase": "Apertura",
+   "local": "Querétaro FC",
+   "visitante": "FC Juárez",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-11-03",
+   "fase": "Apertura",
+   "local": "Atlético San Luis",
+   "visitante": "Club Puebla",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "club-puebla",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-11-03",
+   "fase": "Apertura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Pumas UNAM",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-11-03",
+   "fase": "Apertura",
+   "local": "Club Pachuca",
+   "visitante": "Necaxa",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "necaxa",
+   "goles_local": 6,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-11-03",
+   "fase": "Apertura",
+   "local": "Cruz Azul",
+   "visitante": "Santos Laguna",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-11-03",
+   "fase": "Apertura",
+   "local": "Deportivo Toluca",
+   "visitante": "Club León",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-11-03",
+   "fase": "Apertura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Atlas FC",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 4,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-11-06",
+   "fase": "Apertura",
+   "local": "Pumas UNAM",
+   "visitante": "Querétaro FC",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-11-06",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-11-07",
+   "fase": "Apertura",
+   "local": "Atlas FC",
+   "visitante": "Cruz Azul",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-11-07",
+   "fase": "Apertura",
+   "local": "Club América",
+   "visitante": "Club Pachuca",
+   "local_slug": "club-america",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-11-07",
+   "fase": "Apertura",
+   "local": "FC Juárez",
+   "visitante": "Club Tijuana",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-11-07",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "Atlético San Luis",
+   "local_slug": "necaxa",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-11-07",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-11-09",
+   "fase": "Apertura",
+   "local": "Querétaro FC",
+   "visitante": "Santos Laguna",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-11-10",
+   "fase": "Apertura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Atlético San Luis",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-11-10",
+   "fase": "Apertura",
+   "local": "Club Pachuca",
+   "visitante": "FC Juárez",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-11-10",
+   "fase": "Apertura",
+   "local": "Cruz Azul",
+   "visitante": "Tigres UANL",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-11-10",
+   "fase": "Apertura",
+   "local": "Deportivo Toluca",
+   "visitante": "Club América",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "club-america",
+   "goles_local": 4,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-11-11",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "Club Puebla",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "club-puebla",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-11-11",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "Atlas FC",
+   "local_slug": "necaxa",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-11-11",
+   "fase": "Apertura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Club León",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-11-22",
+   "fase": "Apertura - Play In",
+   "local": "Chivas Guadalajara",
+   "visitante": "Atlas FC",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-11-25",
+   "fase": "Apertura - Play In",
+   "local": "Club Tijuana",
+   "visitante": "Atlas FC",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-11-28",
+   "fase": "Apertura - Play Offs",
+   "local": "Club América",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "club-america",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-11-28",
+   "fase": "Apertura - Play Offs",
+   "local": "Club Tijuana",
+   "visitante": "Cruz Azul",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-11-29",
+   "fase": "Apertura - Play Offs",
+   "local": "Atlético San Luis",
+   "visitante": "Tigres UANL",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-11-29",
+   "fase": "Apertura - Play Offs",
+   "local": "Rayados de Monterrey",
+   "visitante": "Pumas UNAM",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-12-01",
+   "fase": "Apertura - Play Offs",
+   "local": "Cruz Azul",
+   "visitante": "Club Tijuana",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-12-01",
+   "fase": "Apertura - Play Offs",
+   "local": "Deportivo Toluca",
+   "visitante": "Club América",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "club-america",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2024-12-01",
+   "fase": "Apertura - Play Offs",
+   "local": "Pumas UNAM",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 3,
+   "goles_visita": 5
+  },
+  {
+   "fecha": "2024-12-02",
+   "fase": "Apertura - Play Offs",
+   "local": "Tigres UANL",
+   "visitante": "Atlético San Luis",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-12-05",
+   "fase": "Apertura - Play Offs",
+   "local": "Atlético San Luis",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-12-06",
+   "fase": "Apertura - Play Offs",
+   "local": "Club América",
+   "visitante": "Cruz Azul",
+   "local_slug": "club-america",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2024-12-08",
+   "fase": "Apertura - Play Offs",
+   "local": "Rayados de Monterrey",
+   "visitante": "Atlético San Luis",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 5,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-12-09",
+   "fase": "Apertura - Play Offs",
+   "local": "Cruz Azul",
+   "visitante": "Club América",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "club-america",
+   "goles_local": 3,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2024-12-13",
+   "fase": "Apertura - Play Offs",
+   "local": "Club América",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "club-america",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2024-12-16",
+   "fase": "Apertura - Play Offs",
+   "local": "Rayados de Monterrey",
+   "visitante": "Club América",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-01-11",
+   "fase": "Clausura",
+   "local": "Club Tijuana",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 2,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2025-01-11",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "Club América",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "club-america",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-01-12",
+   "fase": "Clausura",
+   "local": "Atlético San Luis",
+   "visitante": "Tigres UANL",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-01-12",
+   "fase": "Clausura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Santos Laguna",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-01-12",
+   "fase": "Clausura",
+   "local": "Cruz Azul",
+   "visitante": "Atlas FC",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-01-12",
+   "fase": "Clausura",
+   "local": "Pumas UNAM",
+   "visitante": "Necaxa",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "necaxa",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-01-13",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Club Puebla",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "club-puebla",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-01-17",
+   "fase": "Clausura",
+   "local": "Club América",
+   "visitante": "Club Tijuana",
+   "local_slug": "club-america",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-01-18",
+   "fase": "Clausura",
+   "local": "Club Puebla",
+   "visitante": "Atlético San Luis",
+   "local_slug": "club-puebla",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-01-18",
+   "fase": "Clausura",
+   "local": "Necaxa",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "necaxa",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-01-19",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "Club León",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "club-leon",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-01-19",
+   "fase": "Clausura",
+   "local": "Deportivo Toluca",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-01-19",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Cruz Azul",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-01-20",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "Pumas UNAM",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-01-21",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "Santos Laguna",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-01-25",
+   "fase": "Clausura",
+   "local": "Atlético San Luis",
+   "visitante": "Necaxa",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "necaxa",
+   "goles_local": 0,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-01-25",
+   "fase": "Clausura",
+   "local": "Club Tijuana",
+   "visitante": "Querétaro FC",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-01-26",
+   "fase": "Clausura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Tigres UANL",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-01-26",
+   "fase": "Clausura",
+   "local": "Club León",
+   "visitante": "FC Juárez",
+   "local_slug": "club-leon",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-01-26",
+   "fase": "Clausura",
+   "local": "Cruz Azul",
+   "visitante": "Club Puebla",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "club-puebla",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-01-26",
+   "fase": "Clausura",
+   "local": "Pumas UNAM",
+   "visitante": "Atlas FC",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-01-26",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Club Pachuca",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-01-26",
+   "fase": "Clausura",
+   "local": "Santos Laguna",
+   "visitante": "Club América",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2025-01-29",
+   "fase": "Clausura",
+   "local": "Club América",
+   "visitante": "Atlético San Luis",
+   "local_slug": "club-america",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-01-29",
+   "fase": "Clausura",
+   "local": "Club León",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "club-leon",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-01-29",
+   "fase": "Clausura",
+   "local": "Necaxa",
+   "visitante": "Cruz Azul",
+   "local_slug": "necaxa",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 1,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-01-29",
+   "fase": "Clausura",
+   "local": "Tigres UANL",
+   "visitante": "Club Tijuana",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 4,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-01-30",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 3,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-01-30",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Santos Laguna",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-01-30",
+   "fase": "Clausura",
+   "local": "Pumas UNAM",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-01-30",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "Club Pachuca",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-02-01",
+   "fase": "Clausura",
+   "local": "Club Tijuana",
+   "visitante": "Cruz Azul",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-02-02",
+   "fase": "Clausura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Querétaro FC",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-02-02",
+   "fase": "Clausura",
+   "local": "Club América",
+   "visitante": "FC Juárez",
+   "local_slug": "club-america",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 4,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-02-02",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "Atlas FC",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-02-02",
+   "fase": "Clausura",
+   "local": "Deportivo Toluca",
+   "visitante": "Tigres UANL",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-02-02",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Necaxa",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "necaxa",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-02-03",
+   "fase": "Clausura",
+   "local": "Atlético San Luis",
+   "visitante": "Pumas UNAM",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-02-03",
+   "fase": "Clausura",
+   "local": "Santos Laguna",
+   "visitante": "Club Puebla",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "club-puebla",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-02-06",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "Club León",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "club-leon",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-02-08",
+   "fase": "Clausura",
+   "local": "Club Puebla",
+   "visitante": "Club América",
+   "local_slug": "club-puebla",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-02-08",
+   "fase": "Clausura",
+   "local": "Necaxa",
+   "visitante": "Santos Laguna",
+   "local_slug": "necaxa",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-02-08",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "Atlético San Luis",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-02-09",
+   "fase": "Clausura",
+   "local": "Club León",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "club-leon",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 3,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-02-09",
+   "fase": "Clausura",
+   "local": "Cruz Azul",
+   "visitante": "Club Pachuca",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-02-09",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-02-09",
+   "fase": "Clausura",
+   "local": "Tigres UANL",
+   "visitante": "Atlas FC",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-02-10",
+   "fase": "Clausura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Club Tijuana",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-02-15",
+   "fase": "Clausura",
+   "local": "Club América",
+   "visitante": "Necaxa",
+   "local_slug": "club-america",
+   "visitante_slug": "necaxa",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-02-15",
+   "fase": "Clausura",
+   "local": "Club Tijuana",
+   "visitante": "FC Juárez",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-02-16",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "Club Puebla",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "club-puebla",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-02-16",
+   "fase": "Clausura",
+   "local": "Deportivo Toluca",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-02-16",
+   "fase": "Clausura",
+   "local": "Tigres UANL",
+   "visitante": "Cruz Azul",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-02-17",
+   "fase": "Clausura",
+   "local": "Atlético San Luis",
+   "visitante": "Club León",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "club-leon",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-02-17",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "Pumas UNAM",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-02-17",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 2,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2025-02-19",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "Necaxa",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "necaxa",
+   "goles_local": 0,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2025-02-20",
+   "fase": "Clausura",
+   "local": "Club América",
+   "visitante": "Club León",
+   "local_slug": "club-america",
+   "visitante_slug": "club-leon",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-02-20",
+   "fase": "Clausura",
+   "local": "Santos Laguna",
+   "visitante": "Cruz Azul",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-02-22",
+   "fase": "Clausura",
+   "local": "Club Puebla",
+   "visitante": "Club Tijuana",
+   "local_slug": "club-puebla",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-02-23",
+   "fase": "Clausura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Club Pachuca",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-02-23",
+   "fase": "Clausura",
+   "local": "Club León",
+   "visitante": "Tigres UANL",
+   "local_slug": "club-leon",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-02-23",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 0,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2025-02-23",
+   "fase": "Clausura",
+   "local": "Pumas UNAM",
+   "visitante": "Club América",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "club-america",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-02-23",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Atlético San Luis",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-02-24",
+   "fase": "Clausura",
+   "local": "Cruz Azul",
+   "visitante": "Querétaro FC",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-02-24",
+   "fase": "Clausura",
+   "local": "Santos Laguna",
+   "visitante": "Atlas FC",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-02-26",
+   "fase": "Clausura",
+   "local": "Club Tijuana",
+   "visitante": "Pumas UNAM",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 4,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-02-26",
+   "fase": "Clausura",
+   "local": "Tigres UANL",
+   "visitante": "FC Juárez",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-02-27",
+   "fase": "Clausura",
+   "local": "Atlético San Luis",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-02-27",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "Club Puebla",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "club-puebla",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-02-27",
+   "fase": "Clausura",
+   "local": "Deportivo Toluca",
+   "visitante": "Querétaro FC",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 5,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-03-02",
+   "fase": "Clausura",
+   "local": "Club América",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "club-america",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-03-02",
+   "fase": "Clausura",
+   "local": "Club León",
+   "visitante": "Club Tijuana",
+   "local_slug": "club-leon",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-03-02",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Club Pachuca",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-03-02",
+   "fase": "Clausura",
+   "local": "Necaxa",
+   "visitante": "Tigres UANL",
+   "local_slug": "necaxa",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-03-02",
+   "fase": "Clausura",
+   "local": "Pumas UNAM",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-03-02",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "Club Puebla",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "club-puebla",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-03-03",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "Atlético San Luis",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-03-03",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Santos Laguna",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 4,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-03-08",
+   "fase": "Clausura",
+   "local": "Atlético San Luis",
+   "visitante": "FC Juárez",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-03-08",
+   "fase": "Clausura",
+   "local": "Club Puebla",
+   "visitante": "Pumas UNAM",
+   "local_slug": "club-puebla",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 1,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-03-08",
+   "fase": "Clausura",
+   "local": "Tigres UANL",
+   "visitante": "Querétaro FC",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-03-09",
+   "fase": "Clausura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Club América",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "club-america",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-03-09",
+   "fase": "Clausura",
+   "local": "Cruz Azul",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-03-09",
+   "fase": "Clausura",
+   "local": "Deportivo Toluca",
+   "visitante": "Necaxa",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "necaxa",
+   "goles_local": 5,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-03-10",
+   "fase": "Clausura",
+   "local": "Club Tijuana",
+   "visitante": "Atlas FC",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 3,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2025-03-10",
+   "fase": "Clausura",
+   "local": "Santos Laguna",
+   "visitante": "Club León",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-03-15",
+   "fase": "Clausura",
+   "local": "Club Puebla",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "club-puebla",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 0,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-03-15",
+   "fase": "Clausura",
+   "local": "Necaxa",
+   "visitante": "Club León",
+   "local_slug": "necaxa",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-03-16",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "Club América",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-03-16",
+   "fase": "Clausura",
+   "local": "Cruz Azul",
+   "visitante": "Atlético San Luis",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-03-16",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-03-16",
+   "fase": "Clausura",
+   "local": "Tigres UANL",
+   "visitante": "Santos Laguna",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-03-17",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "Club Tijuana",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 4,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-03-17",
+   "fase": "Clausura",
+   "local": "Pumas UNAM",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 1,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-03-29",
+   "fase": "Clausura",
+   "local": "Necaxa",
+   "visitante": "Querétaro FC",
+   "local_slug": "necaxa",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-03-30",
+   "fase": "Clausura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Cruz Azul",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-03-30",
+   "fase": "Clausura",
+   "local": "Club América",
+   "visitante": "Tigres UANL",
+   "local_slug": "club-america",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-03-30",
+   "fase": "Clausura",
+   "local": "Deportivo Toluca",
+   "visitante": "Club Pachuca",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-03-30",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Club Puebla",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "club-puebla",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-03-30",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Club Tijuana",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-03-31",
+   "fase": "Clausura",
+   "local": "Club León",
+   "visitante": "Pumas UNAM",
+   "local_slug": "club-leon",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-03-31",
+   "fase": "Clausura",
+   "local": "Santos Laguna",
+   "visitante": "Atlético San Luis",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-04-05",
+   "fase": "Clausura",
+   "local": "Club Puebla",
+   "visitante": "Tigres UANL",
+   "local_slug": "club-puebla",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-04-05",
+   "fase": "Clausura",
+   "local": "Club Tijuana",
+   "visitante": "Necaxa",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "necaxa",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-04-05",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "Club León",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "club-leon",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-04-06",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "FC Juárez",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-04-06",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "Club América",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-04-06",
+   "fase": "Clausura",
+   "local": "Cruz Azul",
+   "visitante": "Pumas UNAM",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-04-06",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-04-07",
+   "fase": "Clausura",
+   "local": "Deportivo Toluca",
+   "visitante": "Santos Laguna",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-04-11",
+   "fase": "Clausura",
+   "local": "Club Tijuana",
+   "visitante": "Atlético San Luis",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-04-12",
+   "fase": "Clausura",
+   "local": "Necaxa",
+   "visitante": "Club Pachuca",
+   "local_slug": "necaxa",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 3,
+   "goles_visita": 5
+  },
+  {
+   "fecha": "2025-04-13",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-04-13",
+   "fase": "Clausura",
+   "local": "Club América",
+   "visitante": "Cruz Azul",
+   "local_slug": "club-america",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-04-13",
+   "fase": "Clausura",
+   "local": "Club León",
+   "visitante": "Club Puebla",
+   "local_slug": "club-leon",
+   "visitante_slug": "club-puebla",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-04-13",
+   "fase": "Clausura",
+   "local": "Pumas UNAM",
+   "visitante": "FC Juárez",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-04-13",
+   "fase": "Clausura",
+   "local": "Tigres UANL",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-04-14",
+   "fase": "Clausura",
+   "local": "Santos Laguna",
+   "visitante": "Querétaro FC",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-04-16",
+   "fase": "Clausura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Club Puebla",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "club-puebla",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-04-16",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "Tigres UANL",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-04-16",
+   "fase": "Clausura",
+   "local": "Cruz Azul",
+   "visitante": "Club León",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-04-16",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Necaxa",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "necaxa",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-04-17",
+   "fase": "Clausura",
+   "local": "Atlético San Luis",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-04-17",
+   "fase": "Clausura",
+   "local": "Pumas UNAM",
+   "visitante": "Santos Laguna",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-04-17",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "Atlas FC",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-04-17",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Club América",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-04-19",
+   "fase": "Clausura",
+   "local": "Club Puebla",
+   "visitante": "Necaxa",
+   "local_slug": "club-puebla",
+   "visitante_slug": "necaxa",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-04-20",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-04-20",
+   "fase": "Clausura",
+   "local": "Deportivo Toluca",
+   "visitante": "Cruz Azul",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-04-20",
+   "fase": "Clausura",
+   "local": "Tigres UANL",
+   "visitante": "Pumas UNAM",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-04-21",
+   "fase": "Clausura",
+   "local": "Atlético San Luis",
+   "visitante": "Club Pachuca",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-04-21",
+   "fase": "Clausura",
+   "local": "Club León",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "club-leon",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-04-21",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Querétaro FC",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-04-21",
+   "fase": "Clausura",
+   "local": "Santos Laguna",
+   "visitante": "Club Tijuana",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 0,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2025-04-28",
+   "fase": "Clausura - Play In",
+   "local": "Rayados de Monterrey",
+   "visitante": "Club Pachuca",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-05-05",
+   "fase": "Clausura - Play In",
+   "local": "Rayados de Monterrey",
+   "visitante": "Pumas UNAM",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-05-08",
+   "fase": "Clausura - Play Offs",
+   "local": "Club Pachuca",
+   "visitante": "Club América",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "club-america",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-05-08",
+   "fase": "Clausura - Play Offs",
+   "local": "Rayados de Monterrey",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-05-09",
+   "fase": "Clausura - Play Offs",
+   "local": "Club León",
+   "visitante": "Cruz Azul",
+   "local_slug": "club-leon",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-05-09",
+   "fase": "Clausura - Play Offs",
+   "local": "Necaxa",
+   "visitante": "Tigres UANL",
+   "local_slug": "necaxa",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-05-11",
+   "fase": "Clausura - Play Offs",
+   "local": "Club América",
+   "visitante": "Club Pachuca",
+   "local_slug": "club-america",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-05-11",
+   "fase": "Clausura - Play Offs",
+   "local": "Deportivo Toluca",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-05-12",
+   "fase": "Clausura - Play Offs",
+   "local": "Cruz Azul",
+   "visitante": "Club León",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-05-12",
+   "fase": "Clausura - Play Offs",
+   "local": "Tigres UANL",
+   "visitante": "Necaxa",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "necaxa",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-05-15",
+   "fase": "Clausura - Play Offs",
+   "local": "Tigres UANL",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-05-16",
+   "fase": "Clausura - Play Offs",
+   "local": "Cruz Azul",
+   "visitante": "Club América",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-05-18",
+   "fase": "Clausura - Play Offs",
+   "local": "Deportivo Toluca",
+   "visitante": "Tigres UANL",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-05-19",
+   "fase": "Clausura - Play Offs",
+   "local": "Club América",
+   "visitante": "Cruz Azul",
+   "local_slug": "club-america",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-05-23",
+   "fase": "Clausura - Play Offs",
+   "local": "Club América",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "club-america",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-05-26",
+   "fase": "Clausura - Play Offs",
+   "local": "Deportivo Toluca",
+   "visitante": "Club América",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "club-america",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-07-12",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "Atlas FC",
+   "local_slug": "club-puebla",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-07-12",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "Querétaro FC",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-07-12",
+   "fase": "Apertura",
+   "local": "FC Juárez",
+   "visitante": "Club América",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-07-13",
+   "fase": "Apertura",
+   "local": "Deportivo Toluca",
+   "visitante": "Necaxa",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "necaxa",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-07-13",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "Pumas UNAM",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-07-14",
+   "fase": "Apertura",
+   "local": "Club León",
+   "visitante": "Atlético San Luis",
+   "local_slug": "club-leon",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-07-14",
+   "fase": "Apertura",
+   "local": "Club Pachuca",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-07-17",
+   "fase": "Apertura",
+   "local": "Club América",
+   "visitante": "Club Tijuana",
+   "local_slug": "club-america",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-07-17",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 2,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2025-07-19",
+   "fase": "Apertura",
+   "local": "Atlético San Luis",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-07-19",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "Querétaro FC",
+   "local_slug": "necaxa",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-07-20",
+   "fase": "Apertura",
+   "local": "Atlas FC",
+   "visitante": "Cruz Azul",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 3,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-07-20",
+   "fase": "Apertura",
+   "local": "Club León",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "club-leon",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-07-20",
+   "fase": "Apertura",
+   "local": "Pumas UNAM",
+   "visitante": "Club Pachuca",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-07-20",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "FC Juárez",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-07-26",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "Santos Laguna",
+   "local_slug": "club-puebla",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-07-26",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "FC Juárez",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-07-26",
+   "fase": "Apertura",
+   "local": "Querétaro FC",
+   "visitante": "Pumas UNAM",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-07-27",
+   "fase": "Apertura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Atlético San Luis",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 4,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-07-27",
+   "fase": "Apertura",
+   "local": "Cruz Azul",
+   "visitante": "Club León",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "club-leon",
+   "goles_local": 4,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-07-27",
+   "fase": "Apertura",
+   "local": "Deportivo Toluca",
+   "visitante": "Tigres UANL",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 3,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2025-07-27",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "Club América",
+   "local_slug": "necaxa",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-07-27",
+   "fase": "Apertura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Atlas FC",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-08-09",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "Club Puebla",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "club-puebla",
+   "goles_local": 7,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-08-10",
+   "fase": "Apertura",
+   "local": "Atlas FC",
+   "visitante": "Club Pachuca",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 0,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-08-10",
+   "fase": "Apertura",
+   "local": "Club América",
+   "visitante": "Querétaro FC",
+   "local_slug": "club-america",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-08-11",
+   "fase": "Apertura",
+   "local": "Pumas UNAM",
+   "visitante": "Necaxa",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "necaxa",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-08-11",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-08-12",
+   "fase": "Apertura",
+   "local": "Atlético San Luis",
+   "visitante": "Cruz Azul",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-08-12",
+   "fase": "Apertura",
+   "local": "Club León",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "club-leon",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 1,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-08-12",
+   "fase": "Apertura",
+   "local": "FC Juárez",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-08-16",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "Atlético San Luis",
+   "local_slug": "club-puebla",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-08-16",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "Club León",
+   "local_slug": "necaxa",
+   "visitante_slug": "club-leon",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-08-17",
+   "fase": "Apertura",
+   "local": "Chivas Guadalajara",
+   "visitante": "FC Juárez",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-08-17",
+   "fase": "Apertura",
+   "local": "Club Pachuca",
+   "visitante": "Club Tijuana",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-08-17",
+   "fase": "Apertura",
+   "local": "Cruz Azul",
+   "visitante": "Santos Laguna",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-08-17",
+   "fase": "Apertura",
+   "local": "Deportivo Toluca",
+   "visitante": "Pumas UNAM",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-08-17",
+   "fase": "Apertura",
+   "local": "Querétaro FC",
+   "visitante": "Atlas FC",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 3,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-08-17",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "Club América",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-08-23",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 3,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-08-23",
+   "fase": "Apertura",
+   "local": "FC Juárez",
+   "visitante": "Santos Laguna",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-08-23",
+   "fase": "Apertura",
+   "local": "Querétaro FC",
+   "visitante": "Atlético San Luis",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-08-24",
+   "fase": "Apertura",
+   "local": "Club León",
+   "visitante": "Club Pachuca",
+   "local_slug": "club-leon",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-08-24",
+   "fase": "Apertura",
+   "local": "Cruz Azul",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-08-24",
+   "fase": "Apertura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Necaxa",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "necaxa",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-08-25",
+   "fase": "Apertura",
+   "local": "Atlas FC",
+   "visitante": "Club América",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "club-america",
+   "goles_local": 2,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2025-08-25",
+   "fase": "Apertura",
+   "local": "Pumas UNAM",
+   "visitante": "Club Puebla",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "club-puebla",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-08-30",
+   "fase": "Apertura",
+   "local": "Atlético San Luis",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 1,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-08-30",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "club-puebla",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 2,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2025-08-31",
+   "fase": "Apertura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Cruz Azul",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-08-31",
+   "fase": "Apertura",
+   "local": "Club América",
+   "visitante": "Club Pachuca",
+   "local_slug": "club-america",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-08-31",
+   "fase": "Apertura",
+   "local": "Club León",
+   "visitante": "Querétaro FC",
+   "local_slug": "club-leon",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-08-31",
+   "fase": "Apertura",
+   "local": "Pumas UNAM",
+   "visitante": "Atlas FC",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-08-31",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "Tigres UANL",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-09-01",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "Necaxa",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "necaxa",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-09-13",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "FC Juárez",
+   "local_slug": "necaxa",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-09-14",
+   "fase": "Apertura",
+   "local": "Atlas FC",
+   "visitante": "Santos Laguna",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-09-14",
+   "fase": "Apertura",
+   "local": "Club América",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "club-america",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-09-14",
+   "fase": "Apertura",
+   "local": "Club Pachuca",
+   "visitante": "Cruz Azul",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-09-14",
+   "fase": "Apertura",
+   "local": "Deportivo Toluca",
+   "visitante": "Club Puebla",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "club-puebla",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-09-14",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "Club León",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "club-leon",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-09-15",
+   "fase": "Apertura",
+   "local": "Atlético San Luis",
+   "visitante": "Club Tijuana",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-09-15",
+   "fase": "Apertura",
+   "local": "Querétaro FC",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-09-18",
+   "fase": "Apertura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Tigres UANL",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-09-20",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "Club León",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "club-leon",
+   "goles_local": 5,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-09-20",
+   "fase": "Apertura",
+   "local": "Cruz Azul",
+   "visitante": "FC Juárez",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-09-20",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "Club Puebla",
+   "local_slug": "necaxa",
+   "visitante_slug": "club-puebla",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-09-21",
+   "fase": "Apertura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 0,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-09-21",
+   "fase": "Apertura",
+   "local": "Club Pachuca",
+   "visitante": "Querétaro FC",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-09-21",
+   "fase": "Apertura",
+   "local": "Pumas UNAM",
+   "visitante": "Tigres UANL",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-09-21",
+   "fase": "Apertura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Club América",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "club-america",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-09-22",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "Atlético San Luis",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 1,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2025-09-24",
+   "fase": "Apertura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Necaxa",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "necaxa",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-09-24",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "Club Pachuca",
+   "local_slug": "club-puebla",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-09-24",
+   "fase": "Apertura",
+   "local": "FC Juárez",
+   "visitante": "Pumas UNAM",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-09-25",
+   "fase": "Apertura",
+   "local": "Atlético San Luis",
+   "visitante": "Club América",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "club-america",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-09-25",
+   "fase": "Apertura",
+   "local": "Cruz Azul",
+   "visitante": "Querétaro FC",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-09-25",
+   "fase": "Apertura",
+   "local": "Deportivo Toluca",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 6,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-09-25",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "Club Tijuana",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-09-25",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "Atlas FC",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-09-27",
+   "fase": "Apertura",
+   "local": "FC Juárez",
+   "visitante": "Club León",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-09-28",
+   "fase": "Apertura",
+   "local": "Atlas FC",
+   "visitante": "Necaxa",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "necaxa",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-09-28",
+   "fase": "Apertura",
+   "local": "Club América",
+   "visitante": "Pumas UNAM",
+   "local_slug": "club-america",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 4,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-09-28",
+   "fase": "Apertura",
+   "local": "Club Pachuca",
+   "visitante": "Atlético San Luis",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-09-28",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "club-puebla",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-09-28",
+   "fase": "Apertura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Santos Laguna",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-09-29",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "Cruz Azul",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-09-29",
+   "fase": "Apertura",
+   "local": "Querétaro FC",
+   "visitante": "Tigres UANL",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-10-04",
+   "fase": "Apertura",
+   "local": "Atlas FC",
+   "visitante": "FC Juárez",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-10-04",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "Club Pachuca",
+   "local_slug": "necaxa",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-10-05",
+   "fase": "Apertura",
+   "local": "Club América",
+   "visitante": "Santos Laguna",
+   "local_slug": "club-america",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-10-05",
+   "fase": "Apertura",
+   "local": "Club León",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "club-leon",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 2,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2025-10-05",
+   "fase": "Apertura",
+   "local": "Querétaro FC",
+   "visitante": "Club Puebla",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "club-puebla",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-10-05",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "Cruz Azul",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-10-06",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-10-06",
+   "fase": "Apertura",
+   "local": "Pumas UNAM",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-10-18",
+   "fase": "Apertura",
+   "local": "Atlético San Luis",
+   "visitante": "Atlas FC",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-10-18",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "Club Tijuana",
+   "local_slug": "club-puebla",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 4,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-10-18",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "Necaxa",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "necaxa",
+   "goles_local": 5,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-10-19",
+   "fase": "Apertura",
+   "local": "Cruz Azul",
+   "visitante": "Club América",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "club-america",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-10-19",
+   "fase": "Apertura",
+   "local": "Deportivo Toluca",
+   "visitante": "Querétaro FC",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 4,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-10-19",
+   "fase": "Apertura",
+   "local": "FC Juárez",
+   "visitante": "Club Pachuca",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-10-19",
+   "fase": "Apertura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Pumas UNAM",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-10-19",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "Club León",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-10-22",
+   "fase": "Apertura",
+   "local": "Club América",
+   "visitante": "Club Puebla",
+   "local_slug": "club-america",
+   "visitante_slug": "club-puebla",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-10-22",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "Cruz Azul",
+   "local_slug": "necaxa",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-10-22",
+   "fase": "Apertura",
+   "local": "Rayados de Monterrey",
+   "visitante": "FC Juárez",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 4,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-10-23",
+   "fase": "Apertura",
+   "local": "Atlas FC",
+   "visitante": "Club León",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-10-23",
+   "fase": "Apertura",
+   "local": "Club Pachuca",
+   "visitante": "Tigres UANL",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-10-23",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-10-23",
+   "fase": "Apertura",
+   "local": "Pumas UNAM",
+   "visitante": "Atlético San Luis",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-10-23",
+   "fase": "Apertura",
+   "local": "Querétaro FC",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-10-25",
+   "fase": "Apertura",
+   "local": "FC Juárez",
+   "visitante": "Club Puebla",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "club-puebla",
+   "goles_local": 4,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2025-10-26",
+   "fase": "Apertura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Atlas FC",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 4,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-10-26",
+   "fase": "Apertura",
+   "local": "Club León",
+   "visitante": "Pumas UNAM",
+   "local_slug": "club-leon",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-10-26",
+   "fase": "Apertura",
+   "local": "Cruz Azul",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-10-26",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "Club Tijuana",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-10-27",
+   "fase": "Apertura",
+   "local": "Atlético San Luis",
+   "visitante": "Necaxa",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "necaxa",
+   "goles_local": 3,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2025-10-27",
+   "fase": "Apertura",
+   "local": "Deportivo Toluca",
+   "visitante": "Club Pachuca",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-10-27",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "Querétaro FC",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-11-01",
+   "fase": "Apertura",
+   "local": "Atlético San Luis",
+   "visitante": "FC Juárez",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-11-01",
+   "fase": "Apertura",
+   "local": "Club Puebla",
+   "visitante": "Cruz Azul",
+   "local_slug": "club-puebla",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 0,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-11-01",
+   "fase": "Apertura",
+   "local": "Necaxa",
+   "visitante": "Santos Laguna",
+   "local_slug": "necaxa",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 4,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-11-02",
+   "fase": "Apertura",
+   "local": "Atlas FC",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-11-02",
+   "fase": "Apertura",
+   "local": "Club América",
+   "visitante": "Club León",
+   "local_slug": "club-america",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-11-02",
+   "fase": "Apertura",
+   "local": "Pumas UNAM",
+   "visitante": "Club Tijuana",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 4,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-11-02",
+   "fase": "Apertura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Tigres UANL",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-11-03",
+   "fase": "Apertura",
+   "local": "Club Pachuca",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-11-08",
+   "fase": "Apertura",
+   "local": "Club Tijuana",
+   "visitante": "Atlas FC",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-11-08",
+   "fase": "Apertura",
+   "local": "FC Juárez",
+   "visitante": "Querétaro FC",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-11-09",
+   "fase": "Apertura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 4,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-11-09",
+   "fase": "Apertura",
+   "local": "Club León",
+   "visitante": "Club Puebla",
+   "local_slug": "club-leon",
+   "visitante_slug": "club-puebla",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-11-09",
+   "fase": "Apertura",
+   "local": "Cruz Azul",
+   "visitante": "Pumas UNAM",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2025-11-09",
+   "fase": "Apertura",
+   "local": "Deportivo Toluca",
+   "visitante": "Club América",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "club-america",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-11-09",
+   "fase": "Apertura",
+   "local": "Tigres UANL",
+   "visitante": "Atlético San Luis",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-11-10",
+   "fase": "Apertura",
+   "local": "Santos Laguna",
+   "visitante": "Club Pachuca",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-11-21",
+   "fase": "Apertura - Play In",
+   "local": "Club Pachuca",
+   "visitante": "Pumas UNAM",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-11-21",
+   "fase": "Apertura - Play In",
+   "local": "Club Tijuana",
+   "visitante": "FC Juárez",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-11-24",
+   "fase": "Apertura - Play In",
+   "local": "FC Juárez",
+   "visitante": "Club Pachuca",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-11-27",
+   "fase": "Apertura - Play Offs",
+   "local": "Club Tijuana",
+   "visitante": "Tigres UANL",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-11-27",
+   "fase": "Apertura - Play Offs",
+   "local": "FC Juárez",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-11-27",
+   "fase": "Apertura - Play Offs",
+   "local": "Rayados de Monterrey",
+   "visitante": "Club América",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "club-america",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-11-28",
+   "fase": "Apertura - Play Offs",
+   "local": "Chivas Guadalajara",
+   "visitante": "Cruz Azul",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-11-30",
+   "fase": "Apertura - Play Offs",
+   "local": "Club América",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "club-america",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-11-30",
+   "fase": "Apertura - Play Offs",
+   "local": "Deportivo Toluca",
+   "visitante": "FC Juárez",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-11-30",
+   "fase": "Apertura - Play Offs",
+   "local": "Tigres UANL",
+   "visitante": "Club Tijuana",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 5,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-12-01",
+   "fase": "Apertura - Play Offs",
+   "local": "Cruz Azul",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-12-04",
+   "fase": "Apertura - Play Offs",
+   "local": "Cruz Azul",
+   "visitante": "Tigres UANL",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-12-04",
+   "fase": "Apertura - Play Offs",
+   "local": "Rayados de Monterrey",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2025-12-07",
+   "fase": "Apertura - Play Offs",
+   "local": "Deportivo Toluca",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2025-12-07",
+   "fase": "Apertura - Play Offs",
+   "local": "Tigres UANL",
+   "visitante": "Cruz Azul",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2025-12-12",
+   "fase": "Apertura - Play Offs",
+   "local": "Tigres UANL",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-01-10",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "Club Puebla",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "club-puebla",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-01-10",
+   "fase": "Clausura",
+   "local": "Club Tijuana",
+   "visitante": "Club América",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "club-america",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-01-11",
+   "fase": "Clausura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Club Pachuca",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-01-11",
+   "fase": "Clausura",
+   "local": "Club León",
+   "visitante": "Cruz Azul",
+   "local_slug": "club-leon",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-01-11",
+   "fase": "Clausura",
+   "local": "Pumas UNAM",
+   "visitante": "Querétaro FC",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-01-11",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-01-11",
+   "fase": "Clausura",
+   "local": "Santos Laguna",
+   "visitante": "Necaxa",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "necaxa",
+   "goles_local": 1,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2026-01-12",
+   "fase": "Clausura",
+   "local": "Atlético San Luis",
+   "visitante": "Tigres UANL",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-01-14",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "Club León",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-01-14",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-01-14",
+   "fase": "Clausura",
+   "local": "Necaxa",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "necaxa",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-01-15",
+   "fase": "Clausura",
+   "local": "Club América",
+   "visitante": "Atlético San Luis",
+   "local_slug": "club-america",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-01-15",
+   "fase": "Clausura",
+   "local": "Cruz Azul",
+   "visitante": "Atlas FC",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-01-15",
+   "fase": "Clausura",
+   "local": "Deportivo Toluca",
+   "visitante": "Santos Laguna",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-01-15",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "Club Tijuana",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-01-15",
+   "fase": "Clausura",
+   "local": "Tigres UANL",
+   "visitante": "Pumas UNAM",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-01-18",
+   "fase": "Clausura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Querétaro FC",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-01-18",
+   "fase": "Clausura",
+   "local": "Club Tijuana",
+   "visitante": "Atlético San Luis",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-01-18",
+   "fase": "Clausura",
+   "local": "Cruz Azul",
+   "visitante": "Club Puebla",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "club-puebla",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-01-18",
+   "fase": "Clausura",
+   "local": "Necaxa",
+   "visitante": "Atlas FC",
+   "local_slug": "necaxa",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-01-18",
+   "fase": "Clausura",
+   "local": "Pumas UNAM",
+   "visitante": "Club León",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "club-leon",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-01-18",
+   "fase": "Clausura",
+   "local": "Tigres UANL",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-01-19",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "Club América",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "club-america",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-01-19",
+   "fase": "Clausura",
+   "local": "Santos Laguna",
+   "visitante": "FC Juárez",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-01-31",
+   "fase": "Clausura",
+   "local": "Club América",
+   "visitante": "Necaxa",
+   "local_slug": "club-america",
+   "visitante_slug": "necaxa",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-01-31",
+   "fase": "Clausura",
+   "local": "Club Puebla",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "club-puebla",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-01-31",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Cruz Azul",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 3,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2026-01-31",
+   "fase": "Clausura",
+   "local": "Pumas UNAM",
+   "visitante": "Santos Laguna",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 4,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-02-01",
+   "fase": "Clausura",
+   "local": "Atlético San Luis",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2026-02-01",
+   "fase": "Clausura",
+   "local": "Club León",
+   "visitante": "Tigres UANL",
+   "local_slug": "club-leon",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-02-01",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Club Tijuana",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-02-02",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "Club Pachuca",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-02-07",
+   "fase": "Clausura",
+   "local": "Club Tijuana",
+   "visitante": "Club Puebla",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "club-puebla",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-02-07",
+   "fase": "Clausura",
+   "local": "Necaxa",
+   "visitante": "Atlético San Luis",
+   "local_slug": "necaxa",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 4,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-02-07",
+   "fase": "Clausura",
+   "local": "Tigres UANL",
+   "visitante": "Santos Laguna",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 5,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-02-08",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "Pumas UNAM",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-02-08",
+   "fase": "Clausura",
+   "local": "Club América",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "club-america",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-02-08",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "FC Juárez",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-02-08",
+   "fase": "Clausura",
+   "local": "Deportivo Toluca",
+   "visitante": "Cruz Azul",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-02-08",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "Club León",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "club-leon",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-02-14",
+   "fase": "Clausura",
+   "local": "Club Puebla",
+   "visitante": "Pumas UNAM",
+   "local_slug": "club-puebla",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2026-02-14",
+   "fase": "Clausura",
+   "local": "Deportivo Toluca",
+   "visitante": "Club Tijuana",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-02-15",
+   "fase": "Clausura",
+   "local": "Atlético San Luis",
+   "visitante": "Querétaro FC",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-02-15",
+   "fase": "Clausura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Club América",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-02-15",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "Atlas FC",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-02-15",
+   "fase": "Clausura",
+   "local": "Cruz Azul",
+   "visitante": "Tigres UANL",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-02-15",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Necaxa",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "necaxa",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-02-15",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Club León",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "club-leon",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-02-21",
+   "fase": "Clausura",
+   "local": "Club Puebla",
+   "visitante": "Club América",
+   "local_slug": "club-puebla",
+   "visitante_slug": "club-america",
+   "goles_local": 0,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2026-02-21",
+   "fase": "Clausura",
+   "local": "Tigres UANL",
+   "visitante": "Club Pachuca",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-02-22",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "Atlético San Luis",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 3,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-02-22",
+   "fase": "Clausura",
+   "local": "Club León",
+   "visitante": "Santos Laguna",
+   "local_slug": "club-leon",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-02-22",
+   "fase": "Clausura",
+   "local": "Cruz Azul",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-02-22",
+   "fase": "Clausura",
+   "local": "Necaxa",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "necaxa",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 0,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2026-02-23",
+   "fase": "Clausura",
+   "local": "Pumas UNAM",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-02-28",
+   "fase": "Clausura",
+   "local": "Club Tijuana",
+   "visitante": "Pumas UNAM",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-02-28",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Atlas FC",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-02-28",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "Santos Laguna",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-03-01",
+   "fase": "Clausura",
+   "local": "Atlético San Luis",
+   "visitante": "Club Puebla",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "club-puebla",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-03-01",
+   "fase": "Clausura",
+   "local": "Club América",
+   "visitante": "Tigres UANL",
+   "local_slug": "club-america",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 4
+  },
+  {
+   "fecha": "2026-03-01",
+   "fase": "Clausura",
+   "local": "Club León",
+   "visitante": "Necaxa",
+   "local_slug": "club-leon",
+   "visitante_slug": "necaxa",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-03-01",
+   "fase": "Clausura",
+   "local": "Deportivo Toluca",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-03-01",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Cruz Azul",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-03-04",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "Necaxa",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "necaxa",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-03-04",
+   "fase": "Clausura",
+   "local": "Pumas UNAM",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2026-03-04",
+   "fase": "Clausura",
+   "local": "Santos Laguna",
+   "visitante": "Cruz Azul",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-03-05",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "Club Tijuana",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-03-05",
+   "fase": "Clausura",
+   "local": "Club América",
+   "visitante": "FC Juárez",
+   "local_slug": "club-america",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-03-05",
+   "fase": "Clausura",
+   "local": "Club Puebla",
+   "visitante": "Tigres UANL",
+   "local_slug": "club-puebla",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-03-05",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Querétaro FC",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 4,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-03-07",
+   "fase": "Clausura",
+   "local": "Necaxa",
+   "visitante": "Pumas UNAM",
+   "local_slug": "necaxa",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-03-08",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-03-08",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "Club Puebla",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "club-puebla",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-03-08",
+   "fase": "Clausura",
+   "local": "Cruz Azul",
+   "visitante": "Atlético San Luis",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-03-08",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "Club América",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-03-08",
+   "fase": "Clausura",
+   "local": "Tigres UANL",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-03-09",
+   "fase": "Clausura",
+   "local": "Club Tijuana",
+   "visitante": "Santos Laguna",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-03-09",
+   "fase": "Clausura",
+   "local": "Deportivo Toluca",
+   "visitante": "FC Juárez",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-03-14",
+   "fase": "Clausura",
+   "local": "Club Puebla",
+   "visitante": "Necaxa",
+   "local_slug": "club-puebla",
+   "visitante_slug": "necaxa",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-03-14",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-03-15",
+   "fase": "Clausura",
+   "local": "Atlético San Luis",
+   "visitante": "Club Pachuca",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-03-15",
+   "fase": "Clausura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Santos Laguna",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-03-15",
+   "fase": "Clausura",
+   "local": "Club León",
+   "visitante": "Club Tijuana",
+   "local_slug": "club-leon",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 0,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2026-03-15",
+   "fase": "Clausura",
+   "local": "Deportivo Toluca",
+   "visitante": "Atlas FC",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-03-15",
+   "fase": "Clausura",
+   "local": "Pumas UNAM",
+   "visitante": "Cruz Azul",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-03-16",
+   "fase": "Clausura",
+   "local": "Tigres UANL",
+   "visitante": "Querétaro FC",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-03-19",
+   "fase": "Clausura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Club León",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "club-leon",
+   "goles_local": 5,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-03-21",
+   "fase": "Clausura",
+   "local": "Necaxa",
+   "visitante": "Club Tijuana",
+   "local_slug": "necaxa",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-03-22",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "Querétaro FC",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-03-22",
+   "fase": "Clausura",
+   "local": "Atlético San Luis",
+   "visitante": "Club León",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "club-leon",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-03-22",
+   "fase": "Clausura",
+   "local": "Pumas UNAM",
+   "visitante": "Club América",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-03-22",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2026-03-23",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-03-23",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Tigres UANL",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-03-23",
+   "fase": "Clausura",
+   "local": "Santos Laguna",
+   "visitante": "Club Puebla",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "club-puebla",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-04",
+   "fase": "Clausura",
+   "local": "Club Puebla",
+   "visitante": "FC Juárez",
+   "local_slug": "club-puebla",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-04",
+   "fase": "Clausura",
+   "local": "Club Tijuana",
+   "visitante": "Tigres UANL",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-04-05",
+   "fase": "Clausura",
+   "local": "Club León",
+   "visitante": "Atlas FC",
+   "local_slug": "club-leon",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-04-05",
+   "fase": "Clausura",
+   "local": "Cruz Azul",
+   "visitante": "Club Pachuca",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-04-05",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-04-05",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Atlético San Luis",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-04-05",
+   "fase": "Clausura",
+   "local": "Santos Laguna",
+   "visitante": "Club América",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "club-america",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-06",
+   "fase": "Clausura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Pumas UNAM",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-04-08",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "FC Juárez",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-11",
+   "fase": "Clausura",
+   "local": "Club Puebla",
+   "visitante": "Club León",
+   "local_slug": "club-puebla",
+   "visitante_slug": "club-leon",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-11",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Club Tijuana",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-04-12",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-04-12",
+   "fase": "Clausura",
+   "local": "Club América",
+   "visitante": "Cruz Azul",
+   "local_slug": "club-america",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-12",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "Santos Laguna",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 4,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-04-12",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "Necaxa",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "necaxa",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-12",
+   "fase": "Clausura",
+   "local": "Tigres UANL",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 4,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-13",
+   "fase": "Clausura",
+   "local": "Deportivo Toluca",
+   "visitante": "Atlético San Luis",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-18",
+   "fase": "Clausura",
+   "local": "Atlético San Luis",
+   "visitante": "Pumas UNAM",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-04-19",
+   "fase": "Clausura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Club Puebla",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "club-puebla",
+   "goles_local": 5,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-04-19",
+   "fase": "Clausura",
+   "local": "Club América",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "club-america",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-19",
+   "fase": "Clausura",
+   "local": "Club León",
+   "visitante": "FC Juárez",
+   "local_slug": "club-leon",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-19",
+   "fase": "Clausura",
+   "local": "Cruz Azul",
+   "visitante": "Club Tijuana",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-19",
+   "fase": "Clausura",
+   "local": "Necaxa",
+   "visitante": "Tigres UANL",
+   "local_slug": "necaxa",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-19",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Club Pachuca",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 1,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2026-04-20",
+   "fase": "Clausura",
+   "local": "Santos Laguna",
+   "visitante": "Atlas FC",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-22",
+   "fase": "Clausura",
+   "local": "Club León",
+   "visitante": "Club América",
+   "local_slug": "club-leon",
+   "visitante_slug": "club-america",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2026-04-22",
+   "fase": "Clausura",
+   "local": "Pumas UNAM",
+   "visitante": "FC Juárez",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "fc-juarez",
+   "goles_local": 4,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-04-22",
+   "fase": "Clausura",
+   "local": "Querétaro FC",
+   "visitante": "Cruz Azul",
+   "local_slug": "queretaro-fc",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 1,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-22",
+   "fase": "Clausura",
+   "local": "Rayados de Monterrey",
+   "visitante": "Club Puebla",
+   "local_slug": "rayados-de-monterrey",
+   "visitante_slug": "club-puebla",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-23",
+   "fase": "Clausura",
+   "local": "Atlas FC",
+   "visitante": "Tigres UANL",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-04-23",
+   "fase": "Clausura",
+   "local": "Atlético San Luis",
+   "visitante": "Santos Laguna",
+   "local_slug": "atletico-san-luis",
+   "visitante_slug": "santos-laguna",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-04-23",
+   "fase": "Clausura",
+   "local": "Club Tijuana",
+   "visitante": "Club Pachuca",
+   "local_slug": "club-tijuana",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-23",
+   "fase": "Clausura",
+   "local": "Necaxa",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "necaxa",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-04-25",
+   "fase": "Clausura",
+   "local": "Club Puebla",
+   "visitante": "Querétaro FC",
+   "local_slug": "club-puebla",
+   "visitante_slug": "queretaro-fc",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-04-26",
+   "fase": "Clausura",
+   "local": "Chivas Guadalajara",
+   "visitante": "Club Tijuana",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "club-tijuana",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-04-26",
+   "fase": "Clausura",
+   "local": "Club América",
+   "visitante": "Atlas FC",
+   "local_slug": "club-america",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-26",
+   "fase": "Clausura",
+   "local": "Club Pachuca",
+   "visitante": "Pumas UNAM",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 0,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-04-26",
+   "fase": "Clausura",
+   "local": "Deportivo Toluca",
+   "visitante": "Club León",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "club-leon",
+   "goles_local": 4,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-26",
+   "fase": "Clausura",
+   "local": "FC Juárez",
+   "visitante": "Atlético San Luis",
+   "local_slug": "fc-juarez",
+   "visitante_slug": "atletico-san-luis",
+   "goles_local": 2,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-27",
+   "fase": "Clausura",
+   "local": "Cruz Azul",
+   "visitante": "Necaxa",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "necaxa",
+   "goles_local": 4,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-04-27",
+   "fase": "Clausura",
+   "local": "Santos Laguna",
+   "visitante": "Rayados de Monterrey",
+   "local_slug": "santos-laguna",
+   "visitante_slug": "rayados-de-monterrey",
+   "goles_local": 3,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-05-03",
+   "fase": "Clausura - Play Offs",
+   "local": "Atlas FC",
+   "visitante": "Cruz Azul",
+   "local_slug": "atlas-fc",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 2,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2026-05-03",
+   "fase": "Clausura - Play Offs",
+   "local": "Tigres UANL",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "tigres-uanl",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 3,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-05-04",
+   "fase": "Clausura - Play Offs",
+   "local": "Club América",
+   "visitante": "Pumas UNAM",
+   "local_slug": "club-america",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 3,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2026-05-04",
+   "fase": "Clausura - Play Offs",
+   "local": "Deportivo Toluca",
+   "visitante": "Club Pachuca",
+   "local_slug": "deportivo-toluca",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 0,
+   "goles_visita": 1
+  },
+  {
+   "fecha": "2026-05-10",
+   "fase": "Clausura - Play Offs",
+   "local": "Chivas Guadalajara",
+   "visitante": "Tigres UANL",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "tigres-uanl",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-05-10",
+   "fase": "Clausura - Play Offs",
+   "local": "Cruz Azul",
+   "visitante": "Atlas FC",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "atlas-fc",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-05-11",
+   "fase": "Clausura - Play Offs",
+   "local": "Club Pachuca",
+   "visitante": "Deportivo Toluca",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "deportivo-toluca",
+   "goles_local": 2,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-05-11",
+   "fase": "Clausura - Play Offs",
+   "local": "Pumas UNAM",
+   "visitante": "Club América",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "club-america",
+   "goles_local": 3,
+   "goles_visita": 3
+  },
+  {
+   "fecha": "2026-05-14",
+   "fase": "Clausura - Play Offs",
+   "local": "Cruz Azul",
+   "visitante": "Chivas Guadalajara",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "chivas-guadalajara",
+   "goles_local": 2,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-05-15",
+   "fase": "Clausura - Play Offs",
+   "local": "Club Pachuca",
+   "visitante": "Pumas UNAM",
+   "local_slug": "club-pachuca",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-05-17",
+   "fase": "Clausura - Play Offs",
+   "local": "Chivas Guadalajara",
+   "visitante": "Cruz Azul",
+   "local_slug": "chivas-guadalajara",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 1,
+   "goles_visita": 2
+  },
+  {
+   "fecha": "2026-05-18",
+   "fase": "Clausura - Play Offs",
+   "local": "Pumas UNAM",
+   "visitante": "Club Pachuca",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "club-pachuca",
+   "goles_local": 1,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-05-22",
+   "fase": "Clausura - Play Offs",
+   "local": "Cruz Azul",
+   "visitante": "Pumas UNAM",
+   "local_slug": "cruz-azul",
+   "visitante_slug": "pumas-unam",
+   "goles_local": 0,
+   "goles_visita": 0
+  },
+  {
+   "fecha": "2026-05-25",
+   "fase": "Clausura - Play Offs",
+   "local": "Pumas UNAM",
+   "visitante": "Cruz Azul",
+   "local_slug": "pumas-unam",
+   "visitante_slug": "cruz-azul",
+   "goles_local": 1,
+   "goles_visita": 2
+  }
+ ]
+}

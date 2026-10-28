@@ -1,0 +1,1766 @@
+{
+ "endpoint": "https://www.fotmob.com/api/data/matchDetails?matchId={match_id}",
+ "esquema": "telemetria_optics_v1",
+ "faltantes": [],
+ "fuente": "fotmob.com · matchDetails › content.stats.Periods.All",
+ "generado_at": "2026-10-19T17:17:39.520694+00:00",
+ "hash_sha256": "8f9ec27bd320acf179b18ad3c87bc5520189c5d65d9b1c9fff479d85d8efa9fe",
+ "liga_fotmob_id": 230,
+ "partidos": {
+  "LIGAMX-J1-01": {
+   "away": {
+    "possession": 36,
+    "slug": "atlante",
+    "sot": 3,
+    "sota": 5
+   },
+   "fotmob_match_id": "1000014499",
+   "home": {
+    "possession": 64,
+    "slug": "necaxa",
+    "sot": 5,
+    "sota": 3
+   },
+   "jornada": 1,
+   "marcador": "2 - 1",
+   "utc_time": "2026-07-17T01:00:00Z"
+  },
+  "LIGAMX-J1-02": {
+   "away": {
+    "possession": 49,
+    "slug": "tigres-uanl",
+    "sot": 4,
+    "sota": 7
+   },
+   "fotmob_match_id": "1000014500",
+   "home": {
+    "possession": 51,
+    "slug": "club-tijuana",
+    "sot": 7,
+    "sota": 4
+   },
+   "jornada": 1,
+   "marcador": "3 - 1",
+   "utc_time": "2026-07-17T03:10:00Z"
+  },
+  "LIGAMX-J1-03": {
+   "away": {
+    "possession": 54,
+    "slug": "cruz-azul",
+    "sot": 10,
+    "sota": 5
+   },
+   "fotmob_match_id": "1000014501",
+   "home": {
+    "possession": 46,
+    "slug": "atletico-san-luis",
+    "sot": 5,
+    "sota": 10
+   },
+   "jornada": 1,
+   "marcador": "2 - 3",
+   "utc_time": "2026-07-18T01:00:00Z"
+  },
+  "LIGAMX-J1-04": {
+   "away": {
+    "possession": 54,
+    "slug": "atlas-fc",
+    "sot": 7,
+    "sota": 8
+   },
+   "fotmob_match_id": "1000014502",
+   "home": {
+    "possession": 46,
+    "slug": "club-leon",
+    "sot": 8,
+    "sota": 7
+   },
+   "jornada": 1,
+   "marcador": "2 - 3",
+   "utc_time": "2026-07-18T01:00:00Z"
+  },
+  "LIGAMX-J1-05": {
+   "away": {
+    "possession": 35,
+    "slug": "club-puebla",
+    "sot": 5,
+    "sota": 1
+   },
+   "fotmob_match_id": "1000014503",
+   "home": {
+    "possession": 65,
+    "slug": "fc-juarez",
+    "sot": 1,
+    "sota": 5
+   },
+   "jornada": 1,
+   "marcador": "0 - 1",
+   "utc_time": "2026-07-18T03:00:00Z"
+  },
+  "LIGAMX-J1-06": {
+   "away": {
+    "possession": 39,
+    "slug": "club-pachuca",
+    "sot": 6,
+    "sota": 1
+   },
+   "fotmob_match_id": "1000014504",
+   "home": {
+    "possession": 61,
+    "slug": "pumas-unam",
+    "sot": 1,
+    "sota": 6
+   },
+   "jornada": 1,
+   "marcador": "0 - 3",
+   "utc_time": "2026-07-18T23:00:00Z"
+  },
+  "LIGAMX-J1-07": {
+   "away": {
+    "possession": 44,
+    "slug": "santos-laguna",
+    "sot": 3,
+    "sota": 13
+   },
+   "fotmob_match_id": "1000014506",
+   "home": {
+    "possession": 56,
+    "slug": "rayados-de-monterrey",
+    "sot": 13,
+    "sota": 3
+   },
+   "jornada": 1,
+   "marcador": "3 - 2",
+   "utc_time": "2026-07-19T01:05:00Z"
+  },
+  "LIGAMX-J1-08": {
+   "away": {
+    "possession": 60,
+    "slug": "deportivo-toluca",
+    "sot": 9,
+    "sota": 4
+   },
+   "fotmob_match_id": "1000014505",
+   "home": {
+    "possession": 40,
+    "slug": "chivas-guadalajara",
+    "sot": 4,
+    "sota": 9
+   },
+   "jornada": 1,
+   "marcador": "0 - 2",
+   "utc_time": "2026-07-19T01:07:00Z"
+  },
+  "LIGAMX-J1-09": {
+   "away": {
+    "possession": 62,
+    "slug": "club-america",
+    "sot": 5,
+    "sota": 2
+   },
+   "fotmob_match_id": "1000014507",
+   "home": {
+    "possession": 38,
+    "slug": "queretaro-fc",
+    "sot": 2,
+    "sota": 5
+   },
+   "jornada": 1,
+   "marcador": "0 - 1",
+   "utc_time": "2026-07-19T03:10:00Z"
+  },
+  "LIGAMX-J10-01": {
+   "away": {
+    "possession": 60,
+    "slug": "rayados-de-monterrey",
+    "sot": 7,
+    "sota": 7
+   },
+   "fotmob_match_id": "1000014580",
+   "home": {
+    "possession": 40,
+    "slug": "atlante",
+    "sot": 7,
+    "sota": 7
+   },
+   "jornada": 10,
+   "marcador": "4 - 2",
+   "utc_time": "2026-09-26T01:00:00Z"
+  },
+  "LIGAMX-J10-02": {
+   "away": {
+    "possession": 70,
+    "slug": "atlas-fc",
+    "sot": 7,
+    "sota": 5
+   },
+   "fotmob_match_id": "1000014581",
+   "home": {
+    "possession": 30,
+    "slug": "club-tijuana",
+    "sot": 5,
+    "sota": 7
+   },
+   "jornada": 10,
+   "marcador": "2 - 3",
+   "utc_time": "2026-09-26T03:00:00Z"
+  },
+  "LIGAMX-J10-03": {
+   "away": {
+    "possession": 50,
+    "slug": "deportivo-toluca",
+    "sot": 7,
+    "sota": 7
+   },
+   "fotmob_match_id": "1000014585",
+   "home": {
+    "possession": 50,
+    "slug": "cruz-azul",
+    "sot": 7,
+    "sota": 7
+   },
+   "jornada": 10,
+   "marcador": "3 - 3",
+   "utc_time": "2026-09-26T22:50:00Z"
+  },
+  "LIGAMX-J10-04": {
+   "away": {
+    "possession": 26,
+    "slug": "queretaro-fc",
+    "sot": 6,
+    "sota": 5
+   },
+   "fotmob_match_id": "1000014582",
+   "home": {
+    "possession": 74,
+    "slug": "chivas-guadalajara",
+    "sot": 5,
+    "sota": 6
+   },
+   "jornada": 10,
+   "marcador": "0 - 2",
+   "utc_time": "2026-09-26T23:07:00Z"
+  },
+  "LIGAMX-J10-05": {
+   "away": {
+    "possession": 45,
+    "slug": "club-pachuca",
+    "sot": 0,
+    "sota": 9
+   },
+   "fotmob_match_id": "1000014583",
+   "home": {
+    "possession": 55,
+    "slug": "santos-laguna",
+    "sot": 9,
+    "sota": 0
+   },
+   "jornada": 10,
+   "marcador": "1 - 0",
+   "utc_time": "2026-09-27T03:05:00Z"
+  },
+  "LIGAMX-J10-06": {
+   "away": {
+    "possession": 41,
+    "slug": "club-puebla",
+    "sot": 1,
+    "sota": 4
+   },
+   "fotmob_match_id": "1000014584",
+   "home": {
+    "possession": 59,
+    "slug": "tigres-uanl",
+    "sot": 4,
+    "sota": 1
+   },
+   "jornada": 10,
+   "marcador": "1 - 0",
+   "utc_time": "2026-09-27T03:10:00Z"
+  },
+  "LIGAMX-J10-07": {
+   "away": {
+    "possession": 46,
+    "slug": "atletico-san-luis",
+    "sot": 7,
+    "sota": 6
+   },
+   "fotmob_match_id": "1000014586",
+   "home": {
+    "possession": 54,
+    "slug": "pumas-unam",
+    "sot": 6,
+    "sota": 7
+   },
+   "jornada": 10,
+   "marcador": "2 - 3",
+   "utc_time": "2026-09-27T18:00:00Z"
+  },
+  "LIGAMX-J10-08": {
+   "away": {
+    "possession": 45,
+    "slug": "fc-juarez",
+    "sot": 1,
+    "sota": 3
+   },
+   "fotmob_match_id": "1000014587",
+   "home": {
+    "possession": 55,
+    "slug": "club-leon",
+    "sot": 3,
+    "sota": 1
+   },
+   "jornada": 10,
+   "marcador": "2 - 1",
+   "utc_time": "2026-09-28T01:00:00Z"
+  },
+  "LIGAMX-J10-09": {
+   "away": {
+    "possession": 47,
+    "slug": "club-america",
+    "sot": 10,
+    "sota": 6
+   },
+   "fotmob_match_id": "1000014588",
+   "home": {
+    "possession": 53,
+    "slug": "necaxa",
+    "sot": 6,
+    "sota": 10
+   },
+   "jornada": 10,
+   "marcador": "2 - 4",
+   "utc_time": "2026-09-28T03:10:00Z"
+  },
+  "LIGAMX-J11-01": {
+   "away": {
+    "possession": 48,
+    "slug": "club-leon",
+    "sot": 3,
+    "sota": 6
+   },
+   "fotmob_match_id": "1000014590",
+   "home": {
+    "possession": 52,
+    "slug": "club-puebla",
+    "sot": 6,
+    "sota": 3
+   },
+   "jornada": 11,
+   "marcador": "1 - 1",
+   "utc_time": "2026-10-10T01:00:00Z"
+  },
+  "LIGAMX-J11-02": {
+   "away": {
+    "possession": 70,
+    "slug": "deportivo-toluca",
+    "sot": 8,
+    "sota": 13
+   },
+   "fotmob_match_id": "1000014591",
+   "home": {
+    "possession": 30,
+    "slug": "tigres-uanl",
+    "sot": 13,
+    "sota": 8
+   },
+   "jornada": 11,
+   "marcador": "3 - 2",
+   "utc_time": "2026-10-10T03:00:00Z"
+  },
+  "LIGAMX-J11-03": {
+   "away": {
+    "possession": 43,
+    "slug": "club-tijuana",
+    "sot": 4,
+    "sota": 6
+   },
+   "fotmob_match_id": "1000014592",
+   "home": {
+    "possession": 57,
+    "slug": "fc-juarez",
+    "sot": 6,
+    "sota": 4
+   },
+   "jornada": 11,
+   "marcador": "1 - 1",
+   "utc_time": "2026-10-10T23:00:00Z"
+  },
+  "LIGAMX-J11-04": {
+   "away": {
+    "possession": 55,
+    "slug": "atlante",
+    "sot": 10,
+    "sota": 3
+   },
+   "fotmob_match_id": "1000014589",
+   "home": {
+    "possession": 45,
+    "slug": "queretaro-fc",
+    "sot": 3,
+    "sota": 10
+   },
+   "jornada": 11,
+   "marcador": "2 - 0",
+   "utc_time": "2026-10-10T23:00:00Z"
+  },
+  "LIGAMX-J11-05": {
+   "away": {
+    "possession": 57,
+    "slug": "chivas-guadalajara",
+    "sot": 5,
+    "sota": 3
+   },
+   "fotmob_match_id": "1000014593",
+   "home": {
+    "possession": 43,
+    "slug": "atlas-fc",
+    "sot": 3,
+    "sota": 5
+   },
+   "jornada": 11,
+   "marcador": "1 - 1",
+   "utc_time": "2026-10-11T01:00:00Z"
+  },
+  "LIGAMX-J11-06": {
+   "away": {
+    "possession": 41,
+    "slug": "rayados-de-monterrey",
+    "sot": 2,
+    "sota": 8
+   },
+   "fotmob_match_id": "1000014594",
+   "home": {
+    "possession": 59,
+    "slug": "club-america",
+    "sot": 8,
+    "sota": 2
+   },
+   "jornada": 11,
+   "marcador": "1 - 1",
+   "utc_time": "2026-10-11T03:10:00Z"
+  },
+  "LIGAMX-J11-07": {
+   "away": {
+    "possession": 44,
+    "slug": "santos-laguna",
+    "sot": 8,
+    "sota": 3
+   },
+   "fotmob_match_id": "1000014596",
+   "home": {
+    "possession": 56,
+    "slug": "atletico-san-luis",
+    "sot": 3,
+    "sota": 8
+   },
+   "jornada": 11,
+   "marcador": "1 - 2",
+   "utc_time": "2026-10-11T23:00:00Z"
+  },
+  "LIGAMX-J11-08": {
+   "away": {
+    "possession": 39,
+    "slug": "necaxa",
+    "sot": 7,
+    "sota": 6
+   },
+   "fotmob_match_id": "1000014595",
+   "home": {
+    "possession": 61,
+    "slug": "club-pachuca",
+    "sot": 6,
+    "sota": 7
+   },
+   "jornada": 11,
+   "marcador": "3 - 3",
+   "utc_time": "2026-10-11T23:10:00Z"
+  },
+  "LIGAMX-J11-09": {
+   "away": {
+    "possession": 69,
+    "slug": "cruz-azul",
+    "sot": 6,
+    "sota": 5
+   },
+   "fotmob_match_id": "1000014597",
+   "home": {
+    "possession": 31,
+    "slug": "pumas-unam",
+    "sot": 5,
+    "sota": 6
+   },
+   "jornada": 11,
+   "marcador": "3 - 3",
+   "utc_time": "2026-10-12T01:15:00Z"
+  },
+  "LIGAMX-J2-01": {
+   "away": {
+    "possession": 33,
+    "slug": "club-puebla",
+    "sot": 4,
+    "sota": 7
+   },
+   "fotmob_match_id": "1000014508",
+   "home": {
+    "possession": 67,
+    "slug": "cruz-azul",
+    "sot": 7,
+    "sota": 4
+   },
+   "jornada": 2,
+   "marcador": "2 - 1",
+   "utc_time": "2026-07-22T01:00:00Z"
+  },
+  "LIGAMX-J2-02": {
+   "away": {
+    "possession": 34,
+    "slug": "pumas-unam",
+    "sot": 3,
+    "sota": 4
+   },
+   "fotmob_match_id": "1000014509",
+   "home": {
+    "possession": 66,
+    "slug": "deportivo-toluca",
+    "sot": 4,
+    "sota": 3
+   },
+   "jornada": 2,
+   "marcador": "1 - 2",
+   "utc_time": "2026-07-22T03:05:00Z"
+  },
+  "LIGAMX-J2-03": {
+   "away": {
+    "possession": 62,
+    "slug": "club-america",
+    "sot": 8,
+    "sota": 4
+   },
+   "fotmob_match_id": "1000014511",
+   "home": {
+    "possession": 38,
+    "slug": "atlante",
+    "sot": 4,
+    "sota": 8
+   },
+   "jornada": 2,
+   "marcador": "1 - 1",
+   "utc_time": "2026-07-25T03:00:00Z"
+  },
+  "LIGAMX-J2-04": {
+   "away": {
+    "possession": 61,
+    "slug": "club-leon",
+    "sot": 2,
+    "sota": 3
+   },
+   "fotmob_match_id": "1000014512",
+   "home": {
+    "possession": 39,
+    "slug": "club-tijuana",
+    "sot": 3,
+    "sota": 2
+   },
+   "jornada": 2,
+   "marcador": "1 - 0",
+   "utc_time": "2026-07-25T03:00:00Z"
+  },
+  "LIGAMX-J2-05": {
+   "away": {
+    "possession": 22,
+    "slug": "fc-juarez",
+    "sot": 0,
+    "sota": 8
+   },
+   "fotmob_match_id": "1000014513",
+   "home": {
+    "possession": 78,
+    "slug": "chivas-guadalajara",
+    "sot": 8,
+    "sota": 0
+   },
+   "jornada": 2,
+   "marcador": "1 - 0",
+   "utc_time": "2026-07-25T23:07:00Z"
+  },
+  "LIGAMX-J2-06": {
+   "away": {
+    "possession": 43,
+    "slug": "atlas-fc",
+    "sot": 5,
+    "sota": 1
+   },
+   "fotmob_match_id": "1000014514",
+   "home": {
+    "possession": 57,
+    "slug": "santos-laguna",
+    "sot": 1,
+    "sota": 5
+   },
+   "jornada": 2,
+   "marcador": "0 - 1",
+   "utc_time": "2026-07-26T03:00:00Z"
+  },
+  "LIGAMX-J2-07": {
+   "away": {
+    "possession": 58,
+    "slug": "atletico-san-luis",
+    "sot": 4,
+    "sota": 2
+   },
+   "fotmob_match_id": "1000014510",
+   "home": {
+    "possession": 42,
+    "slug": "tigres-uanl",
+    "sot": 2,
+    "sota": 4
+   },
+   "jornada": 2,
+   "marcador": "2 - 2",
+   "utc_time": "2026-07-26T03:00:00Z"
+  },
+  "LIGAMX-J2-08": {
+   "away": {
+    "possession": 35,
+    "slug": "rayados-de-monterrey",
+    "sot": 2,
+    "sota": 9
+   },
+   "fotmob_match_id": "1000014515",
+   "home": {
+    "possession": 65,
+    "slug": "necaxa",
+    "sot": 9,
+    "sota": 2
+   },
+   "jornada": 2,
+   "marcador": "2 - 1",
+   "utc_time": "2026-07-26T23:00:00Z"
+  },
+  "LIGAMX-J2-09": {
+   "away": {
+    "possession": 46,
+    "slug": "queretaro-fc",
+    "sot": 5,
+    "sota": 2
+   },
+   "fotmob_match_id": "1000014516",
+   "home": {
+    "possession": 54,
+    "slug": "club-pachuca",
+    "sot": 2,
+    "sota": 5
+   },
+   "jornada": 2,
+   "marcador": "1 - 2",
+   "utc_time": "2026-07-27T01:06:00Z"
+  },
+  "LIGAMX-J3-01": {
+   "away": {
+    "possession": 65,
+    "slug": "chivas-guadalajara",
+    "sot": 9,
+    "sota": 3
+   },
+   "fotmob_match_id": "1000014517",
+   "home": {
+    "possession": 35,
+    "slug": "club-puebla",
+    "sot": 3,
+    "sota": 9
+   },
+   "jornada": 3,
+   "marcador": "1 - 1",
+   "utc_time": "2026-08-01T01:00:00Z"
+  },
+  "LIGAMX-J3-02": {
+   "away": {
+    "possession": 32,
+    "slug": "club-tijuana",
+    "sot": 1,
+    "sota": 2
+   },
+   "fotmob_match_id": "1000014518",
+   "home": {
+    "possession": 68,
+    "slug": "atletico-san-luis",
+    "sot": 2,
+    "sota": 1
+   },
+   "jornada": 3,
+   "marcador": "0 - 0",
+   "utc_time": "2026-08-01T03:00:00Z"
+  },
+  "LIGAMX-J3-03": {
+   "away": {
+    "possession": 52,
+    "slug": "pumas-unam",
+    "sot": 5,
+    "sota": 3
+   },
+   "fotmob_match_id": "1000014519",
+   "home": {
+    "possession": 48,
+    "slug": "fc-juarez",
+    "sot": 3,
+    "sota": 5
+   },
+   "jornada": 3,
+   "marcador": "1 - 5",
+   "utc_time": "2026-08-01T03:00:00Z"
+  },
+  "LIGAMX-J3-04": {
+   "away": {
+    "possession": 65,
+    "slug": "tigres-uanl",
+    "sot": 4,
+    "sota": 6
+   },
+   "fotmob_match_id": "1000014520",
+   "home": {
+    "possession": 35,
+    "slug": "queretaro-fc",
+    "sot": 6,
+    "sota": 4
+   },
+   "jornada": 3,
+   "marcador": "3 - 2",
+   "utc_time": "2026-08-01T23:00:00Z"
+  },
+  "LIGAMX-J3-05": {
+   "away": {
+    "possession": 53,
+    "slug": "rayados-de-monterrey",
+    "sot": 4,
+    "sota": 1
+   },
+   "fotmob_match_id": "1000014522",
+   "home": {
+    "possession": 47,
+    "slug": "atlas-fc",
+    "sot": 1,
+    "sota": 4
+   },
+   "jornada": 3,
+   "marcador": "0 - 2",
+   "utc_time": "2026-08-02T01:05:00Z"
+  },
+  "LIGAMX-J3-06": {
+   "away": {
+    "possession": 48,
+    "slug": "club-pachuca",
+    "sot": 1,
+    "sota": 6
+   },
+   "fotmob_match_id": "1000014521",
+   "home": {
+    "possession": 52,
+    "slug": "club-leon",
+    "sot": 6,
+    "sota": 1
+   },
+   "jornada": 3,
+   "marcador": "1 - 0",
+   "utc_time": "2026-08-02T01:06:00Z"
+  },
+  "LIGAMX-J3-07": {
+   "away": {
+    "possession": 39,
+    "slug": "atlante",
+    "sot": 7,
+    "sota": 10
+   },
+   "fotmob_match_id": "1000014523",
+   "home": {
+    "possession": 61,
+    "slug": "cruz-azul",
+    "sot": 10,
+    "sota": 7
+   },
+   "jornada": 3,
+   "marcador": "2 - 3",
+   "utc_time": "2026-08-02T03:00:00Z"
+  },
+  "LIGAMX-J3-08": {
+   "away": {
+    "possession": 48,
+    "slug": "santos-laguna",
+    "sot": 6,
+    "sota": 6
+   },
+   "fotmob_match_id": "1000014524",
+   "home": {
+    "possession": 52,
+    "slug": "club-america",
+    "sot": 6,
+    "sota": 6
+   },
+   "jornada": 3,
+   "marcador": "3 - 0",
+   "utc_time": "2026-08-02T23:00:00Z"
+  },
+  "LIGAMX-J3-09": {
+   "away": {
+    "possession": 25,
+    "slug": "necaxa",
+    "sot": 2,
+    "sota": 8
+   },
+   "fotmob_match_id": "1000014525",
+   "home": {
+    "possession": 75,
+    "slug": "deportivo-toluca",
+    "sot": 8,
+    "sota": 2
+   },
+   "jornada": 3,
+   "marcador": "3 - 1",
+   "utc_time": "2026-08-03T01:05:00Z"
+  },
+  "LIGAMX-J4-01": {
+   "away": {
+    "possession": 57,
+    "slug": "deportivo-toluca",
+    "sot": 2,
+    "sota": 5
+   },
+   "fotmob_match_id": "1000014526",
+   "home": {
+    "possession": 43,
+    "slug": "atlante",
+    "sot": 5,
+    "sota": 2
+   },
+   "jornada": 4,
+   "marcador": "0 - 0",
+   "utc_time": "2026-08-15T23:00:00Z"
+  },
+  "LIGAMX-J4-02": {
+   "away": {
+    "possession": 38,
+    "slug": "fc-juarez",
+    "sot": 1,
+    "sota": 10
+   },
+   "fotmob_match_id": "1000014527",
+   "home": {
+    "possession": 62,
+    "slug": "rayados-de-monterrey",
+    "sot": 10,
+    "sota": 1
+   },
+   "jornada": 4,
+   "marcador": "6 - 1",
+   "utc_time": "2026-08-16T01:10:00Z"
+  },
+  "LIGAMX-J4-03": {
+   "away": {
+    "possession": 54,
+    "slug": "tigres-uanl",
+    "sot": 8,
+    "sota": 3
+   },
+   "fotmob_match_id": "1000014528",
+   "home": {
+    "possession": 46,
+    "slug": "atlas-fc",
+    "sot": 3,
+    "sota": 8
+   },
+   "jornada": 4,
+   "marcador": "2 - 1",
+   "utc_time": "2026-08-16T03:10:00Z"
+  },
+  "LIGAMX-J4-04": {
+   "away": {
+    "possession": 34,
+    "slug": "queretaro-fc",
+    "sot": 3,
+    "sota": 4
+   },
+   "fotmob_match_id": "1000014529",
+   "home": {
+    "possession": 66,
+    "slug": "pumas-unam",
+    "sot": 4,
+    "sota": 3
+   },
+   "jornada": 4,
+   "marcador": "0 - 0",
+   "utc_time": "2026-08-16T18:00:00Z"
+  },
+  "LIGAMX-J4-05": {
+   "away": {
+    "possession": 47,
+    "slug": "atletico-san-luis",
+    "sot": 3,
+    "sota": 7
+   },
+   "fotmob_match_id": "1000014530",
+   "home": {
+    "possession": 53,
+    "slug": "club-america",
+    "sot": 7,
+    "sota": 3
+   },
+   "jornada": 4,
+   "marcador": "3 - 0",
+   "utc_time": "2026-08-16T23:00:00Z"
+  },
+  "LIGAMX-J4-06": {
+   "away": {
+    "possession": 61,
+    "slug": "chivas-guadalajara",
+    "sot": 5,
+    "sota": 2
+   },
+   "fotmob_match_id": "1000014531",
+   "home": {
+    "possession": 39,
+    "slug": "santos-laguna",
+    "sot": 2,
+    "sota": 5
+   },
+   "jornada": 4,
+   "marcador": "0 - 1",
+   "utc_time": "2026-08-17T01:10:00Z"
+  },
+  "LIGAMX-J4-07": {
+   "away": {
+    "possession": 57,
+    "slug": "cruz-azul",
+    "sot": 6,
+    "sota": 4
+   },
+   "fotmob_match_id": "1000014532",
+   "home": {
+    "possession": 43,
+    "slug": "club-tijuana",
+    "sot": 4,
+    "sota": 6
+   },
+   "jornada": 4,
+   "marcador": "2 - 1",
+   "utc_time": "2026-08-17T03:00:00Z"
+  },
+  "LIGAMX-J4-08": {
+   "away": {
+    "possession": 39,
+    "slug": "club-leon",
+    "sot": 7,
+    "sota": 8
+   },
+   "fotmob_match_id": "1000014533",
+   "home": {
+    "possession": 61,
+    "slug": "necaxa",
+    "sot": 8,
+    "sota": 7
+   },
+   "jornada": 4,
+   "marcador": "1 - 2",
+   "utc_time": "2026-08-18T01:00:00Z"
+  },
+  "LIGAMX-J4-09": {
+   "away": {
+    "possession": 44,
+    "slug": "club-puebla",
+    "sot": 5,
+    "sota": 4
+   },
+   "fotmob_match_id": "1000014534",
+   "home": {
+    "possession": 56,
+    "slug": "club-pachuca",
+    "sot": 4,
+    "sota": 5
+   },
+   "jornada": 4,
+   "marcador": "2 - 3",
+   "utc_time": "2026-08-18T03:06:00Z"
+  },
+  "LIGAMX-J5-01": {
+   "away": {
+    "possession": 65,
+    "slug": "rayados-de-monterrey",
+    "sot": 4,
+    "sota": 5
+   },
+   "fotmob_match_id": "1000014539",
+   "home": {
+    "possession": 35,
+    "slug": "club-leon",
+    "sot": 5,
+    "sota": 4
+   },
+   "jornada": 5,
+   "marcador": "2 - 0",
+   "utc_time": "2026-08-22T01:00:00Z"
+  },
+  "LIGAMX-J5-02": {
+   "away": {
+    "possession": 33,
+    "slug": "atlante",
+    "sot": 4,
+    "sota": 4
+   },
+   "fotmob_match_id": "1000014540",
+   "home": {
+    "possession": 67,
+    "slug": "tigres-uanl",
+    "sot": 4,
+    "sota": 4
+   },
+   "jornada": 5,
+   "marcador": "2 - 0",
+   "utc_time": "2026-08-22T01:00:00Z"
+  },
+  "LIGAMX-J5-03": {
+   "away": {
+    "possession": 59,
+    "slug": "club-america",
+    "sot": 10,
+    "sota": 3
+   },
+   "fotmob_match_id": "1000014536",
+   "home": {
+    "possession": 41,
+    "slug": "fc-juarez",
+    "sot": 3,
+    "sota": 10
+   },
+   "jornada": 5,
+   "marcador": "1 - 2",
+   "utc_time": "2026-08-22T03:10:00Z"
+  },
+  "LIGAMX-J5-04": {
+   "away": {
+    "possession": 50,
+    "slug": "deportivo-toluca",
+    "sot": 3,
+    "sota": 3
+   },
+   "fotmob_match_id": "1000014537",
+   "home": {
+    "possession": 50,
+    "slug": "queretaro-fc",
+    "sot": 3,
+    "sota": 3
+   },
+   "jornada": 5,
+   "marcador": "1 - 2",
+   "utc_time": "2026-08-22T03:10:00Z"
+  },
+  "LIGAMX-J5-05": {
+   "away": {
+    "possession": 41,
+    "slug": "club-tijuana",
+    "sot": 4,
+    "sota": 8
+   },
+   "fotmob_match_id": "1000014538",
+   "home": {
+    "possession": 59,
+    "slug": "chivas-guadalajara",
+    "sot": 8,
+    "sota": 4
+   },
+   "jornada": 5,
+   "marcador": "5 - 2",
+   "utc_time": "2026-08-22T23:07:00Z"
+  },
+  "LIGAMX-J5-06": {
+   "away": {
+    "possession": 61,
+    "slug": "santos-laguna",
+    "sot": 2,
+    "sota": 7
+   },
+   "fotmob_match_id": "1000014535",
+   "home": {
+    "possession": 39,
+    "slug": "club-puebla",
+    "sot": 7,
+    "sota": 2
+   },
+   "jornada": 5,
+   "marcador": "3 - 2",
+   "utc_time": "2026-08-23T01:00:00Z"
+  },
+  "LIGAMX-J5-07": {
+   "away": {
+    "possession": 48,
+    "slug": "atlas-fc",
+    "sot": 5,
+    "sota": 5
+   },
+   "fotmob_match_id": "1000014541",
+   "home": {
+    "possession": 52,
+    "slug": "cruz-azul",
+    "sot": 5,
+    "sota": 5
+   },
+   "jornada": 5,
+   "marcador": "0 - 2",
+   "utc_time": "2026-08-23T03:00:00Z"
+  },
+  "LIGAMX-J5-08": {
+   "away": {
+    "possession": 31,
+    "slug": "club-pachuca",
+    "sot": 2,
+    "sota": 7
+   },
+   "fotmob_match_id": "1000014542",
+   "home": {
+    "possession": 69,
+    "slug": "atletico-san-luis",
+    "sot": 7,
+    "sota": 2
+   },
+   "jornada": 5,
+   "marcador": "1 - 1",
+   "utc_time": "2026-08-23T23:00:00Z"
+  },
+  "LIGAMX-J5-09": {
+   "away": {
+    "possession": 51,
+    "slug": "necaxa",
+    "sot": 4,
+    "sota": 6
+   },
+   "fotmob_match_id": "1000014543",
+   "home": {
+    "possession": 49,
+    "slug": "pumas-unam",
+    "sot": 6,
+    "sota": 4
+   },
+   "jornada": 5,
+   "marcador": "1 - 1",
+   "utc_time": "2026-08-24T01:00:00Z"
+  },
+  "LIGAMX-J6-01": {
+   "away": {
+    "possession": 55,
+    "slug": "cruz-azul",
+    "sot": 8,
+    "sota": 4
+   },
+   "fotmob_match_id": "1000014544",
+   "home": {
+    "possession": 45,
+    "slug": "necaxa",
+    "sot": 4,
+    "sota": 8
+   },
+   "jornada": 6,
+   "marcador": "1 - 3",
+   "utc_time": "2026-08-29T01:00:00Z"
+  },
+  "LIGAMX-J6-02": {
+   "away": {
+    "possession": 52,
+    "slug": "club-leon",
+    "sot": 5,
+    "sota": 4
+   },
+   "fotmob_match_id": "1000014545",
+   "home": {
+    "possession": 48,
+    "slug": "atlante",
+    "sot": 4,
+    "sota": 5
+   },
+   "jornada": 6,
+   "marcador": "1 - 1",
+   "utc_time": "2026-08-29T02:00:00Z"
+  },
+  "LIGAMX-J6-03": {
+   "away": {
+    "possession": 43,
+    "slug": "pumas-unam",
+    "sot": 3,
+    "sota": 3
+   },
+   "fotmob_match_id": "1000014546",
+   "home": {
+    "possession": 57,
+    "slug": "club-tijuana",
+    "sot": 3,
+    "sota": 3
+   },
+   "jornada": 6,
+   "marcador": "2 - 0",
+   "utc_time": "2026-08-29T03:10:00Z"
+  },
+  "LIGAMX-J6-04": {
+   "away": {
+    "possession": 41,
+    "slug": "queretaro-fc",
+    "sot": 5,
+    "sota": 3
+   },
+   "fotmob_match_id": "1000014547",
+   "home": {
+    "possession": 59,
+    "slug": "atlas-fc",
+    "sot": 3,
+    "sota": 5
+   },
+   "jornada": 6,
+   "marcador": "1 - 3",
+   "utc_time": "2026-08-29T23:00:00Z"
+  },
+  "LIGAMX-J6-05": {
+   "away": {
+    "possession": 57,
+    "slug": "chivas-guadalajara",
+    "sot": 5,
+    "sota": 7
+   },
+   "fotmob_match_id": "1000014548",
+   "home": {
+    "possession": 43,
+    "slug": "club-pachuca",
+    "sot": 7,
+    "sota": 5
+   },
+   "jornada": 6,
+   "marcador": "1 - 1",
+   "utc_time": "2026-08-29T23:00:00Z"
+  },
+  "LIGAMX-J6-06": {
+   "away": {
+    "possession": 47,
+    "slug": "club-puebla",
+    "sot": 6,
+    "sota": 6
+   },
+   "fotmob_match_id": "1000014549",
+   "home": {
+    "possession": 53,
+    "slug": "club-america",
+    "sot": 6,
+    "sota": 6
+   },
+   "jornada": 6,
+   "marcador": "2 - 0",
+   "utc_time": "2026-08-30T01:05:00Z"
+  },
+  "LIGAMX-J6-07": {
+   "away": {
+    "possession": 41,
+    "slug": "tigres-uanl",
+    "sot": 2,
+    "sota": 4
+   },
+   "fotmob_match_id": "1000014550",
+   "home": {
+    "possession": 59,
+    "slug": "santos-laguna",
+    "sot": 4,
+    "sota": 2
+   },
+   "jornada": 6,
+   "marcador": "0 - 0",
+   "utc_time": "2026-08-30T03:10:00Z"
+  },
+  "LIGAMX-J6-08": {
+   "away": {
+    "possession": 35,
+    "slug": "fc-juarez",
+    "sot": 2,
+    "sota": 10
+   },
+   "fotmob_match_id": "1000014551",
+   "home": {
+    "possession": 65,
+    "slug": "deportivo-toluca",
+    "sot": 10,
+    "sota": 2
+   },
+   "jornada": 6,
+   "marcador": "4 - 0",
+   "utc_time": "2026-08-31T00:00:00Z"
+  },
+  "LIGAMX-J6-09": {
+   "away": {
+    "possession": 28,
+    "slug": "atletico-san-luis",
+    "sot": 4,
+    "sota": 8
+   },
+   "fotmob_match_id": "1000014552",
+   "home": {
+    "possession": 72,
+    "slug": "rayados-de-monterrey",
+    "sot": 8,
+    "sota": 4
+   },
+   "jornada": 6,
+   "marcador": "1 - 3",
+   "utc_time": "2026-08-31T02:10:00Z"
+  },
+  "LIGAMX-J7-01": {
+   "away": {
+    "possession": 48,
+    "slug": "club-pachuca",
+    "sot": 4,
+    "sota": 1
+   },
+   "fotmob_match_id": "1000014554",
+   "home": {
+    "possession": 52,
+    "slug": "fc-juarez",
+    "sot": 1,
+    "sota": 4
+   },
+   "jornada": 7,
+   "marcador": "0 - 2",
+   "utc_time": "2026-09-05T03:00:00Z"
+  },
+  "LIGAMX-J7-02": {
+   "away": {
+    "possession": 50,
+    "slug": "chivas-guadalajara",
+    "sot": 3,
+    "sota": 4
+   },
+   "fotmob_match_id": "1000014555",
+   "home": {
+    "possession": 50,
+    "slug": "atletico-san-luis",
+    "sot": 4,
+    "sota": 3
+   },
+   "jornada": 7,
+   "marcador": "0 - 3",
+   "utc_time": "2026-09-05T23:00:00Z"
+  },
+  "LIGAMX-J7-03": {
+   "away": {
+    "possession": 42,
+    "slug": "necaxa",
+    "sot": 4,
+    "sota": 6
+   },
+   "fotmob_match_id": "1000014557",
+   "home": {
+    "possession": 58,
+    "slug": "tigres-uanl",
+    "sot": 6,
+    "sota": 4
+   },
+   "jornada": 7,
+   "marcador": "1 - 1",
+   "utc_time": "2026-09-06T01:00:00Z"
+  },
+  "LIGAMX-J7-04": {
+   "away": {
+    "possession": 36,
+    "slug": "atlante",
+    "sot": 2,
+    "sota": 3
+   },
+   "fotmob_match_id": "1000014559",
+   "home": {
+    "possession": 64,
+    "slug": "atlas-fc",
+    "sot": 3,
+    "sota": 2
+   },
+   "jornada": 7,
+   "marcador": "1 - 1",
+   "utc_time": "2026-09-06T03:00:00Z"
+  },
+  "LIGAMX-J7-05": {
+   "away": {
+    "possession": 38,
+    "slug": "santos-laguna",
+    "sot": 1,
+    "sota": 8
+   },
+   "fotmob_match_id": "1000014561",
+   "home": {
+    "possession": 62,
+    "slug": "cruz-azul",
+    "sot": 8,
+    "sota": 1
+   },
+   "jornada": 7,
+   "marcador": "1 - 0",
+   "utc_time": "2026-09-06T23:00:00Z"
+  },
+  "LIGAMX-J7-06": {
+   "away": {
+    "possession": 58,
+    "slug": "club-leon",
+    "sot": 4,
+    "sota": 5
+   },
+   "fotmob_match_id": "1000014560",
+   "home": {
+    "possession": 42,
+    "slug": "pumas-unam",
+    "sot": 5,
+    "sota": 4
+   },
+   "jornada": 7,
+   "marcador": "3 - 1",
+   "utc_time": "2026-09-11T03:05:00Z"
+  },
+  "LIGAMX-J7-07": {
+   "away": {
+    "possession": 56,
+    "slug": "deportivo-toluca",
+    "sot": 3,
+    "sota": 2
+   },
+   "fotmob_match_id": "1000014553",
+   "home": {
+    "possession": 44,
+    "slug": "club-puebla",
+    "sot": 2,
+    "sota": 3
+   },
+   "jornada": 7,
+   "marcador": "0 - 1",
+   "utc_time": "2026-09-16T01:00:00Z"
+  },
+  "LIGAMX-J8-01": {
+   "away": {
+    "possession": 44,
+    "slug": "club-puebla",
+    "sot": 4,
+    "sota": 2
+   },
+   "fotmob_match_id": "1000014562",
+   "home": {
+    "possession": 56,
+    "slug": "necaxa",
+    "sot": 2,
+    "sota": 4
+   },
+   "jornada": 8,
+   "marcador": "0 - 1",
+   "utc_time": "2026-09-12T01:00:00Z"
+  },
+  "LIGAMX-J8-02": {
+   "away": {
+    "possession": 44,
+    "slug": "club-pachuca",
+    "sot": 8,
+    "sota": 5
+   },
+   "fotmob_match_id": "1000014563",
+   "home": {
+    "possession": 56,
+    "slug": "atlante",
+    "sot": 5,
+    "sota": 8
+   },
+   "jornada": 8,
+   "marcador": "0 - 3",
+   "utc_time": "2026-09-12T03:00:00Z"
+  },
+  "LIGAMX-J8-03": {
+   "away": {
+    "possession": 37,
+    "slug": "queretaro-fc",
+    "sot": 4,
+    "sota": 3
+   },
+   "fotmob_match_id": "1000014564",
+   "home": {
+    "possession": 63,
+    "slug": "club-tijuana",
+    "sot": 3,
+    "sota": 4
+   },
+   "jornada": 8,
+   "marcador": "0 - 1",
+   "utc_time": "2026-09-12T03:10:00Z"
+  },
+  "LIGAMX-J8-04": {
+   "away": {
+    "possession": 45,
+    "slug": "atlas-fc",
+    "sot": 2,
+    "sota": 6
+   },
+   "fotmob_match_id": "1000014566",
+   "home": {
+    "possession": 55,
+    "slug": "deportivo-toluca",
+    "sot": 6,
+    "sota": 2
+   },
+   "jornada": 8,
+   "marcador": "5 - 2",
+   "utc_time": "2026-09-12T23:05:00Z"
+  },
+  "LIGAMX-J8-05": {
+   "away": {
+    "possession": 38,
+    "slug": "tigres-uanl",
+    "sot": 3,
+    "sota": 6
+   },
+   "fotmob_match_id": "1000014570",
+   "home": {
+    "possession": 62,
+    "slug": "rayados-de-monterrey",
+    "sot": 6,
+    "sota": 3
+   },
+   "jornada": 8,
+   "marcador": "0 - 0",
+   "utc_time": "2026-09-13T01:10:00Z"
+  },
+  "LIGAMX-J8-06": {
+   "away": {
+    "possession": 57,
+    "slug": "club-america",
+    "sot": 10,
+    "sota": 10
+   },
+   "fotmob_match_id": "1000014567",
+   "home": {
+    "possession": 43,
+    "slug": "cruz-azul",
+    "sot": 10,
+    "sota": 10
+   },
+   "jornada": 8,
+   "marcador": "4 - 3",
+   "utc_time": "2026-09-13T03:15:00Z"
+  },
+  "LIGAMX-J8-07": {
+   "away": {
+    "possession": 47,
+    "slug": "fc-juarez",
+    "sot": 5,
+    "sota": 10
+   },
+   "fotmob_match_id": "1000014568",
+   "home": {
+    "possession": 53,
+    "slug": "santos-laguna",
+    "sot": 10,
+    "sota": 5
+   },
+   "jornada": 8,
+   "marcador": "2 - 1",
+   "utc_time": "2026-09-14T01:00:00Z"
+  },
+  "LIGAMX-J8-08": {
+   "away": {
+    "possession": 34,
+    "slug": "pumas-unam",
+    "sot": 5,
+    "sota": 5
+   },
+   "fotmob_match_id": "1000014569",
+   "home": {
+    "possession": 66,
+    "slug": "chivas-guadalajara",
+    "sot": 5,
+    "sota": 5
+   },
+   "jornada": 8,
+   "marcador": "3 - 0",
+   "utc_time": "2026-09-14T01:07:00Z"
+  },
+  "LIGAMX-J8-09": {
+   "away": {
+    "possession": 58,
+    "slug": "atletico-san-luis",
+    "sot": 2,
+    "sota": 9
+   },
+   "fotmob_match_id": "1000014565",
+   "home": {
+    "possession": 42,
+    "slug": "club-leon",
+    "sot": 9,
+    "sota": 2
+   },
+   "jornada": 8,
+   "marcador": "2 - 0",
+   "utc_time": "2026-09-15T01:00:00Z"
+  },
+  "LIGAMX-J9-01": {
+   "away": {
+    "possession": 46,
+    "slug": "atlante",
+    "sot": 5,
+    "sota": 4
+   },
+   "fotmob_match_id": "1000014571",
+   "home": {
+    "possession": 54,
+    "slug": "club-puebla",
+    "sot": 4,
+    "sota": 5
+   },
+   "jornada": 9,
+   "marcador": "1 - 1",
+   "utc_time": "2026-09-19T01:00:00Z"
+  },
+  "LIGAMX-J9-02": {
+   "away": {
+    "possession": 57,
+    "slug": "tigres-uanl",
+    "sot": 5,
+    "sota": 5
+   },
+   "fotmob_match_id": "1000014572",
+   "home": {
+    "possession": 43,
+    "slug": "fc-juarez",
+    "sot": 5,
+    "sota": 5
+   },
+   "jornada": 9,
+   "marcador": "2 - 0",
+   "utc_time": "2026-09-19T03:00:00Z"
+  },
+  "LIGAMX-J9-03": {
+   "away": {
+    "possession": 47,
+    "slug": "pumas-unam",
+    "sot": 3,
+    "sota": 4
+   },
+   "fotmob_match_id": "1000014573",
+   "home": {
+    "possession": 53,
+    "slug": "atlas-fc",
+    "sot": 4,
+    "sota": 3
+   },
+   "jornada": 9,
+   "marcador": "1 - 1",
+   "utc_time": "2026-09-19T23:00:00Z"
+  },
+  "LIGAMX-J9-04": {
+   "away": {
+    "possession": 41,
+    "slug": "necaxa",
+    "sot": 3,
+    "sota": 5
+   },
+   "fotmob_match_id": "1000014574",
+   "home": {
+    "possession": 59,
+    "slug": "atletico-san-luis",
+    "sot": 5,
+    "sota": 3
+   },
+   "jornada": 9,
+   "marcador": "3 - 1",
+   "utc_time": "2026-09-19T23:00:00Z"
+  },
+  "LIGAMX-J9-05": {
+   "away": {
+    "possession": 52,
+    "slug": "cruz-azul",
+    "sot": 4,
+    "sota": 5
+   },
+   "fotmob_match_id": "1000014575",
+   "home": {
+    "possession": 48,
+    "slug": "rayados-de-monterrey",
+    "sot": 5,
+    "sota": 4
+   },
+   "jornada": 9,
+   "marcador": "1 - 0",
+   "utc_time": "2026-09-20T01:10:00Z"
+  },
+  "LIGAMX-J9-06": {
+   "away": {
+    "possession": 45,
+    "slug": "chivas-guadalajara",
+    "sot": 6,
+    "sota": 4
+   },
+   "fotmob_match_id": "1000014576",
+   "home": {
+    "possession": 55,
+    "slug": "club-america",
+    "sot": 4,
+    "sota": 6
+   },
+   "jornada": 9,
+   "marcador": "2 - 2",
+   "utc_time": "2026-09-20T03:15:00Z"
+  },
+  "LIGAMX-J9-07": {
+   "away": {
+    "possession": 41,
+    "slug": "club-tijuana",
+    "sot": 5,
+    "sota": 11
+   },
+   "fotmob_match_id": "1000014577",
+   "home": {
+    "possession": 59,
+    "slug": "club-pachuca",
+    "sot": 11,
+    "sota": 5
+   },
+   "jornada": 9,
+   "marcador": "2 - 2",
+   "utc_time": "2026-09-21T00:00:00Z"
+  },
+  "LIGAMX-J9-08": {
+   "away": {
+    "possession": 54,
+    "slug": "santos-laguna",
+    "sot": 6,
+    "sota": 9
+   },
+   "fotmob_match_id": "1000014578",
+   "home": {
+    "possession": 46,
+    "slug": "deportivo-toluca",
+    "sot": 9,
+    "sota": 6
+   },
+   "jornada": 9,
+   "marcador": "2 - 3",
+   "utc_time": "2026-09-21T00:00:00Z"
+  },
+  "LIGAMX-J9-09": {
+   "away": {
+    "possession": 61,
+    "slug": "club-leon",
+    "sot": 7,
+    "sota": 4
+   },
+   "fotmob_match_id": "1000014579",
+   "home": {
+    "possession": 39,
+    "slug": "queretaro-fc",
+    "sot": 4,
+    "sota": 7
+   },
+   "jornada": 9,
+   "marcador": "1 - 1",
+   "utc_time": "2026-09-21T02:10:00Z"
+  }
+ },
+ "resumen": {
+  "clubes_descartados": 0,
+  "faltantes": 0,
+  "filas_3nf": 194,
+  "fixtures_calendario": 97,
+  "partidos_congelados": 97
+ },
+ "sonda": "ARCH-1.4.50 · TELEMETRIA-OPTICA-LIGAMX",
+ "temporada": "2026"
+}
