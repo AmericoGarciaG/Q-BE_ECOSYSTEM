@@ -8,10 +8,16 @@ from pathlib import Path
 APP_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = APP_DIR.parent                 # qbe_observatory/
 ECOSYSTEM_ROOT = PROJECT_ROOT.parent          # Q_BE_ECOSYSTEM/
-BASELINE_ROOT = ECOSYSTEM_ROOT.parent / "Q_BE_CD_WEB"
+DATA_DIR = PROJECT_ROOT / "data"              # qbe_observatory/data/
 
+# Autonomía absoluta: el histórico vive DENTRO del Observatorio, nunca en la
+# carpeta del monolito. `QBE_HISTORICO_DB` permite fijar la ruta en despliegues
+# (contenedor, volumen montado) sin tocar código; `OBS_HISTORICO_DB` sobrevive
+# como alias legado de Fase 2 y queda subordinado al nombre canónico.
 HISTORICO_DB = Path(
-    os.getenv("OBS_HISTORICO_DB", str(BASELINE_ROOT / "data" / "qbe_historico.db"))
+    os.getenv("QBE_HISTORICO_DB")
+    or os.getenv("OBS_HISTORICO_DB")
+    or str(DATA_DIR / "qbe_historico.db")
 ).resolve()
 
 LIVE_SNAPSHOT = Path(

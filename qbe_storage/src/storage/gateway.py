@@ -2,7 +2,7 @@
 """
 🏆 Q-BE PERSISTENCE GATEWAY — CENTRAL DATA ACCESS & UNIT OF WORK
 [VAULT-DATA-001] Motor Transaccional SQLite WAL con Foreign Keys y Aislamiento de Contextos.
-Base de Gobierno: Kybern Framework v12.0 [ARCH-1.5.0]
+Base de Gobierno: Kybern Framework v13.5 [ARCH-1.5.1]
 """
 
 import os
@@ -12,49 +12,84 @@ from contextlib import contextmanager
 from datetime import datetime
 from typing import Generator, Optional
 from sqlalchemy import create_engine, event
-from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker, Session
 from src.config import settings
 
 logger = logging.getLogger("PersistenceGateway")
 
 
-@event.listens_for(Engine, "connect")
-def _set_sqlite_pragmas(dbapi_connection, connection_record):
+def _configurar_conexion_sqlite(dbapi_connection, connection_record):
+    """[ARCH-1.5.1] PRAGMAs de sesión para UNA instancia de motor, nunca para la clase.
+
+    Regla de aislamiento: esta función se registra con `event.listen(self.engine, ...)`
+    dentro de `_init_engine`. Jamás debe decorarse con `@event.listens_for(Engine, ...)`:
+    ese registro de clase contamina todos los engines del proceso y rompe las conexiones
+    ajenas abiertas con `mode=ro` (`attempt to write a readonly database`).
+
+    Guarda fiduciaria: `PRAGMA query_only` es un cinturón semántico (en una conexión
+    `mode=ro` recién abierta devuelve 0). La garantía real es capturar
+    `sqlite3.OperationalError` al intentar escribir WAL/synchronous: una conexión de
+    solo lectura o `immutable=1` debe seguir siendo usable para leer.
     """
-    [ARCH-1.5.0] Configuración inmutable de motor SQLite en cada conexión:
-    - WAL Mode: Concurrencia masiva lecturas/escrituras.
-    - Foreign Keys: Integridad referencial estricta 3NF.
-    - Synchronous NORMAL: Seguridad física con máxima velocidad.
-    - Busy Timeout: 15,000 ms para eliminar bloqueos de concurrencia.
-    """
-    if isinstance(dbapi_connection, sqlite3.Connection):
-        cursor = dbapi_connection.cursor()
-        cursor.execute("PRAGMA journal_mode = WAL;")
-        cursor.execute("PRAGMA foreign_keys = ON;")
-        cursor.execute("PRAGMA synchronous = NORMAL;")
+    if not isinstance(dbapi_connection, sqlite3.Connection):
+        return
+
+    cursor = dbapi_connection.cursor()
+    try:
+        # Seguros también en solo lectura: no escriben el archivo.
         cursor.execute("PRAGMA busy_timeout = 15000;")
+        cursor.execute("PRAGMA foreign_keys = ON;")
+
+        # Cinturón: si la sesión ya se declaró de solo lectura, no intentar WAL.
+        try:
+            cursor.execute("PRAGMA query_only;")
+            fila = cursor.fetchone()
+            es_readonly = bool(fila and fila[0] == 1)
+        except sqlite3.OperationalError:
+            es_readonly = True
+        if es_readonly:
+            return
+
+        # Guarda real: WAL exige escribir la cabecera; en `mode=ro` falla y se ignora.
+        try:
+            cursor.execute("PRAGMA journal_mode = WAL;")
+            cursor.execute("PRAGMA synchronous = NORMAL;")
+        except sqlite3.OperationalError as exc:
+            logger.debug(
+                "🔒 [GATEWAY PRAGMA] WAL/synchronous omitidos en conexión no escribible: %s",
+                exc,
+            )
+    finally:
         cursor.close()
 
 
 class PersistenceGateway:
     _instance = None
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, db_url: Optional[str] = None):
         if cls._instance is None:
-            cls._instance = super(PersistenceGateway, cls).__new__(cls)
-            cls._instance._init_engine()
+            instancia = super(PersistenceGateway, cls).__new__(cls)
+            instancia._init_engine(db_url=db_url)
+            cls._instance = instancia
         return cls._instance
 
-    def _init_engine(self):
-        db_path = settings.DATABASE_URL
-        connect_args = {"check_same_thread": False} if "sqlite" in db_path else {}
-        
+    def _init_engine(self, db_url: Optional[str] = None):
+        """Construye el motor y liga el listener de PRAGMAs a ESTA instancia.
+
+        `db_url` permite inyectar una bóveda efímera (jueces, herramientas) sin
+        depender de `settings.DATABASE_URL`; el singleton lo honra sólo en la
+        primera construcción.
+        """
+        url = db_url or settings.DATABASE_URL
+        connect_args = {"check_same_thread": False} if "sqlite" in url else {}
+
         self.engine = create_engine(
-            db_path,
+            url,
             connect_args=connect_args,
             pool_pre_ping=True
         )
+        # [ARCH-1.5.1] Registro por instancia: la clase global `Engine` queda intacta.
+        event.listen(self.engine, "connect", _configurar_conexion_sqlite)
         self.SessionFactory = sessionmaker(
             bind=self.engine,
             autocommit=False,
@@ -69,7 +104,7 @@ class PersistenceGateway:
             result = conn.exec_driver_sql("PRAGMA quick_check;").scalar()
             if result != "ok":
                 raise RuntimeError(f"🚨 FATAL: Base de datos corrupta: {result}")
-            logger.info("🛡️ [GATEWAY HEALTH] SQLite integrity verified: OK (WAL Mode & FK Active)")
+            logger.info("🛡️ [GATEWAY HEALTH] SQLite integrity verified: OK (FK activas)")
 
     @contextmanager
     def read_session(self) -> Generator[Session, None, None]:

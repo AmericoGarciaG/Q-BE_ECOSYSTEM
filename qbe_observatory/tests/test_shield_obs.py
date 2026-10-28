@@ -21,13 +21,12 @@ import pytest
 # ── Rutas del ecosistema ────────────────────────────────────────────────────────────────────────
 # tests/ -> qbe_observatory/ -> Q_BE_ECOSYSTEM/ -> Q-BE Casino Deportes/
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-BASELINE_ROOT = PROJECT_ROOT.parent.parent / "Q_BE_CD_WEB"
 HISTORICO = Path(
-    os.environ.get("OBS_HISTORICO_DB", str(BASELINE_ROOT / "data" / "qbe_historico.db"))
+    os.environ.get("QBE_HISTORICO_DB", str(PROJECT_ROOT / "data" / "qbe_historico.db"))
 ).resolve()
 
 # La app resuelve su fuente por entorno antes de importarse.
-os.environ.setdefault("OBS_HISTORICO_DB", str(HISTORICO))
+os.environ.setdefault("QBE_HISTORICO_DB", str(HISTORICO))
 
 # Permite `import app.*` cuando pytest se ejecuta desde Q_BE_ECOSYSTEM.
 if str(PROJECT_ROOT) not in sys.path:
@@ -98,29 +97,48 @@ def test_c_consumo_de_qbe_core() -> None:
 
 
 def test_d_contrato_del_endpoint() -> None:
-    """Test D — contrato JSON y no-fabricación del Brier de mercado."""
+    """Test D — contrato JSON del reporte de calibración (contrato canónico 3NF).
+
+    [RE-APUNTADO 2026-10-28 · D-1 de `SPRINT-OBSERVATORY-SNAPSHOT-AND-ARCH-ALIGNMENT`]
+    El endpoint `/api/observatory/calibration-report` ya no sirve el universo del
+    histórico: es un ALIAS OBSOLETO del canónico sobre la bóveda 3NF. Este juez
+    conserva su propósito —contrato y no-fabricación— expresado sobre el contrato
+    vigente, y añade la convergencia alias↔canónico (una sola verdad).
+    """
     from fastapi.testclient import TestClient
 
     from app.main import app
 
     with TestClient(app) as cliente:
         respuesta = cliente.get("/api/observatory/calibration-report")
+        canonica = cliente.get("/api/observatory/backtesting/calibration-report")
 
     assert respuesta.status_code == 200, respuesta.text
+    assert canonica.status_code == 200, canonica.text
+
     cuerpo = respuesta.json()
     assert "resumen_temporada" in cuerpo
     assert "jornadas" in cuerpo
     assert isinstance(cuerpo["jornadas"], list)
 
     resumen = cuerpo["resumen_temporada"]
-    assert "brier_mercado" in resumen
-    assert "alpha_calibracion_pct" in resumen
-    assert "mercado_disponible" in resumen
+    # Contrato canónico [ARCH-1.4.38]: Brier dual + Alpha, con taxonomía de vértices.
+    for clave in ("brier_score_qbe", "brier_score_mercado", "alpha_calibracion_pct"):
+        assert clave in resumen, f"falta {clave} en el resumen canónico"
 
-    if resumen["mercado_disponible"] is False:
-        # D-1: la ausencia de cuotas se declara con null, jamás con 0.0.
-        assert resumen["brier_mercado"] is None
-        assert resumen["alpha_calibracion_pct"] is None
-    else:
-        assert isinstance(resumen["brier_mercado"], (int, float))
-        assert isinstance(resumen["alpha_calibracion_pct"], (int, float))
+    # No-fabricación: el Brier es una probabilidad agregada, jamás fuera de rango.
+    assert 0.0 <= float(resumen["brier_score_qbe"]) <= 1.0
+    assert 0.0 <= float(resumen["brier_score_mercado"]) <= 1.0
+
+    if int(resumen["total_partidos"]) == 0:
+        # Definición canónica de qbe_core: sin muestra, 0.0 — nunca un "Brier perfecto" inventado.
+        assert float(resumen["brier_score_qbe"]) == 0.0
+
+    # El alias es byte-idéntico al canónico: cero divergencia de cifras.
+    assert cuerpo["resumen_temporada"] == canonica.json()["resumen_temporada"]
+    # `resumen_temporada` sigue siendo el alias sellado del agregado global.
+    assert cuerpo["resumen_temporada"] == cuerpo["resumen_global"]
+
+    # Deprecación declarada, no silenciosa.
+    assert respuesta.headers.get("deprecation", "").lower() == "true"
+    assert "successor-version" in respuesta.headers.get("link", "")

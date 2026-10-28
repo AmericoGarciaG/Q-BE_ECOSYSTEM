@@ -3,15 +3,19 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Query, Response
 from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 from src.core.contracts.portfolio_math import calcular_brier_multicategorico
+from src.models.web_schemas import CalibrationReportResponse as CanonicalReportResponse
 
 from app.adapters.db_readonly import BaseDatosSoloLectura
 from app.config import HISTORICO_DB
+from app.routes.backtesting import get_db_ro, reporte_calibracion_canonico
 
 router = APIRouter(prefix="/api/observatory", tags=["Observatory"])
 
@@ -62,6 +66,40 @@ def _desenlace(score_home: int, score_away: int) -> str:
     return "EMPATE"
 
 
+def _reporte_sin_historico(
+    ruta: Path, temporada: Optional[str]
+) -> CalibrationReportResponse:
+    """Degradación controlada cuando el histórico no está aprovisionado.
+
+    El arranque de la app no toca el archivo; sólo una consulta histórica lo
+    necesita. Si falta, se devuelve el contrato completo con cero partidos y una
+    nota accionable —jamás 500, jamás cifras inventadas— y `/visor` sigue
+    renderizando su estado vacío explícito.
+    """
+    nota = (
+        f"Histórico no aprovisionado en {ruta}. La app arranca y el visor sigue "
+        "disponible; aprovisione el archivo para evaluar la calibración."
+    )
+    return CalibrationReportResponse(
+        generado_en=datetime.now(timezone.utc),
+        liga="N/D",
+        temporada=temporada,
+        resumen_temporada=ResumenTemporada(
+            brier_qbe=0.0,
+            brier_mercado=None,
+            alpha_calibracion_pct=None,
+            n_partidos_qbe=0,
+            n_partidos_mercado=0,
+            brier_qbe_muestra_mercado=None,
+            fuente_qbe="no_disponible",
+            fuente_mercado="no_disponible",
+            mercado_disponible=False,
+            nota_metodologica=nota,
+        ),
+        jornadas=[],
+    )
+
+
 def construir_reporte(
     *,
     league_id: Optional[str] = None,
@@ -75,8 +113,16 @@ def construir_reporte(
     contiene 32 temporadas y mezclarlas en un mismo `jornada` produciría un
     agregado sin significado. D-1: el histórico no porta cuotas 1X2; el Brier de
     mercado y el Alpha se devuelven como `None` (nunca `0.0`).
+
+    Si el archivo histórico no existe (despliegue sin aprovisionar), se degrada
+    de forma controlada a un reporte vacío con nota explícita: sin excepción, sin
+    cifras fabricadas.
     """
-    base = BaseDatosSoloLectura(HISTORICO_DB)
+    ruta = Path(HISTORICO_DB)
+    if not ruta.is_file():
+        return _reporte_sin_historico(ruta, temporada)
+
+    base = BaseDatosSoloLectura(ruta)
     temporada_efectiva = temporada or _temporada_mas_reciente(base)
     sql = """
         SELECT m.id,
@@ -187,15 +233,39 @@ def construir_reporte(
     )
 
 
-@router.get("/calibration-report", response_model=CalibrationReportResponse)
+@router.get(
+    "/calibration-report",
+    response_model=CanonicalReportResponse,
+    deprecated=True,
+    summary="[OBSOLETO] Alias de /api/observatory/backtesting/calibration-report",
+)
 def reporte_calibracion(
-    league_id: Optional[str] = None,
-    temporada: Optional[str] = None,
-    incluir_mercado: bool = True,
-) -> CalibrationReportResponse:
-    """Reporte de calibración 100% de solo lectura."""
-    return construir_reporte(
-        league_id=league_id,
-        temporada=temporada,
-        incluir_mercado=incluir_mercado,
+    response: Response,
+    league_id: Optional[int] = Query(
+        None,
+        description="ID de liga de la bóveda 3NF (ej. 1 = Liga MX). Sin valor: universo global.",
+    ),
+    db: Session = Depends(get_db_ro),
+) -> Dict[str, Any]:
+    """[OBSOLETO desde 2026-10-28] Alias delgado del reporte canónico de calibración.
+
+    Resolución D-1 (`SPRINT-OBSERVATORY-SNAPSHOT-AND-ARCH-ALIGNMENT`): se unifica
+    la calibración en UN solo builder —`reporte_calibracion_canonico`, bóveda 3NF
+    del snapshot— para impedir que dos endpoints con el mismo nombre sirvan
+    universos distintos. Esta puerta permanece abierta sólo por compatibilidad y
+    se declara obsoleta en cabeceras y en OpenAPI.
+
+    Contrato anterior retirado (declarado, no silencioso): `temporada` e
+    `incluir_mercado` ya no existen aquí; el universo es la bóveda 3NF y el
+    reporte de temporada sobre `qbe_historico.db` sigue disponible en `/visor`
+    como ruta de presentación. Sin snapshot, ambos endpoints responden **503**
+    con instrucción de materialización, jamás 500.
+    """
+    response.headers["Deprecation"] = "true"
+    response.headers["Warning"] = (
+        '299 - "Endpoint obsoleto: use /api/observatory/backtesting/calibration-report"'
     )
+    response.headers["Link"] = (
+        '</api/observatory/backtesting/calibration-report>; rel="successor-version"'
+    )
+    return reporte_calibracion_canonico(db, league_id)

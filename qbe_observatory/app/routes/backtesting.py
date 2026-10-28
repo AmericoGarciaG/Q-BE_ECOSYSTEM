@@ -34,8 +34,22 @@ def _motor_solo_lectura():
     )
 
 
+def _detalle_snapshot_ausente() -> str:
+    """Mensaje accionable para el 503: dice qué falta y cómo resolverlo."""
+    return (
+        f"Snapshot de backtesting no disponible: {config.BACKTESTING_SNAPSHOT}. "
+        "Materialícelo con `python -m scripts.refresh_snapshot --max-age-minutes 60` "
+        "desde qbe_observatory/."
+    )
+
+
 def get_db_ro():
-    motor = _motor_solo_lectura()
+    try:
+        motor = _motor_solo_lectura()
+    except RuntimeError as exc:
+        # La ausencia del snapshot es un estado de servicio, no un fallo interno:
+        # 503 accionable, jamás un 500 opaco.
+        raise HTTPException(status_code=503, detail=_detalle_snapshot_ausente()) from exc
     sesion = sessionmaker(bind=motor)()
     try:
         yield sesion
@@ -48,7 +62,10 @@ class _ReadOnlyGateway:
     """Puerto mínimo que satisface a `simulation_engine` sin abrir escritura."""
 
     def __init__(self) -> None:
-        self.engine = _motor_solo_lectura()
+        try:
+            self.engine = _motor_solo_lectura()
+        except RuntimeError as exc:
+            raise HTTPException(status_code=503, detail=_detalle_snapshot_ausente()) from exc
         self.SessionFactory = sessionmaker(
             bind=self.engine,
             autocommit=False,
@@ -862,6 +879,18 @@ def _construir_reporte_calibracion(
         "resumen_calibrado": resumen_calibrado,
         "jornadas": jornadas,
     }
+
+
+def reporte_calibracion_canonico(
+    session: Session, league_id: Optional[int] = None
+) -> Dict[str, Any]:
+    """Punto público ÚNICO del reporte de calibración sobre la bóveda 3NF.
+
+    Existe para que ningún consumidor —incluido el alias deprecado de
+    `app.routes.calibration`— dependa de un símbolo privado ni reimplemente el
+    agregado. Una sola fuente de verdad, dos puertas: la canónica y la obsoleta.
+    """
+    return _construir_reporte_calibracion(session, league_id)
 
 
 @router.get("/backtesting/calibration-report", response_model=CalibrationReportResponse)

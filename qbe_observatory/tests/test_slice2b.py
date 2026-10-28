@@ -11,14 +11,9 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ECOSYSTEM_ROOT = PROJECT_ROOT.parent
-SNAPSHOT = (
-    ECOSYSTEM_ROOT.parent
-    / "Q_BE_CD_WEB"
-    / "data"
-    / "output"
-    / "backups"
-    / "qbe_database.baseline.db"
-)
+
+# Snapshot interno canónico (idéntico lógicamente al baseline congelado).
+SNAPSHOT = PROJECT_ROOT / "data" / "observatory_snapshot.db"
 
 
 def _hash(path: Path) -> str:
@@ -106,7 +101,9 @@ def test_refresco_atomico_no_muta_origen(tmp_path: Path) -> None:
 
     hash_antes = _hash(origen)
     destino = tmp_path / "observatory_snapshot.db"
-    resultado = refrescar_snapshot(origen, destino, max_age_minutes=60)
+    resultado = refrescar_snapshot(
+        origen, destino, max_age_minutes=60, exigir_contrato=False
+    )
 
     assert destino.is_file()
     assert snapshot_fresco(destino, 60) is True

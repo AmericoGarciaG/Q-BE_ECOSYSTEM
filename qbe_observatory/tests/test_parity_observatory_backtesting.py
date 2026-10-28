@@ -10,14 +10,11 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ECOSYSTEM_ROOT = PROJECT_ROOT.parent
-SNAPSHOT = (
-    ECOSYSTEM_ROOT.parent
-    / "Q_BE_CD_WEB"
-    / "data"
-    / "output"
-    / "backups"
-    / "qbe_database.baseline.db"
-)
+
+# Snapshot interno canónico. Es lógicamente idéntico al baseline congelado que
+# originó el Golden Master (17 tablas, 153 matches, fingerprint 8d21840a…);
+# sólo difiere el layout físico de SQLite. Ya no se depende del monolito.
+SNAPSHOT = PROJECT_ROOT / "data" / "observatory_snapshot.db"
 GOLDEN = Path(__file__).with_name("golden_master_backtesting.json")
 
 
@@ -33,8 +30,8 @@ def _preparar(tmp_path: Path) -> None:
 
     url = f"sqlite:///{base.as_posix()}"
     os.environ["DATABASE_URL"] = url
-    os.environ["OBS_HISTORICO_DB"] = str(
-        ECOSYSTEM_ROOT.parent / "Q_BE_CD_WEB" / "data" / "qbe_historico.db"
+    os.environ["QBE_HISTORICO_DB"] = str(
+        PROJECT_ROOT / "data" / "qbe_historico.db"
     )
     os.environ["OBS_BACKTESTING_SNAPSHOT"] = str(base.resolve())
 
