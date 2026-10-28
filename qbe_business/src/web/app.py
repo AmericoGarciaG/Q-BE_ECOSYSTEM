@@ -59,6 +59,17 @@ def _flags() -> dict[str, bool]:
     }
 
 
+# [D-4 / ARCH-ECOSYSTEM-SUBFASE4.1] Rutas-puente del Centro de Control: ya están
+# materializadas como proxy reverso hacia Ingesta (:8002), por lo que no son
+# superficie de UI bloqueable por flag. El resto de `/api/admin` sigue gobernado por
+# `QBE_FEATURE_ADMIN`; `/api/business/features` continúa declarando `admin: false`
+# hasta que la SPA reciba el flag de forma explícita.
+RUTAS_PUENTE_ADMIN = (
+    "/api/admin/status/drift",
+    "/api/admin/tasks/run",
+)
+
+
 @app.middleware("http")
 async def _fachada_gate(request: Request, call_next):
     """Los módulos no migrados no deben alcanzar routers ni servicios externos."""
@@ -70,10 +81,11 @@ async def _fachada_gate(request: Request, call_next):
             content={"detail": "Módulo no disponible en Business"},
         )
     if ruta.startswith("/api/admin") and not flags["admin"]:
-        return JSONResponse(
-            status_code=503,
-            content={"detail": "Módulo no disponible en Business"},
-        )
+        if ruta.rstrip("/") not in RUTAS_PUENTE_ADMIN:
+            return JSONResponse(
+                status_code=503,
+                content={"detail": "Módulo no disponible en Business"},
+            )
     return await call_next(request)
 
 

@@ -71,73 +71,15 @@ ESTADO_SIN_EVIDENCIA = "SIN EVIDENCIA"
 
 
 # ═════════════════════════════════════════════════════════════════════════════════════════════
-# [LN-QBE-109] CATÁLOGO INMUTABLE DE ALTITUDES DE ESTADIO (msnm)
-# Valores legislados en el Sprint de Contexto & Shocks. Cero calibración local: este catálogo
-# es un HECHO declarado, no una estimación. Slug ausente ⇒ None (SIN EVIDENCIA), jamás 0 m.
-# ═════════════════════════════════════════════════════════════════════════════════════════════
-CATALOGO_ALTITUDES_LIGAMX: Dict[str, float] = {
-    "deportivo-toluca": 2660.0,
-    "pachuca": 2400.0,
-    "club-puebla": 2135.0,
-    "pumas-unam": 2240.0,
-    "club-america": 2240.0,
-    "cruz-azul": 2240.0,
-    "atlante": 2240.0,
-    "chivas-guadalajara": 1560.0,
-    "atlas-fc": 1560.0,
-    "club-leon": 1815.0,
-    "queretaro-fc": 1820.0,
-    "club-necaxa": 1880.0,
-    "atletico-san-luis": 1860.0,
-    "fc-juarez": 1120.0,
-    "santos-laguna": 1120.0,
-    "tigres-uanl": 540.0,
-    "rayados-de-monterrey": 540.0,
-    "club-tijuana": 30.0,
-    "mazatlan-fc": 10.0,
-}
-
-# Deriva de nomenclatura viva (3NF / FotMob) → clave del catálogo legislado.
-# Sólo resuelve nombres: NO altera un solo valor numérico del catálogo.
-ALIAS_ALTITUDES: Dict[str, str] = {
-    "club-pachuca": "pachuca",
-    "necaxa": "club-necaxa",
-    "pumas": "pumas-unam",
-    "america": "club-america",
-    "chivas": "chivas-guadalajara",
-    "atlas": "atlas-fc",
-    "leon": "club-leon",
-    "queretaro": "queretaro-fc",
-    "san-luis": "atletico-san-luis",
-    "juarez": "fc-juarez",
-    "santos": "santos-laguna",
-    "tigres": "tigres-uanl",
-    "monterrey": "rayados-de-monterrey",
-    "tijuana": "club-tijuana",
-    "mazatlan": "mazatlan-fc",
-    "puebla": "club-puebla",
-    "toluca": "deportivo-toluca",
-    "club-atlante": "atlante",
-}
-
-
-def slug_canonico_altitud(home_slug: Optional[str]) -> Optional[str]:
-    """Resuelve el slug vivo al slug del catálogo de altitudes (alias declarado)."""
-    if not home_slug:
-        return None
-    clave = str(home_slug).lower().strip()
-    if clave in CATALOGO_ALTITUDES_LIGAMX:
-        return clave
-    return ALIAS_ALTITUDES.get(clave)
-
-
-def altitud_estadio(home_slug: Optional[str]) -> Optional[float]:
-    """Altitud oficial (msnm) del estadio del club; `None` si no está catalogado."""
-    canonico = slug_canonico_altitud(home_slug)
-    if canonico is None:
-        return None
-    return float(CATALOGO_ALTITUDES_LIGAMX[canonico])
-
+# [FASE3-RECONCILACION] CATALOGO_ALTITUDES_LIGAMX y altitud_estadio promovidos a qbe_core.
+# Fuente única de verdad: src.core.catalog (qbe_core/src/core/catalog.py)
+# [DIRGEN-STRICT] — No editar definiciones locales; editar la fuente en qbe_core.
+from src.core.catalog import (
+    CATALOGO_ALTITUDES_LIGAMX,
+    ALIAS_ALTITUDES,
+    altitud_estadio,
+    slug_canonico_altitud,
+)
 
 def _r(valor: Optional[float], decimales: int = 6) -> Optional[float]:
     """Redondeo seguro para serialización (None permanece None)."""

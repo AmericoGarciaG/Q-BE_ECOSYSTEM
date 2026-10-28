@@ -1,0 +1,1736 @@
+{
+  "catalogo_version": "32V-2026",
+  "cobertura": {
+    "V16": {
+      "equipos_con_dato": 0,
+      "motivo": "No existe leaderboard de equipo 'big chances concedidas' en `stats.teams` (28 tableros).",
+      "normalizacion": "fuera_de_fuente",
+      "tablero": null,
+      "unidad": null,
+      "variable": "V16"
+    },
+    "V26": {
+      "equipos_con_dato": 0,
+      "motivo": "H2H: se resuelve con el corpus propio de fixtures, no con leaderboards torneales.",
+      "normalizacion": "fuera_de_fuente",
+      "tablero": null,
+      "unidad": null,
+      "variable": "V26"
+    },
+    "V27": {
+      "equipos_con_dato": 0,
+      "motivo": "H2H: se resuelve con el corpus propio de fixtures, no con leaderboards torneales.",
+      "normalizacion": "fuera_de_fuente",
+      "tablero": null,
+      "unidad": null,
+      "variable": "V27"
+    },
+    "V28": {
+      "equipos_con_dato": 0,
+      "motivo": "Récord del visitante en sede: corpus propio de fixtures.",
+      "normalizacion": "fuera_de_fuente",
+      "tablero": null,
+      "unidad": null,
+      "variable": "V28"
+    },
+    "V29": {
+      "equipos_con_dato": 0,
+      "motivo": "Altitud: catálogo de sedes (`FIXTURE`), no leaderboard del proveedor.",
+      "normalizacion": "fuera_de_fuente",
+      "tablero": null,
+      "unidad": null,
+      "variable": "V29"
+    },
+    "V30": {
+      "equipos_con_dato": 0,
+      "motivo": "Δ descanso: calendario propio (`FIXTURE`), no leaderboard del proveedor.",
+      "normalizacion": "fuera_de_fuente",
+      "tablero": null,
+      "unidad": null,
+      "variable": "V30"
+    },
+    "V31": {
+      "equipos_con_dato": 0,
+      "motivo": "Forma 5P: derivada del historial propio de resultados (`Q-BE`).",
+      "normalizacion": "fuera_de_fuente",
+      "tablero": null,
+      "unidad": null,
+      "variable": "V31"
+    },
+    "V32": {
+      "equipos_con_dato": 0,
+      "motivo": "Varianza ΔxPTS: derivada del historial propio de resultados (`Q-BE`).",
+      "normalizacion": "fuera_de_fuente",
+      "tablero": null,
+      "unidad": null,
+      "variable": "V32"
+    },
+    "accurate_long_balls_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "publicado",
+      "tablero": "accurate_long_balls_team",
+      "unidad": "pases largos/PJ",
+      "variable": "V04"
+    },
+    "accurate_passes_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "publicado",
+      "tablero": "accurate_pass_team",
+      "unidad": "pases/PJ",
+      "variable": "V03"
+    },
+    "big_chances_created_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "entre_pj",
+      "tablero": "big_chance_team",
+      "unidad": "big chances/PJ",
+      "variable": "V08"
+    },
+    "big_chances_missed_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "entre_pj",
+      "tablero": "big_chance_missed_team",
+      "unidad": "big chances falladas/PJ",
+      "variable": "V09"
+    },
+    "clean_sheets": {
+      "equipos_con_dato": 17,
+      "normalizacion": "acumulado",
+      "tablero": "clean_sheet_team",
+      "unidad": "porterías a cero (total)",
+      "variable": "V20"
+    },
+    "clearances_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "publicado",
+      "tablero": "effective_clearance_team",
+      "unidad": "despejes/PJ",
+      "variable": "V14"
+    },
+    "corners_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "entre_pj",
+      "tablero": "corner_taken_team",
+      "unidad": "córners/PJ",
+      "variable": "V23"
+    },
+    "defensive_actions_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "derivada",
+      "tablero": "tackles_per_match+clearances_per_match+interceptions_per_match",
+      "unidad": "acciones defensivas/PJ",
+      "variable": "V14"
+    },
+    "fouls_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "publicado",
+      "tablero": "fk_foul_lost_team",
+      "unidad": "faltas/PJ",
+      "variable": "V05"
+    },
+    "goals_conceded_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "publicado",
+      "tablero": "goals_conceded_team_match",
+      "unidad": "goles recibidos/PJ",
+      "variable": "-"
+    },
+    "goals_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "publicado",
+      "tablero": "goals_team_match",
+      "unidad": "goles/PJ",
+      "variable": "-"
+    },
+    "goals_prevented_squad": {
+      "equipos_con_dato": 18,
+      "normalizacion": "suma",
+      "tablero": "_goals_prevented",
+      "unidad": "goles evitados acumulados TOP",
+      "variable": "V17"
+    },
+    "interceptions_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "publicado",
+      "tablero": "interception_team",
+      "unidad": "intercepciones/PJ",
+      "variable": "V15"
+    },
+    "penalties_conceded_total": {
+      "equipos_con_dato": 18,
+      "normalizacion": "acumulado",
+      "tablero": "penalty_conceded_team",
+      "unidad": "penales en contra (total)",
+      "variable": "V24"
+    },
+    "penalties_won_total": {
+      "equipos_con_dato": 18,
+      "normalizacion": "acumulado",
+      "tablero": "penalty_won_team",
+      "unidad": "penales a favor (total)",
+      "variable": "V24"
+    },
+    "possession_pct": {
+      "equipos_con_dato": 18,
+      "normalizacion": "publicado",
+      "tablero": "possession_percentage_team",
+      "unidad": "%",
+      "variable": "V01"
+    },
+    "red_cards_per_match": {
+      "equipos_con_dato": 16,
+      "normalizacion": "entre_pj",
+      "tablero": "total_red_card_team",
+      "unidad": "rojas/PJ",
+      "variable": "V25"
+    },
+    "save_percentage": {
+      "equipos_con_dato": 18,
+      "normalizacion": "max",
+      "tablero": "_save_percentage",
+      "unidad": "%",
+      "variable": "V18"
+    },
+    "saves_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "publicado",
+      "tablero": "saves_team",
+      "unidad": "atajadas/PJ",
+      "variable": "V20"
+    },
+    "set_piece_goals_conceded_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "entre_pj",
+      "tablero": "_set_piece_goals_conceded_team",
+      "unidad": "goles ABP recibidos/PJ",
+      "variable": "V22"
+    },
+    "set_piece_goals_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "entre_pj",
+      "tablero": "_set_piece_goals_team",
+      "unidad": "goles ABP/PJ",
+      "variable": "V21"
+    },
+    "sot_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "publicado",
+      "tablero": "ontarget_scoring_att_team",
+      "unidad": "tiros al arco/PJ",
+      "variable": "V07"
+    },
+    "sota_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "derivada",
+      "tablero": "saves_per_match+goals_conceded_per_match",
+      "unidad": "tiros al arco recibidos/PJ",
+      "variable": "V13"
+    },
+    "sweeper_actions": {
+      "equipos_con_dato": 18,
+      "normalizacion": "max",
+      "tablero": "total_keeper_sweeper",
+      "unidad": "salidas/90'",
+      "variable": "V19"
+    },
+    "tackles_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "publicado",
+      "tablero": "total_tackle_team",
+      "unidad": "entradas/PJ",
+      "variable": "V14"
+    },
+    "touches_opp_box_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "entre_pj",
+      "tablero": "touches_in_opp_box_team",
+      "unidad": "toques/PJ",
+      "variable": "V02"
+    },
+    "xa_squad": {
+      "equipos_con_dato": 18,
+      "normalizacion": "suma",
+      "tablero": "expected_assists",
+      "unidad": "xA acumulada TOP",
+      "variable": "V11"
+    },
+    "xg_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "entre_pj",
+      "tablero": "expected_goals_team",
+      "unidad": "xG/PJ",
+      "variable": "V06"
+    },
+    "xga_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "entre_pj",
+      "tablero": "expected_goals_conceded_team",
+      "unidad": "xGA/PJ",
+      "variable": "V12"
+    },
+    "xgot_squad": {
+      "equipos_con_dato": 18,
+      "normalizacion": "suma",
+      "tablero": "expected_goalsontarget",
+      "unidad": "xGOT acumulado TOP",
+      "variable": "V10"
+    },
+    "yellow_cards_per_match": {
+      "equipos_con_dato": 18,
+      "normalizacion": "entre_pj",
+      "tablero": "total_yel_card_team",
+      "unidad": "amarillas/PJ",
+      "variable": "V25"
+    }
+  },
+  "derivaciones": [
+    {
+      "clave": "sota_per_match",
+      "nota": "Identidad de conjunto: SoTA ≈ atajadas + goles recibidos por partido (sin bloqueos ni palos).",
+      "suma": [
+        "saves_per_match",
+        "goals_conceded_per_match"
+      ],
+      "unidad": "tiros al arco recibidos/PJ",
+      "variable": "V13"
+    },
+    {
+      "clave": "defensive_actions_per_match",
+      "nota": "Agregado declarado de tres leaderboards de equipo ya normalizados por partido.",
+      "suma": [
+        "tackles_per_match",
+        "clearances_per_match",
+        "interceptions_per_match"
+      ],
+      "unidad": "acciones defensivas/PJ",
+      "variable": "V14"
+    }
+  ],
+  "endpoint": "https://www.fotmob.com/api/data/leagues?id=230&tab=stats",
+  "equipos": {
+    "atlante": {
+      "accurate_long_balls_per_match": 19.4,
+      "accurate_passes_per_match": 289.4,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 27
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 16
+        }
+      },
+      "big_chances_created_per_match": 2.3571,
+      "big_chances_missed_per_match": 1.7143,
+      "clean_sheets": 2.0,
+      "clearances_per_match": 26.6,
+      "corners_per_match": 5.5,
+      "defensive_actions_per_match": 57.0,
+      "fouls_per_match": 14.4,
+      "goals_conceded_per_match": 1.4,
+      "goals_per_match": 1.0,
+      "goals_prevented_squad": -2.1,
+      "interceptions_per_match": 10.1,
+      "nombre_fuente": "Atlante",
+      "partidos_jugados": 14,
+      "penalties_conceded_total": 4.0,
+      "penalties_won_total": 4.0,
+      "possession_pct": 43.0,
+      "red_cards_per_match": 0.0714,
+      "save_percentage": 70.1,
+      "saves_per_match": 3.4,
+      "set_piece_goals_conceded_per_match": 0.1429,
+      "set_piece_goals_per_match": 0.1429,
+      "slug": "atlante",
+      "sot_per_match": 5.2,
+      "sota_per_match": 4.8,
+      "sweeper_actions": 0.4,
+      "tackles_per_match": 20.3,
+      "team_id": 1942,
+      "touches_opp_box_per_match": 21.0714,
+      "xa_squad": 10.3,
+      "xg_per_match": 1.4,
+      "xga_per_match": 1.3357,
+      "xgot_squad": 19.5,
+      "yellow_cards_per_match": 1.7857
+    },
+    "atlas-fc": {
+      "accurate_long_balls_per_match": 24.9,
+      "accurate_passes_per_match": 351.1,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 27
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 15
+        }
+      },
+      "big_chances_created_per_match": 2.4286,
+      "big_chances_missed_per_match": 1.2857,
+      "clean_sheets": 3.0,
+      "clearances_per_match": 23.9,
+      "corners_per_match": 6.0714,
+      "defensive_actions_per_match": 52.8,
+      "fouls_per_match": 11.6,
+      "goals_conceded_per_match": 1.9,
+      "goals_per_match": 1.8,
+      "goals_prevented_squad": 0.0,
+      "interceptions_per_match": 10.6,
+      "nombre_fuente": "Atlas",
+      "partidos_jugados": 14,
+      "penalties_conceded_total": 7.0,
+      "penalties_won_total": 3.0,
+      "possession_pct": 52.2,
+      "red_cards_per_match": 0.3571,
+      "save_percentage": 58.6,
+      "saves_per_match": 2.9,
+      "set_piece_goals_conceded_per_match": 0.1429,
+      "set_piece_goals_per_match": 0.3571,
+      "slug": "atlas-fc",
+      "sot_per_match": 4.3,
+      "sota_per_match": 4.8,
+      "sweeper_actions": 0.1,
+      "tackles_per_match": 18.3,
+      "team_id": 6577,
+      "touches_opp_box_per_match": 21.8571,
+      "xa_squad": 13.0,
+      "xg_per_match": 1.45,
+      "xga_per_match": 1.75,
+      "xgot_squad": 20.5,
+      "yellow_cards_per_match": 1.7143
+    },
+    "atletico-san-luis": {
+      "accurate_long_balls_per_match": 18.7,
+      "accurate_passes_per_match": 421.3,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 2
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 2
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 23
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 14
+        }
+      },
+      "big_chances_created_per_match": 2.2143,
+      "big_chances_missed_per_match": 1.5714,
+      "clean_sheets": 2.0,
+      "clearances_per_match": 26.1,
+      "corners_per_match": 3.0714,
+      "defensive_actions_per_match": 51.2,
+      "fouls_per_match": 9.5,
+      "goals_conceded_per_match": 1.6,
+      "goals_per_match": 1.4,
+      "goals_prevented_squad": -0.3,
+      "interceptions_per_match": 7.9,
+      "nombre_fuente": "Atlético de San Luis",
+      "partidos_jugados": 14,
+      "penalties_conceded_total": 4.0,
+      "penalties_won_total": 2.0,
+      "possession_pct": 51.7,
+      "red_cards_per_match": 0.0714,
+      "save_percentage": 79.2,
+      "saves_per_match": 4.1,
+      "set_piece_goals_conceded_per_match": 0.4286,
+      "set_piece_goals_per_match": 0.2143,
+      "slug": "atletico-san-luis",
+      "sot_per_match": 4.2,
+      "sota_per_match": 5.7,
+      "sweeper_actions": 0.6,
+      "tackles_per_match": 17.2,
+      "team_id": 6358,
+      "touches_opp_box_per_match": 17.2857,
+      "xa_squad": 11.2,
+      "xg_per_match": 1.2357,
+      "xga_per_match": 1.65,
+      "xgot_squad": 16.1,
+      "yellow_cards_per_match": 0.9286
+    },
+    "chivas-guadalajara": {
+      "accurate_long_balls_per_match": 25.1,
+      "accurate_passes_per_match": 481.6,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 27
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 18
+        }
+      },
+      "big_chances_created_per_match": 2.6429,
+      "big_chances_missed_per_match": 1.7143,
+      "clean_sheets": 6.0,
+      "clearances_per_match": 23.9,
+      "corners_per_match": 7.7857,
+      "defensive_actions_per_match": 48.2,
+      "fouls_per_match": 12.2,
+      "goals_conceded_per_match": 0.9,
+      "goals_per_match": 1.5,
+      "goals_prevented_squad": 1.6,
+      "interceptions_per_match": 8.6,
+      "nombre_fuente": "Chivas",
+      "partidos_jugados": 14,
+      "penalties_conceded_total": 3.0,
+      "penalties_won_total": 3.0,
+      "possession_pct": 58.5,
+      "red_cards_per_match": 0.2143,
+      "save_percentage": 81.1,
+      "saves_per_match": 3.4,
+      "set_piece_goals_conceded_per_match": 0.0,
+      "set_piece_goals_per_match": 0.2857,
+      "slug": "chivas-guadalajara",
+      "sot_per_match": 5.6,
+      "sota_per_match": 4.3,
+      "sweeper_actions": 1.2,
+      "tackles_per_match": 15.7,
+      "team_id": 7807,
+      "touches_opp_box_per_match": 27.6429,
+      "xa_squad": 17.8,
+      "xg_per_match": 1.5286,
+      "xga_per_match": 1.0429,
+      "xgot_squad": 21.4,
+      "yellow_cards_per_match": 1.0714
+    },
+    "club-america": {
+      "accurate_long_balls_per_match": 30.2,
+      "accurate_passes_per_match": 367.5,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 31
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 20
+        }
+      },
+      "big_chances_created_per_match": 2.5385,
+      "big_chances_missed_per_match": 1.1538,
+      "clean_sheets": 4.0,
+      "clearances_per_match": 21.6,
+      "corners_per_match": 6.2308,
+      "defensive_actions_per_match": 47.0,
+      "fouls_per_match": 13.5,
+      "goals_conceded_per_match": 1.4,
+      "goals_per_match": 2.5,
+      "goals_prevented_squad": 1.2,
+      "interceptions_per_match": 9.2,
+      "nombre_fuente": "CF América",
+      "partidos_jugados": 13,
+      "penalties_conceded_total": 3.0,
+      "penalties_won_total": 5.0,
+      "possession_pct": 54.4,
+      "red_cards_per_match": 0.1538,
+      "save_percentage": 71.4,
+      "saves_per_match": 3.3,
+      "set_piece_goals_conceded_per_match": 0.3846,
+      "set_piece_goals_per_match": 0.4615,
+      "slug": "club-america",
+      "sot_per_match": 7.5,
+      "sota_per_match": 4.7,
+      "sweeper_actions": 0.4,
+      "tackles_per_match": 16.2,
+      "team_id": 6576,
+      "touches_opp_box_per_match": 27.2308,
+      "xa_squad": 15.0,
+      "xg_per_match": 2.0077,
+      "xga_per_match": 1.4769,
+      "xgot_squad": 25.8,
+      "yellow_cards_per_match": 1.6154
+    },
+    "club-leon": {
+      "accurate_long_balls_per_match": 21.9,
+      "accurate_passes_per_match": 333.0,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 23
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 14
+        }
+      },
+      "big_chances_created_per_match": 2.7143,
+      "big_chances_missed_per_match": 1.7143,
+      "clean_sheets": 4.0,
+      "clearances_per_match": 25.5,
+      "corners_per_match": 4.1429,
+      "defensive_actions_per_match": 51.7,
+      "fouls_per_match": 12.1,
+      "goals_conceded_per_match": 1.3,
+      "goals_per_match": 1.5,
+      "goals_prevented_squad": -0.8,
+      "interceptions_per_match": 7.5,
+      "nombre_fuente": "León",
+      "partidos_jugados": 14,
+      "penalties_conceded_total": 5.0,
+      "penalties_won_total": 3.0,
+      "possession_pct": 47.9,
+      "red_cards_per_match": 0.2857,
+      "save_percentage": 72.4,
+      "saves_per_match": 3.4,
+      "set_piece_goals_conceded_per_match": 0.2143,
+      "set_piece_goals_per_match": 0.2143,
+      "slug": "club-leon",
+      "sot_per_match": 5.6,
+      "sota_per_match": 4.7,
+      "sweeper_actions": 0.6,
+      "tackles_per_match": 18.7,
+      "team_id": 1841,
+      "touches_opp_box_per_match": 20.2857,
+      "xa_squad": 13.9,
+      "xg_per_match": 1.4857,
+      "xga_per_match": 1.4571,
+      "xgot_squad": 21.2,
+      "yellow_cards_per_match": 1.9286
+    },
+    "club-pachuca": {
+      "accurate_long_balls_per_match": 31.4,
+      "accurate_passes_per_match": 311.9,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 24
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 15
+        }
+      },
+      "big_chances_created_per_match": 3.0,
+      "big_chances_missed_per_match": 2.0,
+      "clean_sheets": 3.0,
+      "clearances_per_match": 21.8,
+      "corners_per_match": 4.9286,
+      "defensive_actions_per_match": 47.4,
+      "fouls_per_match": 15.4,
+      "goals_conceded_per_match": 1.4,
+      "goals_per_match": 1.6,
+      "goals_prevented_squad": 1.6,
+      "interceptions_per_match": 8.1,
+      "nombre_fuente": "Pachuca",
+      "partidos_jugados": 14,
+      "penalties_conceded_total": 6.0,
+      "penalties_won_total": 2.0,
+      "possession_pct": 47.2,
+      "red_cards_per_match": 0.1429,
+      "save_percentage": 71.6,
+      "saves_per_match": 3.4,
+      "set_piece_goals_conceded_per_match": 0.2143,
+      "set_piece_goals_per_match": 0.2857,
+      "slug": "club-pachuca",
+      "sot_per_match": 4.5,
+      "sota_per_match": 4.8,
+      "sweeper_actions": 0.3,
+      "tackles_per_match": 17.5,
+      "team_id": 7848,
+      "touches_opp_box_per_match": 21.1429,
+      "xa_squad": 12.8,
+      "xg_per_match": 1.3286,
+      "xga_per_match": 1.8214,
+      "xgot_squad": 17.1,
+      "yellow_cards_per_match": 2.9286
+    },
+    "club-puebla": {
+      "accurate_long_balls_per_match": 25.6,
+      "accurate_passes_per_match": 291.8,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 23
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 17
+        }
+      },
+      "big_chances_created_per_match": 0.9286,
+      "big_chances_missed_per_match": 0.6429,
+      "clean_sheets": 3.0,
+      "clearances_per_match": 27.1,
+      "corners_per_match": 4.2143,
+      "defensive_actions_per_match": 53.2,
+      "fouls_per_match": 9.9,
+      "goals_conceded_per_match": 1.5,
+      "goals_per_match": 1.1,
+      "goals_prevented_squad": -0.3,
+      "interceptions_per_match": 8.3,
+      "nombre_fuente": "Puebla",
+      "partidos_jugados": 14,
+      "penalties_conceded_total": 2.0,
+      "penalties_won_total": 1.0,
+      "possession_pct": 42.7,
+      "red_cards_per_match": 0.1429,
+      "save_percentage": 67.7,
+      "saves_per_match": 3.1,
+      "set_piece_goals_conceded_per_match": 0.3571,
+      "set_piece_goals_per_match": 0.3571,
+      "slug": "club-puebla",
+      "sot_per_match": 4.1,
+      "sota_per_match": 4.6,
+      "sweeper_actions": 0.9,
+      "tackles_per_match": 17.8,
+      "team_id": 7847,
+      "touches_opp_box_per_match": 16.6429,
+      "xa_squad": 8.0,
+      "xg_per_match": 0.9357,
+      "xga_per_match": 1.4857,
+      "xgot_squad": 12.6,
+      "yellow_cards_per_match": 1.0714
+    },
+    "club-tijuana": {
+      "accurate_long_balls_per_match": 32.7,
+      "accurate_passes_per_match": 297.1,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 23
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 13
+        }
+      },
+      "big_chances_created_per_match": 2.9231,
+      "big_chances_missed_per_match": 1.8462,
+      "clean_sheets": 4.0,
+      "clearances_per_match": 33.3,
+      "corners_per_match": 4.6923,
+      "defensive_actions_per_match": 62.1,
+      "fouls_per_match": 10.1,
+      "goals_conceded_per_match": 1.3,
+      "goals_per_match": 1.6,
+      "goals_prevented_squad": 1.3,
+      "interceptions_per_match": 10.4,
+      "nombre_fuente": "Tijuana",
+      "partidos_jugados": 13,
+      "penalties_conceded_total": 2.0,
+      "penalties_won_total": 8.0,
+      "possession_pct": 43.3,
+      "save_percentage": 73.8,
+      "saves_per_match": 3.7,
+      "set_piece_goals_conceded_per_match": 0.3077,
+      "set_piece_goals_per_match": 0.3077,
+      "slug": "club-tijuana",
+      "sot_per_match": 4.3,
+      "sota_per_match": 5.0,
+      "sweeper_actions": 0.2,
+      "tackles_per_match": 18.4,
+      "team_id": 162418,
+      "touches_opp_box_per_match": 19.6154,
+      "xa_squad": 13.1,
+      "xg_per_match": 1.8385,
+      "xga_per_match": 1.3154,
+      "xgot_squad": 19.6,
+      "yellow_cards_per_match": 1.6154
+    },
+    "cruz-azul": {
+      "accurate_long_balls_per_match": 29.9,
+      "accurate_passes_per_match": 405.6,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 27
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 18
+        }
+      },
+      "big_chances_created_per_match": 3.4286,
+      "big_chances_missed_per_match": 1.9286,
+      "clean_sheets": 2.0,
+      "clearances_per_match": 18.1,
+      "corners_per_match": 6.0714,
+      "defensive_actions_per_match": 43.6,
+      "fouls_per_match": 11.1,
+      "goals_conceded_per_match": 1.6,
+      "goals_per_match": 2.3,
+      "goals_prevented_squad": -3.0,
+      "interceptions_per_match": 9.1,
+      "nombre_fuente": "Cruz Azul",
+      "partidos_jugados": 14,
+      "penalties_conceded_total": 2.0,
+      "penalties_won_total": 5.0,
+      "possession_pct": 56.3,
+      "save_percentage": 65.9,
+      "saves_per_match": 3.5,
+      "set_piece_goals_conceded_per_match": 0.1429,
+      "set_piece_goals_per_match": 0.3571,
+      "slug": "cruz-azul",
+      "sot_per_match": 7.3,
+      "sota_per_match": 5.1,
+      "sweeper_actions": 0.1,
+      "tackles_per_match": 16.4,
+      "team_id": 6578,
+      "touches_opp_box_per_match": 26.9286,
+      "xa_squad": 19.3,
+      "xg_per_match": 1.9786,
+      "xga_per_match": 1.2929,
+      "xgot_squad": 24.8,
+      "yellow_cards_per_match": 2.0
+    },
+    "deportivo-toluca": {
+      "accurate_long_balls_per_match": 29.5,
+      "accurate_passes_per_match": 461.1,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 29
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 17
+        }
+      },
+      "big_chances_created_per_match": 2.8571,
+      "big_chances_missed_per_match": 1.7143,
+      "clean_sheets": 4.0,
+      "clearances_per_match": 20.3,
+      "corners_per_match": 7.2143,
+      "defensive_actions_per_match": 47.8,
+      "fouls_per_match": 11.6,
+      "goals_conceded_per_match": 1.4,
+      "goals_per_match": 2.1,
+      "goals_prevented_squad": -0.9,
+      "interceptions_per_match": 10.4,
+      "nombre_fuente": "Toluca",
+      "partidos_jugados": 14,
+      "penalties_conceded_total": 1.0,
+      "penalties_won_total": 4.0,
+      "possession_pct": 61.4,
+      "red_cards_per_match": 0.1429,
+      "save_percentage": 70.7,
+      "saves_per_match": 3.3,
+      "set_piece_goals_conceded_per_match": 0.3571,
+      "set_piece_goals_per_match": 0.3571,
+      "slug": "deportivo-toluca",
+      "sot_per_match": 6.1,
+      "sota_per_match": 4.7,
+      "sweeper_actions": 1.3,
+      "tackles_per_match": 17.1,
+      "team_id": 6618,
+      "touches_opp_box_per_match": 29.4286,
+      "xa_squad": 19.8,
+      "xg_per_match": 1.9857,
+      "xga_per_match": 1.2643,
+      "xgot_squad": 25.0,
+      "yellow_cards_per_match": 1.3571
+    },
+    "fc-juarez": {
+      "accurate_long_balls_per_match": 25.2,
+      "accurate_passes_per_match": 307.1,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 27
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 11
+        }
+      },
+      "big_chances_created_per_match": 1.7143,
+      "big_chances_missed_per_match": 1.1429,
+      "clean_sheets": 1.0,
+      "clearances_per_match": 27.2,
+      "corners_per_match": 4.2857,
+      "defensive_actions_per_match": 49.8,
+      "fouls_per_match": 12.6,
+      "goals_conceded_per_match": 2.4,
+      "goals_per_match": 0.6,
+      "goals_prevented_squad": -2.7,
+      "interceptions_per_match": 9.2,
+      "nombre_fuente": "FC Juárez",
+      "partidos_jugados": 14,
+      "penalties_conceded_total": 5.0,
+      "penalties_won_total": 3.0,
+      "possession_pct": 46.4,
+      "red_cards_per_match": 0.0714,
+      "save_percentage": 65.3,
+      "saves_per_match": 4.4,
+      "set_piece_goals_conceded_per_match": 0.4286,
+      "set_piece_goals_per_match": 0.1429,
+      "slug": "fc-juarez",
+      "sot_per_match": 2.6,
+      "sota_per_match": 6.8,
+      "sweeper_actions": 0.5,
+      "tackles_per_match": 13.4,
+      "team_id": 649424,
+      "touches_opp_box_per_match": 14.0,
+      "xa_squad": 8.2,
+      "xg_per_match": 1.0071,
+      "xga_per_match": 1.9786,
+      "xgot_squad": 9.1,
+      "yellow_cards_per_match": 2.7857
+    },
+    "necaxa": {
+      "accurate_long_balls_per_match": 26.9,
+      "accurate_passes_per_match": 323.6,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 27
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 16
+        }
+      },
+      "big_chances_created_per_match": 2.9286,
+      "big_chances_missed_per_match": 1.8571,
+      "clearances_per_match": 25.2,
+      "corners_per_match": 5.6429,
+      "defensive_actions_per_match": 48.6,
+      "fouls_per_match": 13.6,
+      "goals_conceded_per_match": 1.9,
+      "goals_per_match": 1.1,
+      "goals_prevented_squad": -1.8,
+      "interceptions_per_match": 8.4,
+      "nombre_fuente": "Necaxa",
+      "partidos_jugados": 14,
+      "penalties_conceded_total": 3.0,
+      "penalties_won_total": 5.0,
+      "possession_pct": 48.6,
+      "red_cards_per_match": 0.2143,
+      "save_percentage": 66.1,
+      "saves_per_match": 3.6,
+      "set_piece_goals_conceded_per_match": 0.6429,
+      "set_piece_goals_per_match": 0.3571,
+      "slug": "necaxa",
+      "sot_per_match": 4.9,
+      "sota_per_match": 5.5,
+      "sweeper_actions": 0.9,
+      "tackles_per_match": 15.0,
+      "team_id": 1842,
+      "touches_opp_box_per_match": 21.9286,
+      "xa_squad": 13.4,
+      "xg_per_match": 1.8357,
+      "xga_per_match": 1.6357,
+      "xgot_squad": 19.4,
+      "yellow_cards_per_match": 2.0714
+    },
+    "pumas-unam": {
+      "accurate_long_balls_per_match": 26.6,
+      "accurate_passes_per_match": 317.8,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 25
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 16
+        }
+      },
+      "big_chances_created_per_match": 1.3571,
+      "big_chances_missed_per_match": 0.6429,
+      "clean_sheets": 1.0,
+      "clearances_per_match": 25.8,
+      "corners_per_match": 5.1429,
+      "defensive_actions_per_match": 47.2,
+      "fouls_per_match": 11.2,
+      "goals_conceded_per_match": 1.6,
+      "goals_per_match": 1.4,
+      "goals_prevented_squad": -3.6,
+      "interceptions_per_match": 8.2,
+      "nombre_fuente": "Pumas",
+      "partidos_jugados": 14,
+      "penalties_conceded_total": 6.0,
+      "penalties_won_total": 2.0,
+      "possession_pct": 45.9,
+      "red_cards_per_match": 0.2857,
+      "save_percentage": 64.6,
+      "saves_per_match": 3.0,
+      "set_piece_goals_conceded_per_match": 0.0714,
+      "set_piece_goals_per_match": 0.2857,
+      "slug": "pumas-unam",
+      "sot_per_match": 3.7,
+      "sota_per_match": 4.6,
+      "sweeper_actions": 0.2,
+      "tackles_per_match": 13.2,
+      "team_id": 1946,
+      "touches_opp_box_per_match": 20.5,
+      "xa_squad": 11.1,
+      "xg_per_match": 1.05,
+      "xga_per_match": 1.5643,
+      "xgot_squad": 13.3,
+      "yellow_cards_per_match": 1.2857
+    },
+    "queretaro-fc": {
+      "accurate_long_balls_per_match": 25.0,
+      "accurate_passes_per_match": 264.2,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 24
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 13
+        }
+      },
+      "big_chances_created_per_match": 2.3077,
+      "big_chances_missed_per_match": 1.2308,
+      "clean_sheets": 4.0,
+      "clearances_per_match": 30.3,
+      "corners_per_match": 4.5385,
+      "defensive_actions_per_match": 56.3,
+      "fouls_per_match": 11.9,
+      "goals_conceded_per_match": 1.4,
+      "goals_per_match": 1.3,
+      "goals_prevented_squad": 1.2,
+      "interceptions_per_match": 10.0,
+      "nombre_fuente": "Querétaro FC",
+      "partidos_jugados": 13,
+      "penalties_conceded_total": 7.0,
+      "penalties_won_total": 5.0,
+      "possession_pct": 40.5,
+      "red_cards_per_match": 0.0769,
+      "save_percentage": 72.3,
+      "saves_per_match": 3.6,
+      "set_piece_goals_conceded_per_match": 0.0769,
+      "set_piece_goals_per_match": 0.0769,
+      "slug": "queretaro-fc",
+      "sot_per_match": 3.9,
+      "sota_per_match": 5.0,
+      "sweeper_actions": 0.1,
+      "tackles_per_match": 16.0,
+      "team_id": 1943,
+      "touches_opp_box_per_match": 17.6923,
+      "xa_squad": 11.2,
+      "xg_per_match": 1.5615,
+      "xga_per_match": 1.7692,
+      "xgot_squad": 16.8,
+      "yellow_cards_per_match": 2.9231
+    },
+    "rayados-de-monterrey": {
+      "accurate_long_balls_per_match": 30.9,
+      "accurate_passes_per_match": 412.8,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 27
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 16
+        }
+      },
+      "big_chances_created_per_match": 2.7692,
+      "big_chances_missed_per_match": 1.7692,
+      "clean_sheets": 3.0,
+      "clearances_per_match": 17.8,
+      "corners_per_match": 6.4615,
+      "defensive_actions_per_match": 46.6,
+      "fouls_per_match": 12.2,
+      "goals_conceded_per_match": 1.4,
+      "goals_per_match": 1.8,
+      "goals_prevented_squad": 2.6,
+      "interceptions_per_match": 12.3,
+      "nombre_fuente": "Monterrey",
+      "partidos_jugados": 13,
+      "penalties_conceded_total": 1.0,
+      "penalties_won_total": 4.0,
+      "possession_pct": 56.0,
+      "red_cards_per_match": 0.3077,
+      "save_percentage": 75.8,
+      "saves_per_match": 2.9,
+      "set_piece_goals_conceded_per_match": 0.4615,
+      "set_piece_goals_per_match": 0.5385,
+      "slug": "rayados-de-monterrey",
+      "sot_per_match": 5.8,
+      "sota_per_match": 4.3,
+      "sweeper_actions": 0.1,
+      "tackles_per_match": 16.5,
+      "team_id": 7849,
+      "touches_opp_box_per_match": 24.8462,
+      "xa_squad": 12.7,
+      "xg_per_match": 1.5923,
+      "xga_per_match": 1.4154,
+      "xgot_squad": 26.4,
+      "yellow_cards_per_match": 1.6923
+    },
+    "santos-laguna": {
+      "accurate_long_balls_per_match": 28.2,
+      "accurate_passes_per_match": 404.6,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 26
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 17
+        }
+      },
+      "big_chances_created_per_match": 2.5714,
+      "big_chances_missed_per_match": 1.5714,
+      "clean_sheets": 4.0,
+      "clearances_per_match": 21.5,
+      "corners_per_match": 6.8571,
+      "defensive_actions_per_match": 43.7,
+      "fouls_per_match": 10.6,
+      "goals_conceded_per_match": 1.4,
+      "goals_per_match": 1.4,
+      "goals_prevented_squad": -2.0,
+      "interceptions_per_match": 7.5,
+      "nombre_fuente": "Santos Laguna",
+      "partidos_jugados": 14,
+      "penalties_conceded_total": 2.0,
+      "penalties_won_total": 6.0,
+      "possession_pct": 52.4,
+      "red_cards_per_match": 0.0714,
+      "save_percentage": 73.0,
+      "saves_per_match": 3.9,
+      "set_piece_goals_conceded_per_match": 0.5,
+      "set_piece_goals_per_match": 0.1429,
+      "slug": "santos-laguna",
+      "sot_per_match": 4.4,
+      "sota_per_match": 5.3,
+      "sweeper_actions": 0.4,
+      "tackles_per_match": 14.7,
+      "team_id": 7857,
+      "touches_opp_box_per_match": 21.7143,
+      "xa_squad": 14.9,
+      "xg_per_match": 1.7214,
+      "xga_per_match": 1.5786,
+      "xgot_squad": 21.4,
+      "yellow_cards_per_match": 1.9286
+    },
+    "tigres-uanl": {
+      "accurate_long_balls_per_match": 20.9,
+      "accurate_passes_per_match": 351.7,
+      "agregados_plantilla": {
+        "goals_prevented_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 1
+        },
+        "save_percentage": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "sweeper_actions": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "max",
+          "n_jugadores": 1
+        },
+        "xa_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 25
+        },
+        "xgot_squad": {
+          "alcance": "top publicado por el proveedor",
+          "modo": "suma",
+          "n_jugadores": 15
+        }
+      },
+      "big_chances_created_per_match": 2.3571,
+      "big_chances_missed_per_match": 1.7857,
+      "clean_sheets": 4.0,
+      "clearances_per_match": 22.4,
+      "corners_per_match": 6.9286,
+      "defensive_actions_per_match": 48.4,
+      "fouls_per_match": 12.0,
+      "goals_conceded_per_match": 1.4,
+      "goals_per_match": 1.1,
+      "goals_prevented_squad": 0.3,
+      "interceptions_per_match": 8.9,
+      "nombre_fuente": "Tigres",
+      "partidos_jugados": 14,
+      "penalties_conceded_total": 5.0,
+      "penalties_won_total": 3.0,
+      "possession_pct": 51.2,
+      "red_cards_per_match": 0.2857,
+      "save_percentage": 69.8,
+      "saves_per_match": 3.1,
+      "set_piece_goals_conceded_per_match": 0.2857,
+      "set_piece_goals_per_match": 0.2857,
+      "slug": "tigres-uanl",
+      "sot_per_match": 5.1,
+      "sota_per_match": 4.5,
+      "sweeper_actions": 0.8,
+      "tackles_per_match": 17.1,
+      "team_id": 8561,
+      "touches_opp_box_per_match": 24.8571,
+      "xa_squad": 15.4,
+      "xg_per_match": 1.5,
+      "xga_per_match": 1.5357,
+      "xgot_squad": 18.0,
+      "yellow_cards_per_match": 1.5
+    }
+  },
+  "errores": [],
+  "esquema": "macro_stats_v1",
+  "fuente": "fotmob.com · leagues(tab=stats) › stats.teams|players[].fetchAllUrl › TopLists[0].StatList",
+  "fuera_de_fuente": {
+    "V16": "No existe leaderboard de equipo 'big chances concedidas' en `stats.teams` (28 tableros).",
+    "V26": "H2H: se resuelve con el corpus propio de fixtures, no con leaderboards torneales.",
+    "V27": "H2H: se resuelve con el corpus propio de fixtures, no con leaderboards torneales.",
+    "V28": "Récord del visitante en sede: corpus propio de fixtures.",
+    "V29": "Altitud: catálogo de sedes (`FIXTURE`), no leaderboard del proveedor.",
+    "V30": "Δ descanso: calendario propio (`FIXTURE`), no leaderboard del proveedor.",
+    "V31": "Forma 5P: derivada del historial propio de resultados (`Q-BE`).",
+    "V32": "Varianza ΔxPTS: derivada del historial propio de resultados (`Q-BE`)."
+  },
+  "generado_at": "2026-10-28T01:51:09Z",
+  "hash_sha256": "43558668c090c0d60e921c4bb5bf02bdc12a39d04240660546827927cb0d7ad9",
+  "huecos": [
+    "necaxa:clean_sheets",
+    "cruz-azul:red_cards_per_match",
+    "club-tijuana:red_cards_per_match"
+  ],
+  "legislacion": [
+    "LN-QBE-120",
+    "ARCH-1.4.59"
+  ],
+  "liga": {
+    "data_provider": "opta",
+    "fotmob_id": 230,
+    "nombre": "Liga MX",
+    "temporada_id": "1000000459",
+    "temporada_seleccionada": "2026/2027 - Apertura",
+    "torneo": "Apertura"
+  },
+  "mapa_leaderboards": [
+    {
+      "board": "possession_percentage_team",
+      "clave": "possession_pct",
+      "fuente": "equipo",
+      "normalizacion": "publicado",
+      "unidad": "%",
+      "variable": "V01"
+    },
+    {
+      "board": "touches_in_opp_box_team",
+      "clave": "touches_opp_box_per_match",
+      "fuente": "equipo",
+      "normalizacion": "entre_pj",
+      "unidad": "toques/PJ",
+      "variable": "V02"
+    },
+    {
+      "board": "accurate_pass_team",
+      "clave": "accurate_passes_per_match",
+      "fuente": "equipo",
+      "normalizacion": "publicado",
+      "unidad": "pases/PJ",
+      "variable": "V03"
+    },
+    {
+      "board": "accurate_long_balls_team",
+      "clave": "accurate_long_balls_per_match",
+      "fuente": "equipo",
+      "normalizacion": "publicado",
+      "unidad": "pases largos/PJ",
+      "variable": "V04"
+    },
+    {
+      "board": "fk_foul_lost_team",
+      "clave": "fouls_per_match",
+      "fuente": "equipo",
+      "normalizacion": "publicado",
+      "unidad": "faltas/PJ",
+      "variable": "V05"
+    },
+    {
+      "board": "expected_goals_team",
+      "clave": "xg_per_match",
+      "fuente": "equipo",
+      "normalizacion": "entre_pj",
+      "unidad": "xG/PJ",
+      "variable": "V06"
+    },
+    {
+      "board": "ontarget_scoring_att_team",
+      "clave": "sot_per_match",
+      "fuente": "equipo",
+      "normalizacion": "publicado",
+      "unidad": "tiros al arco/PJ",
+      "variable": "V07"
+    },
+    {
+      "board": "big_chance_team",
+      "clave": "big_chances_created_per_match",
+      "fuente": "equipo",
+      "normalizacion": "entre_pj",
+      "unidad": "big chances/PJ",
+      "variable": "V08"
+    },
+    {
+      "board": "big_chance_missed_team",
+      "clave": "big_chances_missed_per_match",
+      "fuente": "equipo",
+      "normalizacion": "entre_pj",
+      "unidad": "big chances falladas/PJ",
+      "variable": "V09"
+    },
+    {
+      "board": "expected_goalsontarget",
+      "clave": "xgot_squad",
+      "fuente": "plantilla",
+      "normalizacion": "suma",
+      "unidad": "xGOT acumulado TOP",
+      "variable": "V10"
+    },
+    {
+      "board": "expected_assists",
+      "clave": "xa_squad",
+      "fuente": "plantilla",
+      "normalizacion": "suma",
+      "unidad": "xA acumulada TOP",
+      "variable": "V11"
+    },
+    {
+      "board": "expected_goals_conceded_team",
+      "clave": "xga_per_match",
+      "fuente": "equipo",
+      "normalizacion": "entre_pj",
+      "unidad": "xGA/PJ",
+      "variable": "V12"
+    },
+    {
+      "board": "total_tackle_team",
+      "clave": "tackles_per_match",
+      "fuente": "equipo",
+      "normalizacion": "publicado",
+      "unidad": "entradas/PJ",
+      "variable": "V14"
+    },
+    {
+      "board": "effective_clearance_team",
+      "clave": "clearances_per_match",
+      "fuente": "equipo",
+      "normalizacion": "publicado",
+      "unidad": "despejes/PJ",
+      "variable": "V14"
+    },
+    {
+      "board": "interception_team",
+      "clave": "interceptions_per_match",
+      "fuente": "equipo",
+      "normalizacion": "publicado",
+      "unidad": "intercepciones/PJ",
+      "variable": "V15"
+    },
+    {
+      "board": "_goals_prevented",
+      "clave": "goals_prevented_squad",
+      "fuente": "plantilla",
+      "normalizacion": "suma",
+      "unidad": "goles evitados acumulados TOP",
+      "variable": "V17"
+    },
+    {
+      "board": "_save_percentage",
+      "clave": "save_percentage",
+      "fuente": "plantilla",
+      "normalizacion": "max",
+      "unidad": "%",
+      "variable": "V18"
+    },
+    {
+      "board": "total_keeper_sweeper",
+      "clave": "sweeper_actions",
+      "fuente": "plantilla",
+      "normalizacion": "max",
+      "unidad": "salidas/90'",
+      "variable": "V19"
+    },
+    {
+      "board": "clean_sheet_team",
+      "clave": "clean_sheets",
+      "fuente": "equipo",
+      "normalizacion": "acumulado",
+      "unidad": "porterías a cero (total)",
+      "variable": "V20"
+    },
+    {
+      "board": "saves_team",
+      "clave": "saves_per_match",
+      "fuente": "equipo",
+      "normalizacion": "publicado",
+      "unidad": "atajadas/PJ",
+      "variable": "V20"
+    },
+    {
+      "board": "_set_piece_goals_team",
+      "clave": "set_piece_goals_per_match",
+      "fuente": "equipo",
+      "normalizacion": "entre_pj",
+      "unidad": "goles ABP/PJ",
+      "variable": "V21"
+    },
+    {
+      "board": "_set_piece_goals_conceded_team",
+      "clave": "set_piece_goals_conceded_per_match",
+      "fuente": "equipo",
+      "normalizacion": "entre_pj",
+      "unidad": "goles ABP recibidos/PJ",
+      "variable": "V22"
+    },
+    {
+      "board": "corner_taken_team",
+      "clave": "corners_per_match",
+      "fuente": "equipo",
+      "normalizacion": "entre_pj",
+      "unidad": "córners/PJ",
+      "variable": "V23"
+    },
+    {
+      "board": "penalty_won_team",
+      "clave": "penalties_won_total",
+      "fuente": "equipo",
+      "normalizacion": "acumulado",
+      "unidad": "penales a favor (total)",
+      "variable": "V24"
+    },
+    {
+      "board": "penalty_conceded_team",
+      "clave": "penalties_conceded_total",
+      "fuente": "equipo",
+      "normalizacion": "acumulado",
+      "unidad": "penales en contra (total)",
+      "variable": "V24"
+    },
+    {
+      "board": "total_yel_card_team",
+      "clave": "yellow_cards_per_match",
+      "fuente": "equipo",
+      "normalizacion": "entre_pj",
+      "unidad": "amarillas/PJ",
+      "variable": "V25"
+    },
+    {
+      "board": "total_red_card_team",
+      "clave": "red_cards_per_match",
+      "fuente": "equipo",
+      "normalizacion": "entre_pj",
+      "unidad": "rojas/PJ",
+      "variable": "V25"
+    },
+    {
+      "board": "goals_team_match",
+      "clave": "goals_per_match",
+      "fuente": "equipo",
+      "normalizacion": "publicado",
+      "unidad": "goles/PJ",
+      "variable": "-"
+    },
+    {
+      "board": "goals_conceded_team_match",
+      "clave": "goals_conceded_per_match",
+      "fuente": "equipo",
+      "normalizacion": "publicado",
+      "unidad": "goles recibidos/PJ",
+      "variable": "-"
+    }
+  ],
+  "sonda": "ARCH-1.4.59 · MACRO-STATS-LIGAMX",
+  "totales": {
+    "claves_con_dato": 31,
+    "equipos": 18,
+    "errores": 0,
+    "huecos": 3,
+    "tableros_leidos": 29,
+    "tableros_solicitados": 29
+  }
+}

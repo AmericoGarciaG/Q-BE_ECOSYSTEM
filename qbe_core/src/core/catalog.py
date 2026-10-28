@@ -123,3 +123,85 @@ STRATEGY_CATALOG: Dict[str, StrategyDefinition] = {
         rol_boleto_2="Tiro Directo Underdog + Pago Anticipado"
     )
 }
+
+# =============================================================================
+# [DIRGEN-STRICT] CATÁLOGO INMUTABLE DE ALTITUDES Y SEDES — LIGA MX
+# Promovido desde qbe_observatory a qbe_core en SPRINT-FASE3-ECOSYSTEM-BUSINESS-AND-CATALOG-34
+# Fuente única de verdad para todo el ecosistema. Cero I/O. Cero DB.
+# =============================================================================
+from typing import Dict, Optional
+
+CATALOGO_ALTITUDES_LIGAMX: Dict[str, float] = {
+    "deportivo-toluca": 2660.0,
+    "pachuca": 2400.0,
+    "club-puebla": 2135.0,
+    "pumas-unam": 2240.0,
+    "club-america": 2240.0,
+    "cruz-azul": 2240.0,
+    "atlante": 2240.0,
+    "club-atlante": 2240.0,  # Estadio Ciudad de los Deportes
+    "club-necaxa": 1880.0,
+    "atletico-san-luis": 1860.0,
+    "queretaro-fc": 1820.0,
+    "club-leon": 1815.0,
+    "chivas-guadalajara": 1560.0,
+    "atlas-fc": 1560.0,
+    "fc-juarez": 1120.0,
+    "santos-laguna": 1120.0,
+    "tigres-uanl": 540.0,
+    "rayados-de-monterrey": 540.0,
+    "club-tijuana": 30.0,
+    "mazatlan-fc": 10.0,
+}
+
+# Aliases de nomenclatura viva (3NF / FotMob) -> clave canónica del catálogo.
+# Solo resuelve nombres: NUNCA altera un valor numérico del catálogo.
+ALIAS_ALTITUDES: Dict[str, str] = {
+    "club-pachuca": "pachuca",
+    "necaxa": "club-necaxa",
+    "pumas": "pumas-unam",
+    "america": "club-america",
+    "chivas": "chivas-guadalajara",
+    "atlas": "atlas-fc",
+    "leon": "club-leon",
+    "queretaro": "queretaro-fc",
+    "san-luis": "atletico-san-luis",
+    "juarez": "fc-juarez",
+    "santos": "santos-laguna",
+    "tigres": "tigres-uanl",
+    "monterrey": "rayados-de-monterrey",
+    "tijuana": "club-tijuana",
+    "mazatlan": "mazatlan-fc",
+    "puebla": "club-puebla",
+    "toluca": "deportivo-toluca",
+    "club-atlante": "atlante",
+}
+
+
+def slug_canonico_altitud(slug: Optional[str]) -> Optional[str]:
+    """Resuelve el slug vivo al slug canónico del catálogo de altitudes (alias declarado)."""
+    if not slug:
+        return None
+    clave = str(slug).lower().strip()
+    if clave in CATALOGO_ALTITUDES_LIGAMX:
+        return clave
+    return ALIAS_ALTITUDES.get(clave)
+
+
+def altitud_estadio(slug: str) -> float:
+    """Retorna la altitud en msnm del estadio del club. Fallback 0.0 si es desconocido.
+    
+    Contrato [DIRGEN-STRICT]: función pura, determinista, sin I/O ni DB.
+    Compatible con la firma de context_provider para migración sin fricción.
+    """
+    if not slug:
+        return 0.0
+    clave = str(slug).lower().strip()
+    # Resolución directa
+    if clave in CATALOGO_ALTITUDES_LIGAMX:
+        return float(CATALOGO_ALTITUDES_LIGAMX[clave])
+    # Resolución por alias
+    canonico = ALIAS_ALTITUDES.get(clave)
+    if canonico and canonico in CATALOGO_ALTITUDES_LIGAMX:
+        return float(CATALOGO_ALTITUDES_LIGAMX[canonico])
+    return 0.0
