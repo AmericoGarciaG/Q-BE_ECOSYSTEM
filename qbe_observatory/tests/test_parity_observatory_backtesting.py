@@ -11,10 +11,11 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 ECOSYSTEM_ROOT = PROJECT_ROOT.parent
 
-# Snapshot interno canónico. Es lógicamente idéntico al baseline congelado que
-# originó el Golden Master (17 tablas, 153 matches, fingerprint 8d21840a…);
-# sólo difiere el layout físico de SQLite. Ya no se depende del monolito.
-SNAPSHOT = PROJECT_ROOT / "data" / "observatory_snapshot.db"
+# Baseline CONGELADO de paridad: el Golden Master se ancla a esta copia, no al
+# snapshot operativo. El snapshot de `qbe_observatory/data/` se refresca desde la
+# bóveda viva y por diseño cambia con cada jornada; usarlo aquí acoplaría un juez
+# de regresión del builder al calendario de la ingesta.
+SNAPSHOT = ECOSYSTEM_ROOT / "data" / "snapshots" / "qbe_database_snapshot.db"
 GOLDEN = Path(__file__).with_name("golden_master_backtesting.json")
 
 

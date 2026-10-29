@@ -1972,4 +1972,1283 @@ table.fintech-table {
 .bt-kpi-value.bt-valor-positivo { color: #10B981; }
 .bt-kpi-value.bt-valor-negativo { color: #EF4444; }
 
+/* ==========================================================================
+   AUDITORÍA DE CALIBRACIÓN Y ATRIBUCIÓN [DBBD-FUNGIBLE]
+   Capa aditiva sobre el tema existente. No renombra clases selladas ni altera
+   tokens previos: los alias de DESIGN.md se declaran al final y sólo los usa
+   esta superficie. Cero hex sueltos en la plantilla; todo color vive aquí.
+   ========================================================================== */
+:root {
+    --bg-base: var(--bg-main);
+    --bg-surface: var(--bg-card);
+    --border: var(--border-color);
+    --accent: var(--accent-cyan);
+    --success: #10B981;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+    --muted: #94A3B8;
+    --text: #F8FAFC;
+}
 
+.visor-main {
+    width: 100%;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    min-width: 0;
+}
+
+.visor-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-bottom: 1.25rem;
+}
+
+.visor-cabecera-texto {
+    min-width: 0;
+    max-width: 720px;
+}
+
+.visor-kicker {
+    margin: 0 0 0.35rem;
+    color: var(--muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.visor-titulo {
+    margin: 0;
+    color: var(--text);
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    line-height: 1.15;
+}
+
+.visor-subtitulo {
+    margin: 0.55rem 0 0;
+    color: var(--text-slate);
+    font-size: 0.9rem;
+    max-width: 70ch;
+}
+
+.visor-fuente {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 260px;
+    padding: 0.75rem 0.9rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.visor-fuente-linea {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--text-slate);
+    font-size: 0.78rem;
+}
+
+.visor-fuente-kicker {
+    color: var(--muted);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.visor-fuente-ruta {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    overflow-wrap: anywhere;
+}
+
+.visor-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.12rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+.visor-badge-fresco {
+    color: var(--success);
+    border-color: rgba(16, 185, 129, 0.45);
+    background: rgba(16, 185, 129, 0.08);
+}
+
+.visor-badge-obsoleto {
+    color: var(--warning);
+    border-color: rgba(245, 158, 11, 0.45);
+    background: rgba(245, 158, 11, 0.08);
+}
+
+.visor-badge-sin,
+.visor-badge-pendiente {
+    color: var(--muted);
+    border-color: var(--border);
+    background: rgba(148, 163, 184, 0.06);
+}
+
+.visor-badge-lectura { color: var(--text-slate); }
+
+.visor-badge-cold {
+    color: var(--warning);
+    border-color: rgba(245, 158, 11, 0.45);
+}
+
+/* [DES-QBE-074] Superseditada por `.visor-pildora`: la regla se conserva por
+   compatibilidad de contrato, pero la atribución viva ya usa la píldora. */
+.visor-badge-atribucion {
+    color: var(--accent);
+    border-color: rgba(56, 189, 248, 0.35);
+    background: rgba(56, 189, 248, 0.08);
+    font-weight: 600;
+}
+
+.visor-error {
+    margin-bottom: 1rem;
+    border-color: var(--danger);
+    border-left: 4px solid var(--danger);
+}
+
+.visor-error h2 {
+    margin-top: 0;
+    color: var(--danger);
+}
+
+.visor-controles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin: 0 0 1rem;
+}
+
+.visor-filtro-rango {
+    display: none;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.6rem 0.9rem;
+    padding: 0.7rem 0.9rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.js .visor-filtro-rango { display: flex; }
+
+.visor-control-titulo {
+    color: var(--muted);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding-bottom: 0.35rem;
+}
+
+.visor-control {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    color: var(--muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.visor-control select {
+    min-width: 5rem;
+    padding: 0.35rem 0.55rem;
+    background: var(--bg-base);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font: inherit;
+    font-family: var(--font-mono);
+}
+
+.visor-control-guion {
+    color: var(--muted);
+    padding-bottom: 0.35rem;
+}
+
+.visor-btn-secundario {
+    padding: 0.4rem 0.7rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-slate);
+    font: inherit;
+    cursor: pointer;
+}
+
+.visor-btn-secundario:hover {
+    border-color: var(--accent);
+    color: var(--text);
+}
+
+.visor-rango-estado {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+}
+
+.visor-kpi { min-width: 0; }
+.visor-kpi .bt-kpi-value { overflow-wrap: anywhere; }
+
+.visor-kpi-pendiente { border-style: dashed; }
+
+.visor-valor-sin {
+    color: var(--muted) !important;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.visor-valor-pendiente {
+    color: var(--muted) !important;
+    font-size: 0.92rem !important;
+    letter-spacing: 0.04em;
+}
+
+.visor-alpha-positivo { color: var(--success) !important; }
+.visor-alpha-negativo { color: var(--danger) !important; }
+.visor-alpha-neutro,
+.visor-alpha-sin_evidencia { color: var(--muted) !important; }
+
+.visor-nota {
+    margin: 0.5rem 0 0;
+    color: var(--muted);
+    font-size: 0.76rem;
+}
+
+.visor-nota-kpis { margin: 0.65rem 0 1rem; }
+
+.visor-tabla-card { padding: 1.25rem; }
+
+.visor-tabla-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+}
+
+.visor-tabla-titulo {
+    margin: 0;
+    color: var(--text);
+    font-size: 1.05rem;
+}
+
+.visor-tabla-hint { display: none; }
+
+.visor-tabla-scroll {
+    overflow-x: auto;
+    min-width: 0;
+}
+
+.visor-tabla { min-width: 720px; }
+.visor-tabla th,
+.visor-tabla td { vertical-align: top; }
+
+.visor-th-sub {
+    display: block;
+    margin-top: 0.15rem;
+    color: var(--muted);
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.visor-celda-jornada { white-space: nowrap; }
+
+.visor-jornada-etiqueta {
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-weight: 700;
+}
+
+.visor-btn-drill {
+    display: none;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.4rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    color: var(--text);
+    font: inherit;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.js .visor-btn-drill { display: inline-flex; }
+.js .visor-jornada-etiqueta { display: none; }
+
+.visor-btn-drill:hover {
+    border-color: var(--border);
+    color: var(--accent);
+}
+
+.visor-chevron {
+    display: inline-block;
+    color: var(--accent);
+    transition: transform 0.15s ease;
+}
+
+.visor-btn-drill[aria-expanded="true"] .visor-chevron { transform: rotate(90deg); }
+
+.visor-fila-jornada.visor-fila-oculta { display: none !important; }
+
+.visor-fila-detalle { background: var(--bg-base); }
+.js .visor-fila-detalle { display: none; }
+.js .visor-fila-detalle.visor-detalle-abierta { display: table-row; }
+
+.visor-detalle-panel {
+    min-width: 0;
+    padding: 0.75rem 0.25rem 0.25rem;
+}
+
+.visor-detalle-titulo {
+    margin: 0 0 0.6rem;
+    color: var(--text-slate);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.visor-tabla-micro { min-width: 760px; }
+.visor-tabla-micro th { font-size: 0.68rem; }
+.visor-tabla-micro td { font-size: 0.78rem; }
+
+.visor-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+.visor-probabilidad { color: var(--text-slate); }
+
+.visor-partido-local,
+.visor-partido-visita { color: var(--text); }
+
+.visor-partido-vs {
+    margin: 0 0.25rem;
+    color: var(--muted);
+}
+
+.visor-partido-resultado {
+    display: inline-block;
+    margin-left: 0.4rem;
+    color: var(--muted);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+}
+
+.visor-tabla-vacia {
+    padding: 1.2rem;
+    color: var(--muted);
+    text-align: center;
+}
+
+.visor-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.visor-futuro { margin-top: 1.5rem; }
+
+.visor-futuro-titulo {
+    margin: 0 0 0.35rem;
+    color: var(--text);
+    font-size: 1.05rem;
+}
+
+.visor-futuro-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1rem;
+}
+
+.visor-slot {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 220px;
+    border-style: dashed;
+}
+
+.visor-slot-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.visor-slot-titulo {
+    margin: 0;
+    color: var(--text);
+    font-size: 0.95rem;
+}
+
+.visor-slot-lienzo {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    min-height: 120px;
+    padding: 1rem;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.visor-slot-lienzo-texto {
+    max-width: 40ch;
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+
+.visor-btn-drill:focus-visible,
+.visor-btn-secundario:focus-visible,
+.visor-control select:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+    .header-container {
+        flex-wrap: wrap;
+        height: auto;
+        padding-top: 0.55rem;
+        padding-bottom: 0.55rem;
+        gap: 0.35rem;
+    }
+    .header-nav {
+        width: 100%;
+        justify-content: flex-start;
+        overflow-x: auto;
+    }
+    .header-nav .tab-btn {
+        padding: 3px 10px;
+        font-size: 0.74rem;
+    }
+    .visor-cabecera { flex-direction: column; }
+    .visor-fuente { width: 100%; }
+    .visor-tabla-card { padding: 0.9rem; }
+    .visor-tabla-hint { display: block; margin-bottom: 0.5rem; }
+    .visor-controles { align-items: stretch; }
+    .visor-filtro-rango { width: 100%; }
+    .js .visor-filtro-rango {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        align-items: end;
+    }
+    .visor-control-titulo { grid-column: 1 / -1; }
+    .visor-control select { width: 100%; }
+    .visor-control-guion { display: none; }
+    .visor-btn-secundario {
+        grid-column: 1 / -1;
+        justify-self: start;
+    }
+    .visor-rango-estado { grid-column: 1 / -1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .visor-chevron { transition: none; }
+}
+
+/* ==========================================================================
+   [DES-QBE-074] SANEAMIENTO VISUAL DE LA TABLA DE CALIBRACIÓN [DBBD-FUNGIBLE]
+   Capa ESTRICTAMENTE ADITIVA sobre los tokens de DESIGN.md §1.1. No renombra
+   clases selladas ni reescribe reglas previas: todo selector nuevo vive bajo
+   `.visor-*` para no tocar la tabla compartida de Backtesting (.bt-table).
+   Regla de evidencia (DESIGN.md §1.2): el color no inventa dato; el guion `—`
+   es ausencia declarada, nunca un cero.
+   ========================================================================== */
+
+/* ── 1. Celda sin evidencia: guion largo con tooltip nativo ───────────────── */
+.visor-vacio {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 400;
+    opacity: 0.55;
+    cursor: help;
+}
+
+.visor-num .visor-vacio { font-size: 0.95rem; }
+
+/* ── 2. Micro-tooltip didáctico (ⓘ) sin dependencias de JS ────────────────── */
+.visor-info {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+    margin-left: 3px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.56rem;
+    line-height: 1;
+    cursor: help;
+    vertical-align: middle;
+}
+
+.visor-info:hover,
+.visor-info:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+    outline: none;
+}
+
+.visor-info::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    z-index: 40;
+    width: max-content;
+    max-width: 250px;
+    padding: 8px 10px;
+    transform: translateX(-50%);
+    background: #0B1220;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 8px 20px rgba(2, 6, 23, 0.55);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.7rem;
+    font-weight: 400;
+    font-style: normal;
+    letter-spacing: 0;
+    line-height: 1.35;
+    text-align: left;
+    text-transform: none;
+    white-space: normal;
+    display: none;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.visor-info:hover::after,
+.visor-info:focus-visible::after {
+    display: block;
+    opacity: 1;
+}
+
+/* Variantes para el `th` dentro del contenedor con scroll horizontal:
+   el globo cuelga hacia abajo y se ancla a la derecha para no recortarse. */
+.visor-info-abajo::after {
+    top: calc(100% + 8px);
+    bottom: auto;
+}
+
+.visor-info-fin::after {
+    right: 0;
+    left: auto;
+    transform: none;
+}
+
+/* ── 3. Alineación numérica: cifras a la derecha, texto a la izquierda ────── */
+.visor-tabla .visor-num {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.visor-tabla .visor-th-num {
+    text-align: right;
+    vertical-align: bottom;
+}
+
+.visor-tabla .visor-th-texto {
+    text-align: left;
+    vertical-align: bottom;
+}
+
+.visor-th-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    white-space: nowrap;
+}
+
+/* ── 4. Aire: la tabla respira (solo la superficie del visor) ─────────────── */
+/* El contenedor con scroll es el bloque contenedor de los `.visor-sr-only`
+   absolutos: sin esto, el literal accesible escapa del recorte y ensancha el
+   documento (scroll horizontal de página en móvil). */
+.visor-tabla-scroll { position: relative; }
+
+.visor-tabla td {
+    padding: 12px 16px;
+    vertical-align: middle;
+}
+
+.visor-tabla th {
+    padding: 10px 16px;
+}
+
+.visor-fila-jornada > td {
+    border-bottom: 1px solid var(--border);
+}
+
+.visor-celda-partidos {
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* ── 5. Columna Partido: sin prefijos LOCAL/VISITANTE ─────────────────────── */
+.visor-celda-partido { min-width: 210px; }
+
+.visor-partido {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.35rem;
+}
+
+.visor-partido-nombre { color: var(--text-slate); }
+
+/* El ganador se declara por peso y contraste, no por texto redundante. */
+.visor-partido-ganador {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.visor-partido-vs {
+    color: var(--muted);
+    font-size: 0.7rem;
+    font-weight: 400;
+}
+
+.visor-marcador {
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+/* ── 6. Jerarquía de la tabla anidada: hijo visible de la Jornada ─────────── */
+.visor-fila-detalle > td {
+    padding: 0;
+    background: var(--bg-base);
+    border-bottom: 1px solid var(--border);
+}
+
+.visor-detalle-panel {
+    background: var(--bg-base);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    margin: 0 0 10px 10px;
+    padding: 12px 14px 12px 16px;
+}
+
+.visor-detalle-titulo {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin: 0 0 0.65rem;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.visor-detalle-jornada {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+
+.visor-detalle-meta {
+    color: var(--muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.visor-tabla-micro th {
+    padding: 8px 14px;
+    background: rgba(15, 23, 42, 0.55);
+    color: var(--muted);
+    font-size: 0.64rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    vertical-align: bottom;
+}
+
+.visor-tabla-micro td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.55);
+}
+
+.visor-tabla-micro tbody tr:hover {
+    background: rgba(56, 189, 248, 0.045);
+}
+
+.visor-tabla-micro tbody tr:last-child td { border-bottom: 0; }
+
+.visor-detalle-vacio {
+    margin: 0.25rem 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+
+/* ── 7. Píldora de atribución: bando declarado, no aritmética ─────────────── */
+.visor-celda-atribucion { min-width: 190px; }
+
+.visor-pildora {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 26px;
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Positivo para la casa: --success (DESIGN.md §1.1). */
+.visor-pildora-local {
+    color: var(--success);
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.35);
+}
+
+/* Ventaja de la visita: evento fáctico, NO riesgo ⇒ --accent, jamás --danger. */
+.visor-pildora-visita {
+    color: var(--accent);
+    background: rgba(56, 189, 248, 0.1);
+    border-color: rgba(56, 189, 248, 0.35);
+}
+
+.visor-pildora-neutro {
+    color: var(--muted);
+    background: rgba(148, 163, 184, 0.08);
+    border-color: var(--border);
+}
+
+/* ── 8. Cabecera: cinco KPIs de altura idéntica y alerta contenida ────────── */
+.visor-kpis {
+    align-items: stretch;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+.visor-kpi {
+    flex: 1 1 auto;
+    gap: 6px;
+    min-height: 132px;
+}
+
+.visor-kpi .bt-kpi-label {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    line-height: 1.25;
+}
+
+.visor-kpi .bt-kpi-sub { margin-top: auto; }
+
+.visor-kpi-vacio {
+    font-size: 15pt;
+    line-height: 1.1;
+}
+
+/* `PENDIENTE MOTOR` deja de romper el layout: es una píldora de estado. */
+.visor-kpi-pendiente {
+    background: rgba(245, 158, 11, 0.045);
+    border-color: rgba(245, 158, 11, 0.35);
+}
+
+.visor-pill {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: center;
+    padding: 3px 9px;
+    border: 1px dashed rgba(245, 158, 11, 0.45);
+    border-radius: 999px;
+    color: var(--warning);
+    background: rgba(245, 158, 11, 0.08);
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+/* ── 9. Responsive: el aire se reduce, la jerarquía no se pierde ──────────── */
+@media (max-width: 720px) {
+    .visor-tabla td { padding: 10px 12px; }
+    .visor-tabla th { padding: 8px 12px; }
+    .visor-tabla-micro td { padding: 9px 12px; }
+    .visor-tabla-micro th { padding: 7px 12px; }
+    .visor-detalle-panel {
+        margin-left: 6px;
+        padding: 10px 8px 10px 12px;
+    }
+    .visor-kpi { min-height: 116px; }
+    .visor-info::after {
+        max-width: 190px;
+        font-size: 0.66rem;
+    }
+}
+
+/* ==========================================================================
+   [DES-QBE-075] MATCH CARD HÍBRIDA DE CALIBRACIÓN — bloque ADITIVO.
+   No renombra clases selladas ni altera tokens: sólo consume los alias de
+   DESIGN.md ya declarados en este archivo. Cero sombras, cero degradados.
+   ========================================================================== */
+.visor-match-lista {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr));
+    gap: 0.85rem;
+    min-width: 0;
+    margin-top: 0.6rem;
+}
+
+/* Ancla de compatibilidad: la clase legada ya NO es una tabla; su `min-width`
+   de 760 px se neutraliza para que la lista no desborde en móvil. */
+.visor-match-lista.visor-tabla-micro { min-width: 0; }
+
+.mc-card {
+    display: grid;
+    gap: 0.7rem;
+    min-width: 0;
+    padding: 0.9rem 1rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.mc-sellos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+/* ── Cabecera: local · marcador · visita, con el Brier en banda propia ───── */
+.mc-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: 0.75rem;
+    row-gap: 0.2rem;
+    min-width: 0;
+}
+
+.mc-equipo {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+    color: var(--text);
+    font-size: 0.86rem;
+    font-weight: 600;
+}
+
+.mc-equipo-visita { justify-content: flex-end; }
+
+.mc-equipo-nombre {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mc-escudo {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+.mc-marcador {
+    justify-self: center;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.mc-brier {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    margin: 0;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.mc-brier-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3rem;
+}
+
+.mc-brier-kicker {
+    color: var(--muted);
+    font-size: 0.64rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.mc-brier-valor { color: var(--text); }
+
+.mc-brier-sep { color: var(--border); }
+
+/* ── Cuerpo: parrilla 1 · X · 2 ──────────────────────────────────────────── */
+.mc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.mc-celda {
+    display: grid;
+    gap: 0.18rem;
+    min-width: 0;
+    padding: 0.55rem 0.65rem;
+    background: var(--bg-base);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    /* Red de seguridad anti-encimado: ninguna cifra se derrama a la celda vecina. */
+    overflow: hidden;
+}
+
+/* [DES-QBE-075 · REV.2] Vértice del resultado consumado. El color lo dicta el núcleo
+   vía `clasificacion_triada`: verde P_MAX, cian P_MID, rojo P_LOW. El rojo denota
+   Ruptura Residual (hecho factual), NO error de sistema — DESIGN §7.1.1. */
+.mc-celda-acierto { border-color: var(--accent); }
+
+.mc-celda-acierto[data-vertice="max"] {
+    border-color: var(--success);
+    background-image: linear-gradient(rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.12));
+}
+
+.mc-celda-acierto[data-vertice="mid"] {
+    border-color: var(--accent);
+    background-image: linear-gradient(rgba(56, 189, 248, 0.12), rgba(56, 189, 248, 0.12));
+}
+
+.mc-celda-acierto[data-vertice="low"] {
+    border-color: var(--danger);
+    background-image: linear-gradient(rgba(239, 68, 68, 0.12), rgba(239, 68, 68, 0.12));
+}
+
+/* Cold Start: el hecho se marca; el vértice no se tiñe (prior de ignorancia). */
+.mc-celda-acierto[data-vertice="cold_start"] {
+    border-color: var(--muted);
+    background-image: none;
+}
+
+/* Barras comparativas. `box-shadow` inset: conviven con el color del vértice sin
+   sobrescribirlo (un `border-top` pintaría de gris el borde rojo de una ruptura). */
+.mc-celda[data-barra="p-max"] { box-shadow: inset 0 3px 0 0 var(--text); }
+.mc-celda[data-barra-mkt="true"] { box-shadow: inset 0 -3px 0 0 var(--muted); }
+.mc-celda[data-barra="p-max"][data-barra-mkt="true"] {
+    box-shadow: inset 0 3px 0 0 var(--text), inset 0 -3px 0 0 var(--muted);
+}
+
+.mc-celda-cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.mc-celda-titulo {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--muted);
+    font-size: 0.64rem;
+    letter-spacing: 0.06em;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* Acierto del resultado real: balón en la esquina de la celda. La caja es fija
+   para que la cabecera no cambie de alto y las tres celdas conserven su línea base. */
+.mc-marca-acierto {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 0.85rem;
+    height: 0.85rem;
+    color: var(--text);
+    line-height: 1;
+}
+
+.mc-balon { display: block; width: 100%; height: 100%; }
+
+/* Sprite del balón: presente en el DOM, invisible y sin coste de layout. */
+.mc-sprite {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+/* Marcas de la celda: acierto y/o supresión del veredicto, en un solo canal. */
+.mc-celda-marcas {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 0.95rem;
+}
+
+/* Cold Start (S = 0): el veredicto de valor se suprime y se declara el motivo.
+   Nunca se enciende `↑ VALOR` sobre un prior de ignorancia. */
+.mc-marca-cold {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.52rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.mc-fila {
+    display: grid;
+    grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.mc-etiqueta {
+    color: var(--muted);
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+.mc-valor {
+    color: var(--text-slate);
+    font-family: var(--font-mono);
+    font-size: 0.84rem;
+    font-variant-numeric: tabular-nums;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.mc-fila-p .mc-valor {
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.mc-marca-valor {
+    color: var(--success);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+/* ── Pie: atribución · tetralogía · acceso al catálogo 32V ───────────────── */
+.mc-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 0.75rem;
+    min-width: 0;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--border);
+}
+
+.mc-foot-atribucion {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: center;
+    gap: 0.4rem;
+    min-width: 0;
+}
+
+/* Si el pie se pliega, la acción conserva su borde derecho: el botón nunca
+   queda colgando a la izquierda debajo de la píldora. */
+.mc-foot .btn-ver-44-vars { margin-left: auto; }
+
+.mc-foot-semaforos {
+    display: flex;
+    flex: 0 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+/* La clase dicta el color: el estado viaja en `data-estado` (DESIGN §4.1). */
+.hud-semaforo[data-estado="VERDE"],
+.vars44-semaforo[data-estado="VERDE"] { color: var(--success); }
+.hud-semaforo[data-estado="AMARILLO"],
+.vars44-semaforo[data-estado="AMARILLO"] { color: var(--warning); }
+.hud-semaforo[data-estado="ROJO"],
+.vars44-semaforo[data-estado="ROJO"] { color: var(--danger); }
+.hud-semaforo[data-estado="NEUTRO"],
+.vars44-semaforo[data-estado="NEUTRO"] { color: var(--muted); }
+
+.btn-ver-44-vars:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* ── Modal 32V: cascarón + panel bajo demanda (B2) ───────────────────────── */
+.modal-overlay[hidden] { display: none; }
+
+.mc-modal-panel {
+    width: 96%;
+    max-width: 980px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 22px;
+    background: var(--bg-base);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.mc-vars-panel {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+}
+
+/* Los dos paneles del modal no se estiran al alto del más largo. */
+.mc-vars-panel .vars44-grid { align-items: start; }
+
+.mc-vars-origen {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.mc-vars-separador { margin-top: 14px; }
+
+.mc-vars-lista {
+    display: grid;
+    gap: 1px;
+    margin-top: 8px;
+    min-width: 0;
+}
+
+.mc-var {
+    display: grid;
+    grid-template-columns: 2.6rem minmax(0, 1fr) 5rem 5rem 6.4rem;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 3px 4px;
+    border-bottom: 1px solid rgba(30, 41, 59, 0.6);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    min-width: 0;
+}
+
+.mc-var-id { color: var(--muted); }
+
+.mc-var-nombre {
+    overflow: hidden;
+    color: var(--text-slate);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mc-var-cifra {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.mc-var-estado {
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.mc-var-estado[data-estado="EVALUADO"],
+.mc-var-estado[data-estado="VALIDADO"] { color: var(--success); }
+.mc-var-estado[data-estado="DERIVADO"] { color: var(--accent); }
+.mc-var-estado[data-estado="SIN EVIDENCIA"] { color: var(--muted); }
+
+.vars44-col-variable { color: var(--text-slate); }
+
+.vars44-tabla-soporte .vars44-col-estado[data-estado="EVALUADO"],
+.vars44-tabla-soporte .vars44-col-estado[data-estado="VALIDADO"] { color: var(--success); }
+.vars44-tabla-soporte .vars44-col-estado[data-estado="DERIVADO"] { color: var(--accent); }
+.vars44-tabla-soporte .vars44-col-estado[data-estado="SIN EVIDENCIA"] { color: var(--muted); }
+
+/* ── Responsive: el aire se reduce, la comparación 1 · X · 2 no se pierde ── */
+@media (max-width: 720px) {
+    .mc-card { padding: 0.8rem 0.85rem; gap: 0.6rem; }
+    .mc-celda { padding: 0.45rem 0.5rem; }
+    .mc-fila { grid-template-columns: 2rem minmax(0, 1fr) auto; gap: 0.25rem; }
+    .mc-etiqueta { font-size: 0.6rem; }
+    .mc-valor { font-size: 0.76rem; }
+    .mc-fila-p .mc-valor { font-size: 0.82rem; }
+    .mc-marca-valor { font-size: 0.56rem; }
+    .mc-celda-titulo { font-size: 0.58rem; letter-spacing: 0.04em; }
+    .mc-brier { justify-content: flex-start; }
+    .mc-var { grid-template-columns: 2.2rem minmax(0, 1fr) 4.2rem 4.2rem 5.4rem; font-size: 0.68rem; }
+}
+
+/* ── Umbral de pila: la tabla del visor mide 720 px y es de arrastre horizontal.
+   La tarjeta se ancla al ancho visible y apila 1 · X · 2: el trío completo se lee
+   sin arrastrar la tabla y ninguna cifra queda fuera del viewport. ─────────── */
+@media (max-width: 680px) {
+    .visor-match-lista {
+        width: min(100%, calc(100vw - 3.2rem));
+        grid-template-columns: 1fr;
+    }
+
+    .mc-grid { grid-template-columns: 1fr; }
+
+    /* En la celda apilada el chip se pega a su cifra: a 310 px de ancho, un chip
+       alineado al borde derecho se lee desconectado del valor que califica. */
+    .mc-fila { grid-template-columns: 3.2rem auto minmax(0, 1fr); }
+    .mc-marcador { font-size: 1rem; }
+}

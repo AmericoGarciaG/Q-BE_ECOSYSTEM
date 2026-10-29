@@ -7,7 +7,7 @@
 **Marco:** Kybern Industrial Framework v13.5  
 **Expediente:** `SPRINT-FASE4-MIGRACION-REFLEXIVA-BG-04`  
 **Fecha:** 2026-10-28  
-**Filas canónicas:** 257
+**Filas canónicas:** 258
 
 > **Naturaleza.** Tablero canónico de control del registro legislativo. Fuente única de verdad para la asignación de nuevos identificadores (`max + 1` sobre el último ID libre). Un identificador sellado es inmutable y no reasignable. Las anclas apuntan a los libros de `docs/` del ecosistema; las rutas de tests legados se conservan solo como memoria histórica y no se presentan como evidencia vigente.
 
@@ -271,6 +271,8 @@
 | `[ARCH-1.4.69]` | ARCH | `docs/ARCH.md` | Artefacto Congelado del Prior de Apertura 2025 y Resolvedor de Insumos con Mezcla | SELLADO |
 | `[ARCH-1.4.70]` | ARCH | `docs/ARCH.md` | Instrumento CLI-FIRST de Minería de Shannon y Árbol Esparso de Veto | SELLADO |
 | `[ARCH-1.4.73]` | ARCH | `docs/ARCH.md` | Extractor Histórico Masivo de FotMob | SELLADO |
+| `[DES-QBE-074]` | DISEÑO | `docs/DESIGN.md` | Saneamiento Visual de la Tabla de Calibración: Aire, Jerarquía Anidada y Píldora de Atribución | SELLADO |
+| `[DES-QBE-075]` | DISEÑO | `docs/DESIGN.md` | Match Card Híbrido de Calibración: Tres Zonas, Vértice Cromático del Resultado, Barras P′/Mercado y Modal 32V Bajo Demanda | SELLADO |
 | `[LN-QBE-092]` | LOGIC | `docs/LOGIC.md` | *(Reservado - Conciliación de Mercados Derivados)* | LIBRE |
 
 ## PROTOCOLO DE ASIGNACIÓN
@@ -280,4 +282,4 @@
 3. **Sellado:** al pasar a verde (`EXIT CODE 0`), la fila migra de `EN FORJA` a `SELLADO` con anclaje simbólico (`docs/LOGIC.md` / `docs/ARCH.md` + símbolo), jamás `archivo:línea`.
 4. **Cobertura:** la migración de Fase 4 no puede reducir el conjunto de IDs. Las filas con estado no canónico se conservan para auditoría y no se promueven sin Juez.
 
-_Total de filas: 257._
+_Total de filas: 259._

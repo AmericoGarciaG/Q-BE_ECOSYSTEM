@@ -1,0 +1,211 @@
+{#
+  [DES-QBE-075] Match Card Híbrido de Calibración — parcial Jinja2 del Observatorio.
+  Régimen [DBBD-FUNGIBLE]: transcribe el DTO del endpoint canónico. Cero cálculo:
+  no resta, no deriva probabilidades ni márgenes; sólo compara dos magnitudes ya
+  servidas (`P′ > q_mkt`) y marca el desenlace consumado.
+#}
+{% from "_macros.html" import vacio %}
+
+{% macro pct(valor) -%}
+  {%- if valor is number -%}{{ "%.1f"|format(valor * 100) }}%{%- else -%}{{ vacio('Probabilidad no publicada en el snapshot') }}{%- endif -%}
+{%- endmacro %}
+
+{% macro momio(valor) -%}
+  {%- if valor is number and valor > 1 -%}{{ "%.2f"|format(valor) }}{%- else -%}{{ vacio('Momio no publicado en el snapshot') }}{%- endif -%}
+{%- endmacro %}
+
+{% macro bando_atribucion(partido) -%}
+  {%- set driver = partido.atribucion_driver -%}
+  {%- if partido.atribucion_disponible and driver -%}
+    {%- if ' Local (' in driver -%}{%- set favorece = 'local' -%}
+    {%- elif ' Visita (' in driver -%}{%- set favorece = 'visita' -%}
+    {%- else -%}{%- set favorece = 'neutro' -%}{%- endif -%}
+    <span class="visor-pildora visor-pildora-{{ favorece }}" data-favorece="{{ favorece }}"
+          title="Driver factorial principal · {{ 'impulsa al equipo de casa' if favorece == 'local' else ('impulsa a la visita' if favorece == 'visita' else 'sin bando declarado') }}">{{ driver }}</span>
+  {%- else -%}
+    {{ vacio('Atribución factorial no disponible: el motor no declaró driver para este partido') }}
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro tira_semaforos(partido) -%}
+  {%- set salud = partido.semaforos if partido.semaforos is mapping else {} -%}
+  {%- for clave, nombre in [('opta', 'OPTA'), ('sede', 'SEDE'), ('h2h', 'H2H'), ('ctx', 'CTX')] -%}
+    {%- set estado = salud.get(clave) or 'NEUTRO' -%}
+    <span class="hud-semaforo" data-semaforo="{{ nombre }}" data-estado="{{ estado }}"
+          title="{{ nombre }}: {{ estado|lower }}" role="img"
+          aria-label="{{ nombre }}: {{ estado|lower }}">● {{ nombre }}</span>
+  {%- endfor -%}
+{%- endmacro %}
+
+{% macro banda_brier(partido) -%}
+  <p class="mc-brier">
+    <span class="mc-brier-item">
+      <span class="mc-brier-kicker">Brier QBE</span>
+      {%- if partido.brier_qbe is number -%}
+        <span class="mc-brier-valor">{{ "%.4f"|format(partido.brier_qbe) }}</span>
+      {%- else -%}
+        {{ vacio('Brier Q-BE no publicado para este partido') }}
+      {%- endif -%}
+    </span>
+    <span class="mc-brier-sep" aria-hidden="true">·</span>
+    <span class="mc-brier-item">
+      <span class="mc-brier-kicker">Mkt</span>
+      {%- if partido.brier_mercado is number -%}
+        <span class="mc-brier-valor">{{ "%.4f"|format(partido.brier_mercado) }}</span>
+      {%- else -%}
+        {{ vacio('Sin cuotas de cierre para este partido: no hay Brier de mercado') }}
+      {%- endif -%}
+    </span>
+    <span class="mc-brier-sep" aria-hidden="true">·</span>
+    <span class="mc-brier-item">
+      <span class="mc-brier-kicker">Brier Vars</span>
+      {{ vacio('Brier Vars · Pendiente de legislación del motor causal: el motor de eventos minuto a minuto aún no está legislado') }}
+    </span>
+  </p>
+{%- endmacro %}
+
+{% macro celda_1x2(casilla, resultado_real, es_cold_start, vertice_celda, titulo_vertice, barra_p, barra_mkt) -%}
+  {%- set clave = casilla.clave -%}
+  {%- set p = casilla.p -%}
+  {%- set q = casilla.q -%}
+  {%- set con_p = p is number -%}
+  {%- set con_q = q is number -%}
+  {%- set comparacion = con_p and con_q and p > q -%}
+  {#- [DES-QBE-075 · Micro-iteración] Con S = 0 la P′ es el prior de ignorancia: la
+      comparación mecánica P′ > q_mkt NO es una oportunidad. El veredicto se suprime
+      y se declara el motivo; jamás se enciende un indicador de valor. -#}
+  {%- set suprimido = comparacion and es_cold_start -%}
+  {%- set valor = comparacion and not es_cold_start -%}
+  {%- set acierto = resultado_real == clave -%}
+  <div class="mc-celda{% if acierto %} mc-celda-acierto{% endif %}"
+       data-clave="{{ clave }}" data-valor="{{ 'true' if valor else 'false' }}"
+       {%- if suprimido %} data-valor-suprimido="cold_start"{% endif %}
+       data-acierto="{{ 'true' if acierto else 'false' }}"
+       {%- if vertice_celda %} data-vertice="{{ vertice_celda }}"{% endif %}
+       {%- if barra_p %} data-barra="p-max"{% endif %}
+       {%- if barra_mkt %} data-barra-mkt="true"{% endif %}>
+    <span class="mc-celda-cabecera">
+      <span class="mc-celda-titulo">{{ casilla.etiqueta }}</span>
+      <span class="mc-celda-marcas">
+        {%- if suprimido -%}
+          <span class="mc-marca-cold" title="Cold Start (S = 0): prior sin evidencia fáctica; la comparación P′ vs mercado no constituye señal de valor">COLD START</span>
+        {%- endif -%}
+        {%- if acierto -%}
+          <span class="mc-marca-acierto" title="{{ titulo_vertice }}">
+            <svg class="mc-balon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#mc-balon"></use></svg>
+          </span>
+        {%- endif -%}
+      </span>
+    </span>
+    <span class="mc-fila mc-fila-p">
+      <span class="mc-etiqueta">P′</span>
+      <span class="mc-valor">{{ pct(p) }}</span>
+      {%- if valor -%}
+        <span class="mc-marca-valor" title="Q-BE detecta valor: P′ supera al consenso de mercado">↑ VALOR</span>
+      {%- endif -%}
+    </span>
+    <span class="mc-fila">
+      <span class="mc-etiqueta">Mkt</span>
+      <span class="mc-valor">{{ pct(q) }}</span>
+    </span>
+    <span class="mc-fila">
+      <span class="mc-etiqueta">@</span>
+      <span class="mc-valor">{{ momio(casilla.momio) }}</span>
+    </span>
+    {%- if con_p and con_q -%}
+      <span class="visor-sr-only">{% if acierto %}{{ titulo_vertice }}. {% endif %}{% if suprimido %}Cold Start: S = 0, sin evidencia fáctica; no se declara valor.{% else %}Q-BE estima {{ pct(p) }} frente al {{ pct(q) }} del mercado: {{ 'hay valor' if valor else 'sin valor' }}.{% endif %}</span>
+    {%- elif acierto -%}
+      <span class="visor-sr-only">{{ titulo_vertice }}.</span>
+    {%- endif -%}
+  </div>
+{%- endmacro %}
+
+{% macro match_card(partido, jornada) -%}
+{%- set id_partido = partido.id_partido | default('', true) -%}
+{%- set momios = partido.momios if partido.momios is mapping else {} -%}
+{%- set local = partido.local | default('Local', true) -%}
+{%- set visita = partido.visitante | default('Visita', true) -%}
+<article class="mc-card" role="listitem" data-partido-id="{{ id_partido }}"
+         aria-label="{{ local }} contra {{ visita }}{% if partido.marcador %} · {{ partido.marcador }}{% endif %}">
+  {%- if partido.es_cold_start or partido.origen_captura %}
+  <div class="mc-sellos">
+    {%- if partido.es_cold_start -%}
+      <span class="visor-badge visor-badge-cold" title="Suficiencia de Datos = 0: sin evidencia fáctica; se evalúa el prior puro del modelo">❄️ Cold Start · S = 0</span>
+    {%- endif -%}
+    {%- if partido.origen_captura -%}
+      <span class="visor-badge visor-badge-lectura" title="{{ 'Evidencia capturada en ventanilla' if partido.origen_captura == 'EN_VIVO' else 'Evidencia reconstruida con posterioridad' }}">{{ '🔴 EN VIVO' if partido.origen_captura == 'EN_VIVO' else '🏛️ HISTÓRICO' }}</span>
+    {%- endif -%}
+  </div>
+  {%- endif %}
+
+  <header class="mc-head">
+    <span class="mc-equipo">
+      {%- if partido.local_escudo_url -%}
+        <img class="mc-escudo" src="{{ partido.local_escudo_url }}" alt="" loading="lazy" decoding="async"
+             onerror="this.hidden = true">
+      {%- endif -%}
+      <span class="mc-equipo-nombre" title="{{ local }}">{{ local }}</span>
+    </span>
+    <span class="mc-marcador">
+      {%- if partido.marcador -%}{{ partido.marcador }}{%- else -%}{{ vacio('Marcador no publicado en el snapshot') }}{%- endif -%}
+    </span>
+    <span class="mc-equipo mc-equipo-visita">
+      <span class="mc-equipo-nombre" title="{{ visita }}">{{ visita }}</span>
+      {%- if partido.visitante_escudo_url -%}
+        <img class="mc-escudo" src="{{ partido.visitante_escudo_url }}" alt="" loading="lazy" decoding="async"
+             onerror="this.hidden = true">
+      {%- endif -%}
+    </span>
+    {%- if partido.resultado_real -%}
+      <span class="visor-sr-only">Resultado real: {{ partido.resultado_real }}</span>
+    {%- endif -%}
+  </header>
+
+  {{ banda_brier(partido) }}
+
+  {#- [DES-QBE-075 · REV.2] Vértice y barras comparativas. El vértice se TRANSCRIBE
+      de `clasificacion_triada` (emitido por el núcleo con banda de indiferencia y
+      rescate territorial). El máximo de mercado es un argmax puro sobre q_mkt, se
+      evalúa UNA vez por tarjeta. Cero ordenamiento de P′ en el pintor. -#}
+  {%- set q_max = ([partido.q_local, partido.q_empate, partido.q_visitante] | max)
+        if (partido.q_local is number and partido.q_empate is number and partido.q_visitante is number)
+        else none -%}
+  {%- set mapa_vertice = {'P_MAX': 'max', 'P_MID': 'mid', 'P_LOW': 'low'} -%}
+  {%- set vertice = mapa_vertice.get(partido.clasificacion_triada) -%}
+  {%- set etiquetas_vertice = {
+        'max': 'Acierto Primario · el resultado real cayó en el vértice de mayor probabilidad P′',
+        'mid': 'Rescate de Cobertura · el resultado real cayó en el segundo vértice de P′',
+        'low': 'Ruptura Residual · el resultado real cayó en el vértice de menor probabilidad P′',
+        'cold_start': 'Cold Start · S = 0: el resultado es un hecho consumado; su vértice no se tiñe'
+      } -%}
+  {%- set casillas = [
+        {'etiqueta': '1 · LOCAL', 'clave': 'LOCAL', 'p': partido.p_local, 'q': partido.q_local, 'momio': momios.get('L')},
+        {'etiqueta': 'X · EMPATE', 'clave': 'EMPATE', 'p': partido.p_empate, 'q': partido.q_empate, 'momio': momios.get('E')},
+        {'etiqueta': '2 · VISITANTE', 'clave': 'VISITANTE', 'p': partido.p_visitante, 'q': partido.q_visitante, 'momio': momios.get('V')}
+      ] -%}
+
+  <div class="mc-grid">
+    {%- for casilla in casillas %}
+      {%- set acierto_celda = partido.resultado_real == casilla.clave %}
+      {%- set vertice_celda = ('cold_start' if partido.es_cold_start else vertice) if acierto_celda else none %}
+      {{ celda_1x2(casilla, partido.resultado_real, partido.es_cold_start, vertice_celda,
+                   etiquetas_vertice.get(vertice_celda, 'Resultado real consumado'),
+                   (casilla.clave == partido.r_max) and not partido.es_cold_start,
+                   q_max is not none and casilla.q == q_max) }}
+    {%- endfor %}
+  </div>
+
+  <footer class="mc-foot">
+    <div class="mc-foot-atribucion">
+      {{ bando_atribucion(partido) }}
+    </div>
+    <div class="mc-foot-semaforos" aria-label="Tetralogía fáctica de salud de datos">
+      {{ tira_semaforos(partido) }}
+    </div>
+    <button type="button" class="btn-ver-44-vars"
+            data-vars44-url="/visor/partido/{{ id_partido }}/variables"
+            data-vars44-titulo="🔬 {{ local }} vs {{ visita }}{% if jornada %} · Jornada {{ jornada }}{% endif %}{% if partido.marcador %} · {{ partido.marcador }}{% endif %}"
+            title="Inspección forense del catálogo de 32 variables">🔬 Catálogo Fáctico (32V)</button>
+  </footer>
+</article>
+{%- endmacro %}

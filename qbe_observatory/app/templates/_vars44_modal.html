@@ -1,0 +1,22 @@
+{#
+  [DES-QBE-075 / DES-QBE-064] Cascarón único del modal de 32 variables.
+  El cuerpo (`#vars44-cuerpo`) lo hidrata `visor-vars44.js` con el fragmento
+  servido por `/visor/partido/<id_partido>/variables` (B2). El `id` es ancla de
+  red y de pruebas: no se renombra por estética (DESIGN.md §7).
+#}
+<div id="modal-44-variables" class="modal-overlay" role="dialog" aria-modal="true"
+     aria-labelledby="vars44-titulo" hidden>
+  <div class="modal-content vars44-modal mc-modal-panel">
+    <div class="vars44-cabecera">
+      <div>
+        <h3 id="vars44-titulo" class="vars44-titulo">🔬 Inspección forense · catálogo de 32 variables</h3>
+        <span class="vars44-subtitulo">
+          Descomposición Δη = ln(λ_H/λ_A) ≡ Δ Ofensiva + Δ Defensiva + Δ Contexto ·
+          catálogo canónico de 32 variables en 6 dimensiones canónicas · [LN-QBE-101]
+        </span>
+      </div>
+      <button type="button" class="btn-cerrar-44" data-cerrar-modal>Cerrar</button>
+    </div>
+    <div id="vars44-cuerpo"></div>
+  </div>
+</div>

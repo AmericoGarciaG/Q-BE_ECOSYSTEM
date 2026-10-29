@@ -5,100 +5,439 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ titulo }}</title>
   <link rel="stylesheet" href="/static/css/theme.css">
+  <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
-  {% set resumen = reporte.resumen_temporada %}
+  {# [DES-QBE-075 · REV.2] Sprite único del balón: se declara UNA vez y cada casilla
+     lo referencia con `<use>`. Sin emoji de sistema y sin N copias del path. #}
+  <svg class="mc-sprite" aria-hidden="true" focusable="false" width="0" height="0">
+    <symbol id="mc-balon" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path fill="currentColor" d="M12 8.5 L15.3 10.9 L14 14.8 L10 14.8 L8.7 10.9 Z"/>
+      <path fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
+            d="M12 8.5 V4 M15.3 10.9 L19.5 9.5 M14 14.8 L16.8 18 M10 14.8 L7.2 18 M8.7 10.9 L4.5 9.5"/>
+    </symbol>
+  </svg>
+  {% set resumen = vista.resumen %}
+  {% set fuente = vista.fuente %}
+
+  {# [DES-QBE-074] Celda sin evidencia: guion largo visual + literal canónico accesible.
+     DESIGN.md §7: `SIN EVIDENCIA` no se borra, se traslada a la capa accesible.
+     [DES-QBE-075] La macro vive en `_macros.html`: una sola fuente para el visor y
+     para la Match Card. #}
+  {% from "_macros.html" import vacio %}
+  {% from "_match_card.html" import match_card %}
+
   <header class="header-container">
     <div class="header-brand">Q-BE <span>Observatory</span></div>
     <nav class="header-nav">
       <a class="tab-btn" href="/">Inicio</a>
-      <a class="tab-btn active" href="/visor">Visor de Calibración</a>
+      <a class="tab-btn active" href="/visor">Auditoría de Calibración</a>
       <a class="tab-btn" href="/backtesting">Backtesting</a>
     </nav>
   </header>
 
-  <main style="max-width: 1100px; margin: 2rem auto; padding: 0 1rem;">
-    <h1 style="margin-top: 0;">Visor de Calibración</h1>
-    <p>
-      Liga: <strong>{{ reporte.liga }}</strong> ·
-      Temporada: <strong>{{ reporte.temporada or 'N/D' }}</strong> ·
-      Partidos evaluados: <strong>{{ resumen.n_partidos_qbe }}</strong> ·
-      Fuente: <code>{{ resumen.fuente_qbe }}</code>
-    </p>
-
-    <form method="get" action="/visor" style="margin: 1rem 0;">
-      <label for="jornada">Filtrar jornada:</label>
-      <input id="jornada" name="jornada" type="number" min="1" step="1"
-             value="{{ jornada if jornada is not none else '' }}"
-             style="width: 8rem; padding: 0.35rem; margin: 0 0.5rem;">
-      <button class="btn-primary" type="submit">Ver</button>
-      {% if jornada is not none %}
-        <a class="tab-btn" href="/visor" style="margin-left: 0.5rem;">Quitar filtro</a>
-      {% endif %}
-    </form>
-
-    <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
-      <article class="card">
-        <h2 style="margin-top: 0;">Brier QBE</h2>
-        <p style="font-size: 1.8rem; margin: 0;">{{ "%.4f"|format(resumen.brier_qbe) }}</p>
-        <p style="color: var(--text-muted); margin-bottom: 0;">Multicategórico 1X2 · qbe_core</p>
-      </article>
-
-      <article class="card">
-        <h2 style="margin-top: 0;">Brier Mercado</h2>
-        <p style="font-size: 1.8rem; margin: 0;">
-          {% if resumen.brier_mercado is none %}N/D{% else %}{{ "%.4f"|format(resumen.brier_mercado) }}{% endif %}
+  <main class="visor-main">
+    <header class="visor-cabecera">
+      <div class="visor-cabecera-texto">
+        <p class="visor-kicker">Observatorio · Bóveda 3NF</p>
+        <h1 class="visor-titulo">Auditoría de Calibración y Atribución</h1>
+        <p class="visor-subtitulo">
+          Calibración 1X2 y atribución factorial del universo auditado.
+          <button type="button" class="visor-info" aria-label="Lectura de solo lectura del snapshot: el cliente no recalcula probabilidades, Brier ni Alpha."
+                  data-tip="Lectura de solo lectura del snapshot: el cliente transcribe el DTO y no recalcula probabilidades, Brier ni Alpha.">ⓘ</button>
         </p>
-        <p style="color: var(--text-muted); margin-bottom: 0;">{{ resumen.fuente_mercado }}</p>
-      </article>
+      </div>
 
-      <article class="card">
-        <h2 style="margin-top: 0;">Alpha de Calibración</h2>
-        <p style="font-size: 1.8rem; margin: 0;">
-          {% if resumen.alpha_calibracion_pct is none %}N/D{% else %}{{ "%.2f"|format(resumen.alpha_calibracion_pct) }}%{% endif %}
-        </p>
-        <p style="color: var(--text-muted); margin-bottom: 0;">
-          {% if resumen.mercado_disponible %}Mercado disponible{% else %}Mercado no disponible{% endif %}
-        </p>
-      </article>
-    </section>
+      <div class="visor-fuente" aria-label="Fuente de datos">
+        <span class="visor-fuente-linea">
+          <span class="visor-fuente-kicker">Fuente</span>
+          <code class="visor-fuente-ruta" title="{{ fuente.ruta }}">{{ fuente.nombre }}</code>
+        </span>
+        <span class="visor-fuente-linea">
+          <span class="visor-fuente-kicker">Estado</span>
+          {% if fuente.fresco %}
+            <span class="visor-badge visor-badge-fresco">Fresco · {{ "%.1f"|format(fuente.edad_min) }} min</span>
+          {% elif fuente.edad_min is not none %}
+            <span class="visor-badge visor-badge-obsoleto">Obsoleto · {{ "%.1f"|format(fuente.edad_min) }} min</span>
+          {% else %}
+            <span class="visor-badge visor-badge-sin">SIN EVIDENCIA</span>
+          {% endif %}
+          <span class="visor-badge visor-badge-lectura">Solo lectura</span>
+        </span>
+        <span class="visor-fuente-linea">
+          <span class="visor-fuente-kicker">Universo</span>
+          <span>{{ fuente.liga }} · Temporada: {{ fuente.temporada }}</span>
+        </span>
+      </div>
+    </header>
 
-    {% if resumen.nota_metodologica %}
-      <p style="margin-top: 1rem; color: var(--text-muted);">{{ resumen.nota_metodologica }}</p>
+    {% if vista.error %}
+      <section class="card visor-error" role="alert">
+        <h2>Fuente de calibración no disponible</h2>
+        <p>{{ vista.error }}</p>
+        <p class="visor-nota">
+          La Auditoría no cae a la base viva ni al histórico. Aprovisione el snapshot y recargue.
+        </p>
+      </section>
     {% endif %}
 
-    <section class="card" style="margin-top: 1.5rem; overflow-x: auto;">
-      <h2 style="margin-top: 0;">
-        Desglose por jornada
-        {% if jornada is not none %}· Jornada {{ jornada }}{% endif %}
-      </h2>
-      <table class="fintech-table">
-        <thead>
-          <tr>
-            <th>Jornada</th>
-            <th>Partidos</th>
-            <th>Brier QBE</th>
-            <th>Brier Mercado</th>
-            <th>Alpha</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for fila in jornadas %}
-            <tr>
-              <td>{{ fila.jornada }}</td>
-              <td>{{ fila.n_partidos }}</td>
-              <td>{{ "%.4f"|format(fila.brier_qbe) }}</td>
-              <td>{% if fila.brier_mercado is none %}N/D{% else %}{{ "%.4f"|format(fila.brier_mercado) }}{% endif %}</td>
-              <td>{% if fila.alpha_calibracion_pct is none %}N/D{% else %}{{ "%.2f"|format(fila.alpha_calibracion_pct) }}%{% endif %}</td>
-            </tr>
+    {% if vista.jornadas %}
+      <section class="visor-controles" aria-label="Filtro de rango de jornadas">
+        <div class="visor-filtro-rango">
+          <span class="visor-control-titulo">Rango de jornadas</span>
+          <label class="visor-control" for="filtro-jornada-desde">
+            Desde
+            <select id="filtro-jornada-desde">
+              {% for fila in vista.jornadas %}
+                <option value="{{ fila.jornada }}" {% if loop.first %}selected{% endif %}>J{{ fila.jornada }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <span class="visor-control-guion" aria-hidden="true">—</span>
+          <label class="visor-control" for="filtro-jornada-hasta">
+            Hasta
+            <select id="filtro-jornada-hasta">
+              {% for fila in vista.jornadas %}
+                <option value="{{ fila.jornada }}" {% if loop.last %}selected{% endif %}>J{{ fila.jornada }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <button type="button" class="visor-btn-secundario" id="visor-rango-reset">Restablecer</button>
+          <span class="visor-rango-estado" id="visor-rango-estado" aria-live="polite"></span>
+        </div>
+        <noscript>
+          <p class="visor-nota">
+            Sin JavaScript se muestra el universo completo y el detalle expandido; el filtro
+            de rango no está disponible.
+          </p>
+        </noscript>
+      </section>
+    {% endif %}
+
+    <section class="bt-macro-grid visor-kpis" aria-label="KPIs de calibración">
+      <article class="bt-kpi-card visor-kpi">
+        <span class="bt-kpi-label">Partidos auditados</span>
+        <span class="bt-kpi-value">{{ resumen.total_partidos }}</span>
+        <span class="bt-kpi-sub">
+          {% if resumen.n_jornadas > 0 %}
+            {{ resumen.n_jornadas }} jornadas · J{{ resumen.jornada_min }}–J{{ resumen.jornada_max }}
           {% else %}
+            Sin jornadas auditables
+          {% endif %}
+        </span>
+      </article>
+
+      <article class="bt-kpi-card visor-kpi">
+        <span class="bt-kpi-label">Brier Q-BE
+          <button type="button" class="visor-info" aria-label="Error cuadrático multicategórico de la distribución soberana 1X2. Más bajo es mejor."
+                  data-tip="Error cuadrático multicategórico de la distribución soberana 1X2 sobre el universo auditado. Más bajo es mejor.">ⓘ</button>
+        </span>
+        {% if resumen.brier_qbe is not none %}
+          <span class="bt-kpi-value">{{ "%.4f"|format(resumen.brier_qbe) }}</span>
+        {% else %}
+          <span class="bt-kpi-value visor-valor-sin visor-kpi-vacio" title="Sin evidencia en el snapshot">—</span><span class="visor-sr-only">SIN EVIDENCIA</span>
+        {% endif %}
+        <span class="bt-kpi-sub">1X2 multicategórico · qbe_core</span>
+      </article>
+
+      <article class="bt-kpi-card visor-kpi">
+        <span class="bt-kpi-label">Brier Mercado
+          <button type="button" class="visor-info" aria-label="Mismo error calculado con las cuotas de cierre del snapshot 3NF."
+                  data-tip="Mismo error calculado con las cuotas de cierre del snapshot 3NF. Solo existe si la jornada publica el trío 1X2.">ⓘ</button>
+        </span>
+        {% if resumen.brier_mercado is not none %}
+          <span class="bt-kpi-value">{{ "%.4f"|format(resumen.brier_mercado) }}</span>
+        {% else %}
+          <span class="bt-kpi-value visor-valor-sin visor-kpi-vacio" title="Sin evidencia de mercado en el snapshot">—</span><span class="visor-sr-only">SIN EVIDENCIA</span>
+        {% endif %}
+        <span class="bt-kpi-sub">Cuotas de cierre · snapshot 3NF</span>
+      </article>
+
+      <article class="bt-kpi-card visor-kpi">
+        <span class="bt-kpi-label">Alpha de Calibración
+          <button type="button" class="visor-info" aria-label="Ventaja porcentual del Brier Q-BE sobre el de mercado: (1 − QBE ÷ Mercado) × 100."
+                  data-tip="Ventaja porcentual del Brier Q-BE sobre el de mercado: (1 − QBE ÷ Mercado) × 100. Positivo: el motor calibra mejor.">ⓘ</button>
+        </span>
+        {% if resumen.alpha_calibracion_pct is not none %}
+          <span class="bt-kpi-value visor-alpha visor-alpha-{{ resumen.alpha_signo }}" data-signo="{{ resumen.alpha_signo }}">
+            {% if resumen.alpha_calibracion_pct > 0 %}+{% endif %}{{ "%.2f"|format(resumen.alpha_calibracion_pct) }}%
+          </span>
+        {% else %}
+          <span class="bt-kpi-value visor-valor-sin visor-kpi-vacio" title="Sin evidencia de mercado para contrastar">—</span><span class="visor-sr-only">SIN EVIDENCIA</span>
+        {% endif %}
+        <span class="bt-kpi-sub">Global · {{ resumen.total_partidos }} partidos</span>
+      </article>
+
+      <article class="bt-kpi-card visor-kpi visor-kpi-pendiente" data-estado="PENDIENTE_MOTOR">
+        <span class="bt-kpi-label">Brier Q-BE Variables
+          <button type="button" class="visor-info" aria-label="Brier del motor causal de eventos minuto a minuto. Aún no legislado."
+                  data-tip="Brier del motor causal de eventos minuto a minuto. Aún no legislado: se declara como estado, jamás como cifra.">ⓘ</button>
+        </span>
+        <span class="bt-kpi-value visor-valor-pendiente" aria-hidden="true">—</span>
+        <span class="visor-pill visor-pill-pendiente">PENDIENTE MOTOR</span>
+        <span class="bt-kpi-sub">Motor causal minuto a minuto · no legislado</span>
+      </article>
+    </section>
+
+    <p class="visor-nota visor-nota-kpis">
+      El rango de jornadas filtra la tabla; los KPIs son el agregado global del snapshot.
+    </p>
+
+    <section class="card visor-tabla-card" aria-labelledby="titulo-tabla-calibracion">
+      <div class="visor-tabla-cabecera">
+        <div class="visor-tabla-cabecera-texto">
+          <h2 class="visor-tabla-titulo" id="titulo-tabla-calibracion">Calibración por jornada</h2>
+          <p class="visor-nota">Cada jornada se despliega al detalle por partido.</p>
+        </div>
+        <span class="visor-badge visor-badge-pendiente">Brier Vars · PENDIENTE MOTOR</span>
+      </div>
+
+      <p class="visor-nota visor-tabla-hint">
+        Desliza horizontalmente para ver Brier Mercado, Alpha y Brier Vars.
+      </p>
+
+      <div class="visor-tabla-scroll">
+        <table class="bt-table visor-tabla" id="tabla-calibracion">
+          <caption class="visor-sr-only">
+            Calibración agregada por jornada y detalle por partido
+          </caption>
+          <thead>
             <tr>
-              <td colspan="5">Sin jornadas para el filtro solicitado.</td>
+              <th scope="col" class="visor-th-texto">Jornada</th>
+              <th scope="col" class="visor-num visor-th-num">Partidos</th>
+              <th scope="col" class="visor-num visor-th-num">Brier QBE</th>
+              <th scope="col" class="visor-num visor-th-num">Brier Mercado</th>
+              <th scope="col" class="visor-num visor-th-num">Alpha</th>
+              <th scope="col" class="visor-num visor-th-num">
+                <span class="visor-th-label">Brier Vars
+                  <button type="button" class="visor-info visor-info-abajo visor-info-fin"
+                          aria-label="Brier del motor causal minuto a minuto. Aún no legislado: PENDIENTE MOTOR."
+                          data-tip="Brier del motor causal de eventos minuto a minuto. Aún no legislado: la columna se declara PENDIENTE MOTOR, no se imputa.">ⓘ</button>
+                </span>
+              </th>
             </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {% for fila in vista.jornadas %}
+              <tr class="visor-fila-jornada" data-jornada="{{ fila.jornada }}" data-partidos="{{ fila.total_partidos }}">
+                <td class="visor-celda-jornada">
+                  <button type="button" class="visor-btn-drill" aria-expanded="false" aria-controls="detalle-jornada-{{ fila.jornada }}">
+                    <span class="visor-chevron" aria-hidden="true">▸</span>
+                    <span>J{{ fila.jornada }}</span>
+                  </button>
+                  <span class="visor-jornada-etiqueta">J{{ fila.jornada }}</span>
+                </td>
+                <td class="visor-num visor-celda-partidos">{{ fila.total_partidos }}</td>
+                <td class="visor-num">
+                  {% if fila.brier_qbe is not none %}{{ "%.4f"|format(fila.brier_qbe) }}{% else %}{{ vacio('Brier Q-BE no publicado para esta jornada') }}{% endif %}
+                </td>
+                <td class="visor-num">
+                  {% if fila.brier_mercado is not none %}{{ "%.4f"|format(fila.brier_mercado) }}{% else %}{{ vacio('La jornada no publica cuotas de cierre: no hay Brier de mercado') }}{% endif %}
+                </td>
+                <td class="visor-num">
+                  {% if fila.alpha_calibracion_pct is not none %}
+                    <span class="visor-alpha visor-alpha-{{ fila.alpha_signo }}" data-signo="{{ fila.alpha_signo }}">
+                      {% if fila.alpha_calibracion_pct > 0 %}+{% endif %}{{ "%.2f"|format(fila.alpha_calibracion_pct) }}%
+                    </span>
+                    {% if fila.alpha_etiqueta == "COLD_START" %}
+                      <span class="visor-badge visor-badge-cold">COLD START</span>
+                    {% endif %}
+                  {% else %}
+                    {{ vacio('Alpha no calculable: falta el Brier de mercado de la jornada') }}
+                  {% endif %}
+                </td>
+                <td class="visor-num">{{ vacio('Brier Vars · el motor causal minuto a minuto aún no está legislado') }}</td>
+              </tr>
+
+              <tr class="visor-fila-detalle" id="detalle-jornada-{{ fila.jornada }}" data-jornada-padre="{{ fila.jornada }}">
+                <td colspan="6">
+                  <div class="visor-detalle-panel">
+                    <p class="visor-detalle-titulo">
+                      <span class="visor-detalle-jornada">J{{ fila.jornada }}</span>
+                      <span class="visor-detalle-meta">{{ fila.total_partidos }} partidos</span>
+                    </p>
+                    {% if fila.partidos %}
+                      {# [DES-QBE-075] El detalle de jornada se lee como Match Card. El
+                         contenedor conserva la clase legada `visor-tabla-micro` como ancla
+                         de compatibilidad; su `min-width` de tabla se neutraliza en el CSS. #}
+                      <div class="visor-match-lista visor-tabla-micro" role="list"
+                           aria-label="Partidos de la jornada {{ fila.jornada }}">
+                        {% for partido in fila.partidos %}
+                          {{ match_card(partido, fila.jornada) }}
+                        {% endfor %}
+                      </div>
+                    {% else %}
+                      <p class="visor-detalle-vacio">{{ vacio('Sin partidos auditables en esta jornada') }}</p>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="6" class="visor-tabla-vacia">
+                  <span class="visor-vacio" title="El snapshot no contiene jornadas auditables" aria-hidden="true">—</span>
+                  <span class="visor-sr-only">SIN EVIDENCIA</span>
+                  <span class="visor-tabla-vacia-texto">Sin jornadas auditables en el snapshot.</span>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="visor-futuro" aria-labelledby="titulo-modulos-causales">
+      <h2 class="visor-futuro-titulo" id="titulo-modulos-causales">Módulos causales futuros</h2>
+      <p class="visor-nota">
+        Contenedores reservados. No hay datos ni ejes fabricados: el motor causal de
+        eventos minuto a minuto aún no está legislado.
+      </p>
+      <div class="visor-futuro-grid">
+        <article class="card visor-slot" id="slot-heatmap-sinergia"
+                 data-componente="heatmap-sinergia" data-fuente="motor_causal"
+                 data-estado="PENDIENTE_MOTOR" data-version="0">
+          <div class="visor-slot-cabecera">
+            <h3 class="visor-slot-titulo">Heatmap de Sinergia</h3>
+            <span class="visor-badge visor-badge-pendiente">PENDIENTE MOTOR</span>
+          </div>
+          <div class="visor-slot-lienzo" id="lienzo-heatmap-sinergia">
+            <p class="visor-slot-lienzo-texto">
+              PENDIENTE MOTOR<br>
+              Se poblará cuando el motor causal esté legislado.
+            </p>
+          </div>
+        </article>
+
+        <article class="card visor-slot" id="slot-radar-distribucion"
+                 data-componente="radar-distribucion" data-fuente="motor_causal"
+                 data-estado="PENDIENTE_MOTOR" data-version="0">
+          <div class="visor-slot-cabecera">
+            <h3 class="visor-slot-titulo">Radar de Distribución</h3>
+            <span class="visor-badge visor-badge-pendiente">PENDIENTE MOTOR</span>
+          </div>
+          <div class="visor-slot-lienzo" id="lienzo-radar-distribucion">
+            <p class="visor-slot-lienzo-texto">
+              PENDIENTE MOTOR<br>
+              Se poblará cuando el motor causal esté legislado.
+            </p>
+          </div>
+        </article>
+      </div>
     </section>
   </main>
+
+  {% include "_vars44_modal.html" %}
+  <script src="/static/js/visor-vars44.js?v=2026QBE_V1" defer></script>
+
+  <script>
+    (() => {
+      const tabla = document.getElementById('tabla-calibracion');
+      if (!tabla) return;
+
+      const filas = Array.from(tabla.querySelectorAll('tr.visor-fila-jornada'));
+      const detalles = Array.from(tabla.querySelectorAll('tr.visor-fila-detalle'));
+      const desde = document.getElementById('filtro-jornada-desde');
+      const hasta = document.getElementById('filtro-jornada-hasta');
+      const estado = document.getElementById('visor-rango-estado');
+      const reset = document.getElementById('visor-rango-reset');
+      const jornadaInicial = {{ jornada_inicial|tojson }};
+
+      if (!filas.length) return;
+
+      const valores = filas
+        .map((fila) => Number.parseInt(fila.dataset.jornada, 10))
+        .filter((valor) => Number.isFinite(valor));
+      if (!valores.length) return;
+
+      const minimo = Math.min(...valores);
+      const maximo = Math.max(...valores);
+      const leer = (valor) => {
+        const numero = Number.parseInt(valor, 10);
+        return Number.isFinite(numero) ? numero : null;
+      };
+      const acotar = (numero) => Math.max(minimo, Math.min(maximo, numero));
+
+      const cerrar = (fila) => {
+        const boton = fila.querySelector('.visor-btn-drill');
+        if (!boton) return;
+        boton.setAttribute('aria-expanded', 'false');
+        const detalle = document.getElementById(boton.getAttribute('aria-controls'));
+        if (detalle) detalle.classList.remove('visor-detalle-abierta');
+      };
+
+      const aplicar = (inicio, fin, actualizarUrl) => {
+        if (inicio === null || fin === null) return;
+        if (inicio > fin) [inicio, fin] = [fin, inicio];
+        inicio = acotar(inicio);
+        fin = acotar(fin);
+
+        if (desde) desde.value = String(inicio);
+        if (hasta) hasta.value = String(fin);
+
+        filas.forEach((fila) => {
+          const jornada = Number.parseInt(fila.dataset.jornada, 10);
+          const visible = jornada >= inicio && jornada <= fin;
+          fila.classList.toggle('visor-fila-oculta', !visible);
+          if (!visible) cerrar(fila);
+        });
+
+        detalles.forEach((detalle) => {
+          const jornada = Number.parseInt(detalle.dataset.jornadaPadre, 10);
+          if (jornada < inicio || jornada > fin) {
+            detalle.classList.remove('visor-detalle-abierta');
+          }
+        });
+
+        if (estado) estado.textContent = `Mostrando J${inicio}–J${fin} de J${minimo}–J${maximo}`;
+
+        if (actualizarUrl) {
+          const url = new URL(window.location.href);
+          url.searchParams.set('desde', String(inicio));
+          url.searchParams.set('hasta', String(fin));
+          url.searchParams.delete('jornada');
+          window.history.replaceState(null, '', url);
+        }
+      };
+
+      tabla.addEventListener('click', (evento) => {
+        const boton = evento.target.closest('.visor-btn-drill');
+        if (!boton) return;
+        const detalle = document.getElementById(boton.getAttribute('aria-controls'));
+        const abierto = boton.getAttribute('aria-expanded') === 'true';
+        boton.setAttribute('aria-expanded', String(!abierto));
+        if (detalle) detalle.classList.toggle('visor-detalle-abierta', !abierto);
+      });
+
+      if (desde) desde.addEventListener('change', () => aplicar(leer(desde.value), leer(hasta.value), true));
+      if (hasta) hasta.addEventListener('change', () => aplicar(leer(desde.value), leer(hasta.value), true));
+      if (reset) reset.addEventListener('click', () => aplicar(minimo, maximo, true));
+
+      window.addEventListener('popstate', () => {
+        const parametros = new URLSearchParams(window.location.search);
+        const inicio = leer(parametros.get('desde'));
+        const fin = leer(parametros.get('hasta'));
+        aplicar(
+          inicio === null ? minimo : inicio,
+          fin === null ? maximo : fin,
+          false
+        );
+      });
+
+      const parametros = new URLSearchParams(window.location.search);
+      let inicio = leer(parametros.get('desde'));
+      let fin = leer(parametros.get('hasta'));
+      if (inicio === null || fin === null) {
+        if (Number.isFinite(jornadaInicial)) {
+          inicio = jornadaInicial;
+          fin = jornadaInicial;
+        } else {
+          inicio = minimo;
+          fin = maximo;
+        }
+      }
+      aplicar(inicio, fin, false);
+    })();
+  </script>
 </body>
 </html>

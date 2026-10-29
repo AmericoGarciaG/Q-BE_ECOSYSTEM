@@ -157,6 +157,38 @@ El micro-HUD publica exactamente cuatro luces:
 | `.btn-ver-44-vars` | No se renombra por estética. |
 | `semaforos` | Tetralogía `OPTA/SEDE/H2H/CTX`; `epist` queda fuera del micro-HUD. |
 | `SIN EVIDENCIA` | Literal canónico; no se sustituye por `0` ni por `—` sin explicación. |
+| `visor-vacio` | [DES-QBE-074] Ausencia visual = `—` con `title` explicativo + literal `SIN EVIDENCIA` en `.visor-sr-only`. El literal sigue en el DOM; nunca se pinta un cero. |
+| `data-favorece` | [DES-QBE-074] Bando de la píldora de atribución (`local` / `visita` / `neutro`), transcrito de la etiqueta del driver. Positivo casa = `--success`; visita = `--accent`; `--danger` queda reservado a veto/riesgo. |
+| `data-valor` | [DES-QBE-075] `true` / `false`: predicado `P′ > q_mkt` sobre dos magnitudes ya transcritas. El margen en puntos porcentuales **no** se pinta: cero aritmética en el pintor. |
+| `data-acierto` | [DES-QBE-075] `true` en la celda cuyo rol coincide con `resultado_real`. Se marca con el balón `#mc-balon` (sprite único) y el marco se tiñe según `data-vertice`. |
+| `data-vertice` | [DES-QBE-075 · REV.2] `max` / `mid` / `low` transcrito de `clasificacion_triada` (`P_MAX`/`P_MID`/`P_LOW`), más `cold_start`. **Cero ordenamiento en el pintor:** el vértice lo emite `resolver_orden_fiduciario_con_indiferencia` (ε = 1 % + rescate territorial). |
+| `data-barra` | [DES-QBE-075 · REV.2] `p-max` en la celda de `r_max` (transcrito): barra superior de 3 px en `--text`. |
+| `data-barra-mkt` | [DES-QBE-075 · REV.2] `true` en la celda con el máximo de `q_mkt` (argmax puro evaluado una vez por tarjeta; empate técnico ⇒ todas las casillas que alcanzan el máximo): barra inferior de 3 px en `--muted`. |
+| `data-valor-suprimido` | [DES-QBE-075] `cold_start` cuando `S = 0`: la comparación `P′ > q_mkt` existe pero **no** se declara valor. La celda publica `data-valor="false"` y el chip `COLD START`.
+| `.mc-card` / `.mc-celda` | [DES-QBE-075] Namespace exclusivo de la Match Card del Observatorio. No se reutiliza en la Mesa ni sustituye a `.match-card-clean`. |
+| `/visor/partido/<id_partido>/variables` | [DES-QBE-075] Fragmento HTML de solo lectura con el panel 32V (`vars44-*`). Se inyecta en `#vars44-cuerpo`; no calcula nada. |
+
+### 7.1 `[DES-QBE-075]` Match Card Híbrido de Calibración
+
+El detalle de jornada del Visor deja de ser una tabla plana y pasa a una tarjeta de tres zonas que fusiona la estética saneada de `[DES-QBE-074]` con la parrilla 1X2 de la casilla micro, **sin importar código** del pilar `qbe_business` (§2.3): se re-expresa en Jinja2 sobre el mismo DTO canónico.
+
+| Zona | Geometría | Contenido |
+|---|---|---|
+| Cabecera | `grid` `1fr · auto · 1fr`, `gap` 0.5–1rem | Escudo + equipo local · marcador monoespaciado centrado · visita espejada. Banda de Brier en fila propia, alineada a la derecha. |
+| Cuerpo | `grid` `repeat(3, minmax(0, 1fr))`, `gap` 0.5rem | Celdas `1` · `X` · `2` sobre `--bg-base`; cada una transcribe `P′` (Q-BE), `Mkt` (q_mkt desmarcado) y `@` (momio decimal), con etiquetas en columna fija para que las tres celdas compartan línea base. |
+| Pie | `flex` con `space-between`, `gap` 0.5–0.75rem | Píldora de atribución (`visor-pildora`, `data-favorece`) · tetralogía `● OPTA ● SEDE ● H2H ● CTX` (`hud-semaforo`, `data-estado`) · botón `.btn-ver-44-vars`. |
+
+Reglas de composición:
+
+1. **Veredicto del resultado: balón + vértice canónico.** La celda del `resultado_real` se marca con el **balón** (`#mc-balon`, sprite único) y su borde y fondo se tiñen según el vértice emitido por el núcleo: `max` = `--success`, `mid` = `--accent`, `low` = `--danger`. El color nunca va solo: balón, `title` y literal accesible nombran el vértice con el vocabulario forense sellado — **Acierto Primario**, **Rescate de Cobertura**, **Ruptura Residual**. Queda prohibido el léxico de apuestas («Apuesta Ganada», «Suerte»): esta vista audita, no opera.
+   **Excepción cromática autorizada (D5).** El rojo `--danger` denota en esta tarjeta **`P_LOW` consumado (Ruptura Residual)**, no error de sistema ni riesgo. Es la única excepción admitida y viaja siempre acompañada de balón, `title` y literal accesible.
+2. **Valor: chip, no riel.** `P′ > q_mkt` ⇒ chip literal `↑ VALOR` en la fila de P′ con `data-valor="true"`. El riel izquierdo verde quedó **derogado** en REV.2: el chip es el único canal de valor y no compite con el color del vértice.
+3. **Barras comparativas.** La celda de `r_max` porta barra superior de 3 px en `--text` (P′max); la del máximo de `q_mkt`, barra inferior de 3 px en `--muted` (MKTmax). Se materializan con `box-shadow` inset para que convivan con el color del vértice sin sobrescribir el borde; una celda puede portar ambas.
+4. **Cold Start (S = 0) suprime el veredicto fiduciario.** Sin evidencia fáctica no hay vértice que leer: se conserva el balón (el partido existió) y la barra de mercado (el consenso es un hecho); se suprimen el tinte del marco, la barra P′max y el chip de valor. La celda declara `data-vertice="cold_start"`, `data-valor="false"` y `data-valor-suprimido="cold_start"`, y el chip `COLD START` explica el conjunto.
+5. **Cero aritmética en el pintor.** Solo se comparan magnitudes transcritas; ningún margen, delta ni probabilidad derivada. El orden de los vértices de P′ jamás se recalcula en la plantilla.
+6. **Brier Vars en la banda de Brier**, como tercera ranura fija (`QBE · Mkt · Vars`). Sin dato ⇒ `—` con `title` explicativo y `SIN EVIDENCIA` en `.visor-sr-only`; el estado `PENDIENTE MOTOR` se declara una vez por sección, jamás por tarjeta.
+7. **Densidad.** `--bg-surface` para la tarjeta, `--bg-base` para las tres celdas, `--border` para hairlines, tres niveles tipográficos y `tabular-nums` en toda cifra. Sin sombras externas ni degradados; las barras son sombras internas de 3 px.
+8. **Modal 32V bajo demanda.** El cascarón único `#modal-44-variables` hospeda el fragmento de `/visor/partido/<id_partido>/variables`, que transcribe `atribucion_factorial` con las clases `vars44-*`. Abrir y cerrar conserva su contrato.
 
 ---
 
@@ -229,9 +261,11 @@ El micro-HUD publica exactamente cuatro luces:
 | `[DES-QBE-071]` | Tetralogía Fáctica en el Micro-HUD y Retiro Visual del Semáforo EPIST [UX-MANDATE] | `compartida` | VIGENTE |
 | `[DES-QBE-072]` | Glosario Autodescriptivo de la Vitrina y Arquitectura de Cuatro Capas del Visor de Calibración [UX-MANDATE] | `observatorio` | VIGENTE |
 | `[DES-QBE-073]` | Apilamiento de Desglose en Tabla Meso [UX-MANDATE] | `observatorio` | VIGENTE |
+| `[DES-QBE-074]` | Saneamiento Visual de la Tabla de Calibración: Aire, Jerarquía Anidada y Píldora de Atribución [UX-MANDATE] | `observatorio` | VIGENTE |
+| `[DES-QBE-075]` | Match Card Híbrido de Calibración: Tres Zonas, Vértice Cromático del Resultado, Barras P′/Mercado y Modal 32V Bajo Demanda [UX-MANDATE] | `observatorio` | VIGENTE |
 | `[UX-CFG-01]` | Orden Configurable de Boletos en Tarjeta [UX-MANDATE] [BACKLOG] | `compartida` | VIGENTE |
 
-_Total: 66 identificadores._
+_Total: 68 identificadores._
 
 
 ---

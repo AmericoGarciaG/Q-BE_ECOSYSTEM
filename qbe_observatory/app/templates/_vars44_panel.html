@@ -1,0 +1,147 @@
+{#
+  [DES-QBE-075 / DES-QBE-064 / DES-QBE-070-B] Panel forense de 32 variables de UN
+  partido. Se sirve como fragmento bajo demanda (B2) y se inyecta en #vars44-cuerpo.
+  Régimen [DBBD-FUNGIBLE]: transcribe `atribucion_factorial`; no calcula ni imputa.
+  El soporte numérico se publica UNA sola vez, consolidado y replegable (DESIGN §3.1).
+#}
+{% from "_macros.html" import cifra, cifra_z %}
+{%- set variables = partido.variables_44 if partido.variables_44 is mapping else {} -%}
+{%- set dimensiones = variables.get('dimensiones') or [] -%}
+{%- set des = partido.descomposicion_log if partido.descomposicion_log is mapping else {} -%}
+{%- set salud = partido.semaforos if partido.semaforos is mapping else {} -%}
+{%- set total_vars = variables.get('total_variables') or 0 -%}
+<div class="mc-vars-panel">
+  <div class="vars44-aviso{% if partido.atribucion_disponible %} vars44-aviso-ok{% endif %}">
+    {%- if partido.atribucion_disponible -%}
+      ✅ Atribución disponible · origen de factores:
+      <strong>{{ partido.origen_factores or '—' }}</strong> · driver principal:
+      <strong>{{ partido.atribucion_driver or '—' }}</strong>
+    {%- else -%}
+      ⚪ Atribución NEUTRA: la bóveda no publicó el vector de factores de entrada de este
+      partido (<code>disponible = false</code>). El catálogo se exhibe sin fabricar cifras.
+    {%- endif -%}
+  </div>
+
+  <div class="mc-vars-origen">
+    {%- if partido.origen_captura -%}
+      <span class="visor-badge visor-badge-lectura">{{ '🔴 EN VIVO' if partido.origen_captura == 'EN_VIVO' else '🏛️ HISTÓRICO' }}</span>
+    {%- endif -%}
+    <span class="vars44-origen-sello">sello: {{ partido.origen_captura or 'no publicado (traza legada)' }}</span>
+    <span class="vars44-origen-sello">vector P′: {{ partido.origen_p_prima or 'no declarado' }}</span>
+    <span class="vars44-origen-sello">jornada: {{ jornada }}</span>
+  </div>
+
+  <div class="vars44-grid">
+    <div class="vars44-panel">
+      <div class="vars44-panel-titulo">Descomposición logarítmica</div>
+      <table class="vars44-tabla vars44-tabla-descomposicion">
+        <thead>
+          <tr><th>Componente</th><th class="vars44-col-num">Δ (log)</th></tr>
+        </thead>
+        <tbody>
+          {%- for etiqueta, clave in [
+                ('Δ Ofensiva', 'delta_ofensiva'),
+                ('Δ Defensiva', 'delta_defensiva'),
+                ('Δ Contexto', 'delta_contexto'),
+                ('Δ Neto ≡ ln(λ_H/λ_A)', 'delta_neto_total'),
+                ('Residuo no atribuido', 'residuo_no_atribuido')] %}
+            {%- set valor = des.get(clave) %}
+            <tr>
+              <td class="vars44-col-variable">{{ etiqueta }}</td>
+              <td class="vars44-col-num">{% if valor is number %}{{ "%+.4f"|format(valor) }}{% else %}—{% endif %}</td>
+            </tr>
+          {%- endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="vars44-panel">
+      <div class="vars44-panel-titulo">Tetralogía fáctica de salud de datos</div>
+      <div class="vars44-semaforos">
+        {%- for clave, nombre in [('opta', 'OPTA'), ('sede', 'SEDE'), ('h2h', 'H2H'), ('ctx', 'CTX')] -%}
+          {%- set estado = salud.get(clave) or 'NEUTRO' -%}
+          <span class="vars44-semaforo hud-semaforo" data-semaforo="{{ nombre }}" data-estado="{{ estado }}"
+                title="{{ nombre }}: {{ estado|lower }}" role="img"
+                aria-label="{{ nombre }}: {{ estado|lower }}">● {{ nombre }}</span>
+        {%- endfor %}
+      </div>
+      <div class="vars44-panel-titulo mc-vars-separador">Catálogo forense</div>
+      <div class="vars44-resumen">
+        <strong>{{ total_vars }}</strong> variables en <strong>{{ dimensiones|length }}</strong>
+        dimensiones canónicas.
+      </div>
+    </div>
+  </div>
+
+  <div class="vars44-acordeon">
+    {%- for dim in dimensiones %}
+      {%- set evaluadas = dim.variables_evaluadas | default(0) %}
+      {%- set total_dim = dim.total_variables | default(dim.conteo | default(0)) %}
+      {%- set con_datos = dim.tiene_datos and evaluadas > 0 %}
+      <details class="vars44-dimension {{ 'dim-con-datos' if con_datos else 'dim-fase6' }}"
+               data-dimension="{{ dim.dimension }}">
+        <summary>
+          <span class="vars44-dim-titulo">{{ dim.titulo }}</span>
+          <span class="vars44-dim-meta">
+            <span class="badge-dim {{ 'badge-dim-evaluada' if con_datos else 'badge-dim-fase6' }}">
+              {{ (evaluadas ~ '/' ~ total_dim ~ ' evaluadas') if con_datos else 'SIN EVALUAR' }}
+            </span>
+            <span class="vars44-dim-conteo">{{ dim.conteo }} variables · {{ dim.dimension }}</span>
+          </span>
+        </summary>
+        <div class="mc-vars-lista">
+          {%- for v in dim.get('variables', []) %}
+            <div class="mc-var">
+              <span class="mc-var-id">{{ v.id }}</span>
+              <span class="mc-var-nombre">{{ v.variable }}</span>
+              <span class="mc-var-cifra">{{ cifra(v.local) }}</span>
+              <span class="mc-var-cifra">{{ cifra(v.visita) }}</span>
+              <span class="mc-var-estado" data-estado="{{ v.estado }}">{{ v.estado }}</span>
+            </div>
+          {%- else %}
+            <p class="vars44-resumen">○ Sin variables publicadas en esta dimensión (Fase 6).</p>
+          {%- endfor %}
+        </div>
+      </details>
+    {%- else %}
+      <div class="vars44-aviso">⚪ El endpoint no publicó el catálogo de 32 variables de este partido.</div>
+    {%- endfor %}
+  </div>
+
+  {%- if dimensiones %}
+  <details class="vars44-soporte">
+    <summary>Soporte forense consolidado · {{ total_vars }} variables</summary>
+    <table class="vars44-tabla vars44-tabla-soporte">
+      <caption class="visor-sr-only">Catálogo forense consolidado del partido</caption>
+      <thead>
+        <tr>
+          <th class="vars44-col-id">ID</th>
+          <th>Variable</th>
+          <th class="vars44-col-num">Local</th>
+          <th class="vars44-col-num">Visita</th>
+          <th class="vars44-col-num">z</th>
+          <th class="vars44-col-origen">Origen</th>
+          <th class="vars44-col-estado">Estado</th>
+        </tr>
+      </thead>
+      {%- for dim in dimensiones %}
+        <tbody>
+          <tr class="vars44-soporte-familia">
+            <td colspan="7">{{ dim.titulo }} · {{ dim.dimension }}</td>
+          </tr>
+          {%- for v in dim.get('variables', []) %}
+            <tr>
+              <td class="vars44-col-id">{{ v.id }}</td>
+              <td class="vars44-col-variable">{{ v.variable }}</td>
+              <td class="vars44-col-num">{{ cifra(v.local) }}</td>
+              <td class="vars44-col-num">{{ cifra(v.visita) }}</td>
+              <td class="vars44-col-num">{{ cifra_z(v.z_score) }}</td>
+              <td class="vars44-col-origen">{{ v.origen }}</td>
+              <td class="vars44-col-estado" data-estado="{{ v.estado }}">{{ v.estado }}</td>
+            </tr>
+          {%- endfor %}
+        </tbody>
+      {%- endfor %}
+    </table>
+  </details>
+  {%- endif %}
+</div>

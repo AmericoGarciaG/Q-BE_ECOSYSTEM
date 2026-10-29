@@ -11,7 +11,7 @@
     <div class="header-brand">Q-BE <span>Observatory</span></div>
     <nav class="header-nav">
       <a class="tab-btn active" href="/">Inicio</a>
-      <a class="tab-btn" href="/visor">Visor de Calibración</a>
+      <a class="tab-btn" href="/visor">Auditoría de Calibración</a>
       <a class="tab-btn" href="/backtesting">Backtesting</a>
     </nav>
   </header>
@@ -21,10 +21,11 @@
       <h1 style="margin-top: 0;">Observatorio Q-BE</h1>
       <p>
         Módulo independiente de observabilidad y calibración. Consume el núcleo
-        <strong>qbe_core</strong> y lee el histórico en modo estrictamente de solo lectura.
+        <strong>qbe_core</strong> y lee el snapshot de la bóveda 3NF y el histórico
+        en modo estrictamente de solo lectura.
       </p>
       <p>
-        <a class="btn-primary" href="/visor">Abrir Visor de Calibración</a>
+        <a class="btn-primary" href="/visor">Abrir Auditoría de Calibración</a>
       </p>
     </section>
 
@@ -36,8 +37,9 @@
         <li>No reimplementa Poisson, Dixon-Coles, André ni Kelly: importa <code>qbe_core</code>.</li>
       </ul>
       <p style="color: var(--text-muted);">
-        El Brier de mercado y el Alpha se muestran como <strong>N/D</strong> cuando no hay
-        cuotas 1X2 en la fuente (D-1).
+        La Auditoría de Calibración lee la bóveda 3NF del snapshot en modo de solo
+        lectura. El Brier de mercado y el Alpha se muestran como
+        <strong>SIN EVIDENCIA</strong> cuando la fuente no porta cuotas 1X2.
       </p>
     </section>
   </main>

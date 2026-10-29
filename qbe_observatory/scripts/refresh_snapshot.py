@@ -20,7 +20,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from app.config import BACKTESTING_SNAPSHOT, BASELINE_ROOT
+from app.config import BACKTESTING_SNAPSHOT, LIVE_DB
 from app.services.snapshot_refresh import refrescar_snapshot
 
 
@@ -29,8 +29,11 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--source",
         type=Path,
-        default=BASELINE_ROOT / "data" / "qbe_database.db",
-        help="BD viva de origen (se abre en solo lectura)",
+        default=LIVE_DB,
+        help=(
+            "BD viva de origen (se abre en solo lectura). Por omisión: "
+            "QBE_LIVE_DB o Q_BE_ECOSYSTEM/data/qbe_database.db"
+        ),
     )
     parser.add_argument(
         "--dest",

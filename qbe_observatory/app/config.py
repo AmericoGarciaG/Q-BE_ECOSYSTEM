@@ -24,6 +24,15 @@ LIVE_SNAPSHOT = Path(
     os.getenv("OBS_LIVE_SNAPSHOT", str(PROJECT_ROOT / "data" / "live_snapshot.db"))
 ).resolve()
 
+# Bóveda viva del monorepo: fuente del refresco atómico del snapshot. Vive dentro
+# de Q_BE_ECOSYSTEM/ para preservar la autonomía del Observatorio; un despliegue
+# puede sustituirla con `QBE_LIVE_DB` sin tocar código.
+LIVE_DB = Path(
+    os.getenv("QBE_LIVE_DB")
+    or os.getenv("OBS_LIVE_DB")
+    or str(ECOSYSTEM_ROOT / "data" / "qbe_database.db")
+).resolve()
+
 BACKTESTING_SNAPSHOT = Path(
     os.getenv(
         "OBS_BACKTESTING_SNAPSHOT",

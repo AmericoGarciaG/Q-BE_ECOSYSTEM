@@ -1,0 +1,26 @@
+{#
+  Macros compartidos del Visor de Calibración — [DES-QBE-074] / [DES-QBE-075].
+  Única fuente del vacío declarado: guion visual + literal canónico accesible.
+  Ninguna macro calcula ni deriva: sólo transcriben el DTO servido por el Observatorio.
+#}
+{% macro vacio(motivo) -%}
+  <span class="visor-vacio" title="{{ motivo }}" aria-hidden="true">—</span><span class="visor-sr-only">SIN EVIDENCIA</span>
+{%- endmacro %}
+
+{#
+  [DES-QBE-075] Transcripción de una magnitud del catálogo. El DTO sirve unas
+  celdas como número y otras como cadena ya formateada por el motor (tasas,
+  agregados torneales): ambas son evidencia y se transcriben LITERALES. Sólo la
+  ausencia (`none`) se declara con guion. Cero reformateo, cero imputación.
+#}
+{% macro cifra(valor) -%}
+  {%- if valor is number -%}{{ "%.4f"|format(valor) }}
+  {%- elif valor is string and valor|length -%}{{ valor }}
+  {%- else -%}—{%- endif -%}
+{%- endmacro %}
+
+{% macro cifra_z(valor) -%}
+  {%- if valor is number -%}{{ "%+.4f"|format(valor) }}
+  {%- elif valor is string and valor|length -%}{{ valor }}
+  {%- else -%}—{%- endif -%}
+{%- endmacro %}
