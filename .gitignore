@@ -32,6 +32,11 @@ logs/
 *.sqlite-wal
 *.sqlite3
 
+# [P0 #4] Copias congeladas del corpus (se regeneran; jamás se versionan)
+data/snapshots/*.db
+data/snapshots/*.db-shm
+data/snapshots/*.db-wal
+
 # Salidas generadas y artefactos de cobertura
 data/output/*
 !data/output/.gitkeep

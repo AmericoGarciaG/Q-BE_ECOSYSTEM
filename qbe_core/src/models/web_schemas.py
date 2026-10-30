@@ -270,12 +270,14 @@ class CalibrationMatchOut(BaseModel):
     p_local: float
     p_empate: float
     p_visitante: float
-    q_local: float
-    q_empate: float
-    q_visitante: float
+    # [P0 #1.3] Un partido sin cuota válida declara `None` (SIN EVIDENCIA): jamás un 1/3 ni un
+    # 0.0 imputado. El Brier de mercado también queda ausente en ese caso.
+    q_local: Optional[float] = None
+    q_empate: Optional[float] = None
+    q_visitante: Optional[float] = None
     momios: Dict[str, float] = Field(default_factory=dict)
     brier_qbe: float
-    brier_mercado: float
+    brier_mercado: Optional[float] = None
     acierto: bool
     # [LN-QBE-125 · derogación de la sustitución de [LN-QBE-100]] Sello de suficiencia fáctica
     # S(I) del partido: 0 = ignorancia declarada ⇒ P′ se evalúa TAL CUAL fue publicada (Cold Start

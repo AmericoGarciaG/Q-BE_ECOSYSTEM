@@ -52,13 +52,16 @@ from scripts.laboratorio.sandbox_arquetipos_vectores import (  # noqa: E402
 from scripts.laboratorio.sandbox_optimizacion_gradiente import (  # noqa: E402
     RUTA_SNAPSHOT_DEFECTO,
     _motor_solo_lectura,
+    ruta_reporte,
     sha256_archivo,
 )
 from scripts.laboratorio.sandbox_shadow_competitivo import (  # noqa: E402
     ANCLA_FACTIBLE,
     DIMENSIONES,
+    ConteoNoCoincide,
     FalloOptimizacion,
     NOMBRE_DIMENSION,
+    UniversoInsuficiente,
     ajustar_davidson,
     brier,
     cargar_muestra,
@@ -227,8 +230,14 @@ class ResultadoTau:
     sin_evidencia: List[str]
 
 
-def ejecutar(ruta_snapshot: Path) -> Dict[str, Any]:
-    muestra = cargar_muestra(ruta_snapshot)
+def ejecutar(
+    ruta_snapshot: Path,
+    n_esperado: Optional[int] = None,
+    universo_completo: bool = False,
+) -> Dict[str, Any]:
+    muestra = cargar_muestra(
+        ruta_snapshot, n_esperado=n_esperado, universo_completo=universo_completo
+    )
     local, visita, bilateral = cargar_niveles(ruta_snapshot, muestra.ids, muestra.celdas)
 
     # Diferencial reconstruido: debe coincidir con la matriz certificada (cero imputación).
@@ -461,16 +470,158 @@ def imprimir(datos: Dict[str, Any], sha_despues: str) -> None:
 
 
 # ═════════════════════════════════════════════════════════════════════════════════════════════
+# PRE-VUELO — [P0 #3] --dry-run: carga, verifica, imprime y sale (cero análisis)
+# ═════════════════════════════════════════════════════════════════════════════════════════════
+def _imprimir_dry_run(muestra, sha_despues: str) -> int:
+    """[P0 #3.1] Verificación de carga: no se ejecuta bisección, λ, Davidson ni se reporta σ."""
+    observado = ~np.isnan(muestra.crudo)
+    n_con_evidencia = int((observado.sum(axis=1) > 0).sum())
+    n_sin_evidencia = muestra.n - n_con_evidencia
+    lineas = [
+        _linea(),
+        "🎯 DRY-RUN — DISTANCIA AL BORDE (solo carga y verificación)",
+        _linea(),
+        f"   Snapshot          : {muestra.ruta_snapshot}",
+        f"   SHA-256 (carga)   : {muestra.sha_snapshot}",
+        f"   n                 : {muestra.n}",
+        f"   n_esperado        : {muestra.n_esperado}"
+        f"{' (--universo-completo)' if muestra.universo_completo else ''}",
+        f"   n_con_evidencia   : {n_con_evidencia}",
+        f"   n_sin_evidencia   : {n_sin_evidencia}",
+        f"   Celdas            : {len(muestra.celdas)} seleccionadas de "
+        f"{len(muestra.cobertura_todas)} candidatas",
+        "   Celdas seleccionadas (cobertura):",
+    ]
+    for celda in muestra.celdas:
+        cobertura = muestra.cobertura.get(celda, 0)
+        pct = (cobertura / muestra.n) * 100.0 if muestra.n else 0.0
+        lineas.append(f"      · {celda}: {cobertura}/{muestra.n} ({pct:.2f}%)")
+    lineas.append("   Variables excluidas:")
+    if muestra.excluidas:
+        for item in muestra.excluidas:
+            lineas.append(
+                f"      · {item['celda']}: {item['cobertura']}/{muestra.n} "
+                f"({item['pct']:.2f}%) — {item['motivo']}"
+            )
+    else:
+        lineas.append("      · ninguna")
+    cuotas = muestra.resumen_cuotas or {}
+    if cuotas:
+        lineas += [
+            "   Cuotas:",
+            f"      · con cuota fixtures   : {cuotas.get('n_con_cuota_fixtures', 0)}",
+            f"      · con cuota histórica  : {cuotas.get('n_con_cuota_historica', 0)}",
+            f"      · sin cuota            : {cuotas.get('n_sin_cuota', 0)}",
+            f"      · JOIN ambiguo         : {cuotas.get('n_join_ambiguo', 0)}",
+            f"      · fuente               : {cuotas.get('fuente_cuotas', {})}",
+            f"      · motivos sin cuota    : {cuotas.get('motivos_sin_cuota', {})}",
+            f"      · inventario histórico : {cuotas.get('historico', {})}",
+        ]
+    lineas += [
+        f"   SHA-256 (después) : {sha_despues}",
+        f"   Snapshot inmutable: {'IDÉNTICO' if sha_despues == muestra.sha_snapshot else 'CAMBIÓ 🚨'}",
+        f"   Conteo            : {'COINCIDE' if muestra.n == muestra.n_esperado else 'NO COINCIDE 🚨'}",
+        "   Análisis ejecutado: NINGUNO (bisección, λ, Davidson y bootstrap no se invocan)",
+        _linea(),
+    ]
+    print("\n".join(lineas))
+    if sha_despues != muestra.sha_snapshot:
+        return 2
+    if muestra.n != muestra.n_esperado:
+        return 3
+    return 0
+
+
+# ═════════════════════════════════════════════════════════════════════════════════════════════
 # MAIN
 # ═════════════════════════════════════════════════════════════════════════════════════════════
 def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Distancia al borde de decisión (counterfactual).")
     parser.add_argument("--snapshot", default=str(RUTA_SNAPSHOT_DEFECTO))
     parser.add_argument("--json", action="store_true")
+    conteo = parser.add_mutually_exclusive_group()
+    conteo.add_argument(
+        "--n-esperado",
+        type=int,
+        default=None,
+        help="Exige exactamente N partidos (default: 124).",
+    )
+    conteo.add_argument(
+        "--universo-completo",
+        action="store_true",
+        help="Acepta el conteo real de la bóveda y lo declara (sustituye N_ESPERADO).",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Solo carga y verifica. No ejecuta análisis.",
+    )
+    parser.add_argument(
+        "--salida",
+        default=None,
+        type=Path,
+        help="Directorio de salida para --json. Si None, usa data/output/ (compatibilidad).",
+    )
+    # ── [Rerun Doble B + D] Flags del análisis completo (opt-in, defaults intactos) ───────────
+    parser.add_argument("--taus", default=None, help="Curva τ separada por comas.")
+    parser.add_argument("--n-fragiles", type=int, default=None, help="Tamaño del top frágil.")
+    parser.add_argument("--bootstrap", type=int, default=None, help="Remuestreos de bloques.")
+    parser.add_argument("--fixed-free", action="store_true", help="Ablaciones V12/V26+V29+V30/V06.")
+    parser.add_argument("--modelo-nulo", action="store_true", help="P_null uniforme (1/3).")
+    parser.add_argument("--outliers", type=int, default=None, help="Top/bottom por norma.")
+    parser.add_argument(
+        "--estratificar",
+        default=None,
+        choices=["procedencia_xg"],
+        help="Particiona σ por sello xg_es_real_opta.",
+    )
+    parser.add_argument("--kfold", type=int, default=None, help="K-fold de α (sólo D).")
     argumentos = parser.parse_args(argv)
+    ruta_snapshot = Path(argumentos.snapshot)
+
+    if argumentos.dry_run:
+        try:
+            muestra = cargar_muestra(
+                ruta_snapshot,
+                n_esperado=argumentos.n_esperado,
+                universo_completo=argumentos.universo_completo,
+            )
+            cargar_niveles(ruta_snapshot, muestra.ids, muestra.celdas)
+        except ConteoNoCoincide as error:
+            print(f"\n{error}\n", file=sys.stderr)
+            return 3
+        except (UniversoInsuficiente, BordeInfactible, RuntimeError) as error:
+            print(f"\n{error}\n", file=sys.stderr)
+            return 4
+        return _imprimir_dry_run(muestra, sha256_archivo(ruta_snapshot))
+
+    # [Rerun Doble B + D] Los flags del análisis completo despachan al motor dedicado.
+    flags_rerun = any(
+        [
+            argumentos.taus is not None,
+            argumentos.n_fragiles is not None,
+            argumentos.bootstrap is not None,
+            argumentos.fixed_free,
+            argumentos.modelo_nulo,
+            argumentos.outliers is not None,
+            argumentos.estratificar is not None,
+            argumentos.kfold is not None,
+        ]
+    )
+    if flags_rerun:
+        from scripts.laboratorio.rerun_doble import ejecutar_rerun
+
+        return ejecutar_rerun(argumentos, ruta_snapshot)
 
     try:
-        datos = ejecutar(Path(argumentos.snapshot))
+        datos = ejecutar(
+            ruta_snapshot,
+            n_esperado=argumentos.n_esperado,
+            universo_completo=argumentos.universo_completo,
+        )
+    except ConteoNoCoincide as error:
+        print(f"\n{error}\n", file=sys.stderr)
+        return 3
     except BordeInfactible as error:
         print(f"\n{error}\n", file=sys.stderr)
         return 4
@@ -523,9 +674,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 for j in range(len(muestra.celdas))
             },
         }
-        RUTA_SALIDA_JSON.parent.mkdir(parents=True, exist_ok=True)
-        RUTA_SALIDA_JSON.write_text(json.dumps(reporte, ensure_ascii=False, indent=2), encoding="utf-8")
-        print(f"\n📄 Reporte exportado: {RUTA_SALIDA_JSON}")
+        ruta_salida = ruta_reporte(argumentos, "distancia_borde", RUTA_SALIDA_JSON)
+        ruta_salida.parent.mkdir(parents=True, exist_ok=True)
+        ruta_salida.write_text(json.dumps(reporte, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"\n📄 Reporte exportado: {ruta_salida}")
     return 0
 
 

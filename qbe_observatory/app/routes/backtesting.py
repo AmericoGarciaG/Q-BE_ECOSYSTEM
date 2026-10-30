@@ -7,10 +7,12 @@ Extraídas del monolito; la aritmética permanece en qbe_core / observatory.core
 from typing import Any, Dict, List, Optional, Tuple
 import logging
 from contextlib import contextmanager
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, sessionmaker
 
 from app import config
@@ -357,45 +359,278 @@ def _p_prima_al_vuelo(
     return (float(salida.p_local), float(salida.p_empate), float(salida.p_visitante))
 
 
+# ── [P0 #1 / P0 #5] FUENTES DE CUOTA Y VALIDEZ FIDUCIARIA ────────────────────────────────────
+# Sellos de procedencia del trío 1X2. El reporte declara, partido por partido, de dónde sale la
+# cuota: captura del fixture (J14), histórico FootyStats, o ausencia declarada. Cero imputación.
+FUENTE_CUOTAS_FIXTURES = "FIXTURES"
+FUENTE_CUOTAS_HISTORICO = "HISTORICAL_MATCHES"
+FUENTE_CUOTAS_SIN_EVIDENCIA = "SIN EVIDENCIA"
+FUENTE_CUOTAS_JOIN_AMBIGUO = "JOIN_AMBIGUO"
+
+_CUOTA_MINIMA = 1.0          # una cuota ≤ 1.0 no es un precio de mercado válido
+_SOBREPRECIO_MIN = 0.9       # Σ 1/o: por debajo no hay mercado (cuotas incoherentes)
+_SOBREPRECIO_MAX = 1.2       # Σ 1/o: por encima el margen de la casa es implausible
+
+_CLAVE_INDICE_HISTORICO = "qbe_indice_cuotas_historicas"
+_IDENTIDAD_CANONICA: Dict[str, Optional[str]] = {}
+
+
+def _trio_cuotas_valido(
+    local: Any, empate: Any, visitante: Any
+) -> Optional[Dict[str, float]]:
+    """Valida un trío 1X2 factual: cuotas > 1.0 y Σ(1/o) ∈ [0.9, 1.2].
+
+    Devuelve `None` cuando el trío está incompleto o es incoherente. No repara, no completa y no
+    promedia: la ausencia se declara aguas arriba [GOVERNANCE-01].
+    """
+    try:
+        o_local, o_empate, o_visitante = float(local), float(empate), float(visitante)
+    except (TypeError, ValueError):
+        return None
+    if min(o_local, o_empate, o_visitante) <= _CUOTA_MINIMA:
+        return None
+    sobreprecio = 1.0 / o_local + 1.0 / o_empate + 1.0 / o_visitante
+    if not (_SOBREPRECIO_MIN <= sobreprecio <= _SOBREPRECIO_MAX):
+        return None
+    return {"L": o_local, "E": o_empate, "V": o_visitante}
+
+
 def _cuotas_1x2_factuales(fx: Dict[str, Any]) -> Dict[str, float]:
     """
-    [ARCH-1.4.38] Trío 1X2 factual para el desmarque: captura CANÓNICA del snapshot
-    ([ARCH-1.4.15]) con respaldo determinista en la mejor captura por operador. Un fixture
-    sin trío completo devuelve `{}`: cero cuotas prestadas entre casas [GOVERNANCE-01].
+    [ARCH-1.4.38 / P0 #1.1] Trío 1X2 factual de la captura congelada del snapshot.
 
-    Decreto del Director (2026-10-14): la captura congelada se lee con FALLBACK DUAL,
-    `cuotas` (ingesta explícita) o `momios` (ingesta nativa). El mismo trío factual no puede
-    quedar invisible al Visor por el nombre del campo que lo porta: el Brier del mercado se
-    deriva de las cuotas de cierre realmente capturadas, jamás de un relleno uniforme.
+    Decreto del Director (2026-10-14): la captura se lee con FALLBACK DUAL, `cuotas` (ingesta
+    explícita) o `momios` (ingesta nativa), con respaldo determinista en `momios_operadores`.
+    Un fixture sin trío válido devuelve `{}`: cero cuotas prestadas entre casas [GOVERNANCE-01].
+
+    La referencia al fallback canónico inexistente quedó ELIMINADA (P0 #1.1): el flujo ya no
+    puede romperse con un `NameError` ni caer a un `1/3` implícito. La ausencia se declara con
+    `{}` y la fuente se resuelve en `_cuotas_1x2_con_fuente` / `cuotas_desde_historico`.
     """
     cuotas_dict = fx.get("cuotas") or fx.get("momios") or {}
     try:
-        if all(float(cuotas_dict.get(k, 0.0) or 0.0) > 1.0 for k in ("L", "E", "V")):
-            return {
-                "L": float(cuotas_dict["L"]),
-                "E": float(cuotas_dict["E"]),
-                "V": float(cuotas_dict["V"]),
-            }
-    except (TypeError, ValueError):
-        pass
-
-    canonica = _captura_canonica_1x2(fx)
-    if canonica:
-        return {"L": canonica["L"], "E": canonica["E"], "V": canonica["V"]}
+        validas = _trio_cuotas_valido(
+            cuotas_dict.get("L"), cuotas_dict.get("E"), cuotas_dict.get("V")
+        )
+    except AttributeError:
+        validas = None
+    if validas is not None:
+        return validas
 
     capturas = fx.get("momios_operadores") or {}
-    for operador in sorted(capturas.keys()):
-        m_data = capturas.get(operador) or {}
-        try:
-            if all(float(m_data.get(k, 0.0) or 0.0) > 1.0 for k in ("L", "E", "V")):
-                return {
-                    "L": float(m_data["L"]),
-                    "E": float(m_data["E"]),
-                    "V": float(m_data["V"]),
-                }
-        except (TypeError, ValueError):
-            continue
+    if isinstance(capturas, dict):
+        for operador in sorted(capturas.keys()):
+            m_data = capturas.get(operador) or {}
+            if not isinstance(m_data, dict):
+                continue
+            validas = _trio_cuotas_valido(m_data.get("L"), m_data.get("E"), m_data.get("V"))
+            if validas is not None:
+                return validas
     return {}
+
+
+def _cuotas_1x2_con_fuente(fx: Dict[str, Any]) -> Tuple[Dict[str, float], str]:
+    """Trío del fixture + sello de fuente (`FIXTURES` o `SIN EVIDENCIA`)."""
+    cuotas = _cuotas_1x2_factuales(fx)
+    if cuotas:
+        return cuotas, FUENTE_CUOTAS_FIXTURES
+    return {}, FUENTE_CUOTAS_SIN_EVIDENCIA
+
+
+def _fecha_dia(valor: Any) -> Optional[str]:
+    """Día ISO (`YYYY-MM-DD`) de un `kickoff_utc`/`fecha_utc` textual o `datetime`."""
+    if valor is None:
+        return None
+    if isinstance(valor, datetime):
+        return valor.date().isoformat()
+    if isinstance(valor, date):
+        return valor.isoformat()
+    texto = str(valor).strip()
+    if len(texto) < 10:
+        return None
+    return texto[:10]
+
+
+def _identidad_canonica(slug: Any) -> Optional[str]:
+    """
+    Identidad de club para el JOIN histórico, SIN coincidencia difusa.
+
+    Usa el catálogo canónico sellado [LN-QBE-012] en su rama de ALIAS EXPLÍCITO (`_CANONICAL_ALIASES`)
+    —jamás SequenceMatcher ni Levenshtein— para reconciliar las dos convenciones de slug del
+    corpus (`pachuca` ↔ `club-pachuca`, `guadalajara` ↔ `chivas-guadalajara`, …). Un slug que no
+    figura en el catálogo conserva su forma literal normalizada: no se adivina su identidad.
+    """
+    if slug is None:
+        return None
+    clave = str(slug).strip()
+    if not clave:
+        return None
+    if clave not in _IDENTIDAD_CANONICA:
+        try:
+            from src.core.normalization.normalizer import _CANONICAL_ALIASES, _normalize_text
+
+            texto = _normalize_text(clave.replace("-", " "))
+            _IDENTIDAD_CANONICA[clave] = _CANONICAL_ALIASES.get(texto) or f"slug:{clave.lower()}"
+        except (ImportError, AttributeError):  # pragma: no cover - catálogo ausente ⇒ literal
+            _IDENTIDAD_CANONICA[clave] = f"slug:{clave.lower()}"
+    return _IDENTIDAD_CANONICA[clave]
+
+
+def _construir_indice_cuotas_historicas(sesion: Session) -> Dict[str, Any]:
+    """
+    Índice en memoria (una sola lectura) de `historical_matches` para resolver cuotas.
+
+    `disponible = False` cuando la bóveda no porta la tabla (p. ej. el snapshot J14): el JOIN
+    histórico no aplica y cada partido cae a `SIN EVIDENCIA`, sin excepción.
+    """
+    indice: Dict[str, Any] = {
+        "disponible": False,
+        "total": 0,
+        "validas": 0,
+        "invalidas": 0,
+        "con_odd_mayor_1": 0,
+        "por_fecha": {},
+        "por_fecha_canonica": {},
+        "filas": {},
+        "usados": set(),
+    }
+    try:
+        filas = sesion.execute(
+            text(
+                "SELECT match_id, fecha_utc, home_team_slug, away_team_slug, "
+                "odd_home, odd_draw, odd_away FROM historical_matches"
+            )
+        ).mappings().all()
+    except SQLAlchemyError:
+        return indice
+
+    indice["disponible"] = True
+    for fila in filas:
+        registro = dict(fila)
+        dia = _fecha_dia(registro.get("fecha_utc"))
+        if dia is None:
+            continue
+        match_hist = str(registro["match_id"])
+        indice["filas"][match_hist] = registro
+        indice["por_fecha"].setdefault(
+            (str(registro.get("home_team_slug")), str(registro.get("away_team_slug")), dia), []
+        ).append(match_hist)
+        canonica = (
+            _identidad_canonica(registro.get("home_team_slug")),
+            _identidad_canonica(registro.get("away_team_slug")),
+            dia,
+        )
+        indice["por_fecha_canonica"].setdefault(canonica, []).append(match_hist)
+        if _trio_cuotas_valido(
+            registro.get("odd_home"), registro.get("odd_draw"), registro.get("odd_away")
+        ) is not None:
+            indice["validas"] += 1
+        else:
+            indice["invalidas"] += 1
+        try:
+            if min(
+                float(registro.get("odd_home")),
+                float(registro.get("odd_draw")),
+                float(registro.get("odd_away")),
+            ) > _CUOTA_MINIMA:
+                indice["con_odd_mayor_1"] += 1
+        except (TypeError, ValueError):
+            pass
+        indice["total"] += 1
+    return indice
+
+
+def _resolver_cuota_historica(
+    sesion: Session, match_id: str
+) -> Tuple[Dict[str, float], str, Dict[str, Any]]:
+    """
+    Resuelve la cuota de mercado de un partido contra `historical_matches`.
+
+    Reglas (P0 #1.2, tolerancia horaria declarada):
+      1. JOIN por (home_team_slug, away_team_slug, date(kickoff_utc)) — identidad literal.
+      2. Identidad canónica sellada + mismo día (dos convenciones de slug del corpus).
+      3. Identidad canónica + día contiguo (−1/+1) por desfase de zona horaria.
+      4. Cualquier empate entre candidatos ⇒ `JOIN_AMBIGUO` (no se adivina).
+      5. Trío fuera de rango ⇒ `SIN EVIDENCIA` (cuota incompleta/incoherente).
+
+    Devuelve `(cuotas, fuente, diagnostico)`. Nunca escribe.
+    """
+    indice = sesion.info.get(_CLAVE_INDICE_HISTORICO)
+    if indice is None:
+        indice = _construir_indice_cuotas_historicas(sesion)
+        sesion.info[_CLAVE_INDICE_HISTORICO] = indice
+    if not indice["disponible"]:
+        return {}, FUENTE_CUOTAS_SIN_EVIDENCIA, {"motivo": "TABLA_AUSENTE"}
+
+    fila = sesion.execute(
+        text(
+            "SELECT kickoff_utc, home_team_slug, away_team_slug FROM matches WHERE id = :id"
+        ),
+        {"id": str(match_id)},
+    ).mappings().first()
+    if fila is None:
+        return {}, FUENTE_CUOTAS_SIN_EVIDENCIA, {"motivo": "PARTIDO_AUSENTE"}
+
+    dia = _fecha_dia(fila["kickoff_utc"])
+    if dia is None:
+        return {}, FUENTE_CUOTAS_SIN_EVIDENCIA, {"motivo": "KICKOFF_ILEGIBLE"}
+    try:
+        dia_iso = date.fromisoformat(dia)
+    except ValueError:
+        return {}, FUENTE_CUOTAS_SIN_EVIDENCIA, {"motivo": "KICKOFF_ILEGIBLE"}
+    local_literal = str(fila["home_team_slug"])
+    visita_literal = str(fila["away_team_slug"])
+    canonica = (_identidad_canonica(local_literal), _identidad_canonica(visita_literal))
+
+    literal = indice["por_fecha"].get((local_literal, visita_literal, dia), [])
+    canonico = indice["por_fecha_canonica"].get((canonica[0], canonica[1], dia), [])
+    candidatos = list(dict.fromkeys(literal + canonico))
+    if not candidatos:
+        for desplazamiento in (-1, 1):
+            vecino = (dia_iso + timedelta(days=desplazamiento)).isoformat()
+            hallados = indice["por_fecha_canonica"].get((canonica[0], canonica[1], vecino), [])
+            if hallados:
+                candidatos = list(dict.fromkeys(hallados))
+                break
+
+    if len(candidatos) > 1:
+        return {}, FUENTE_CUOTAS_JOIN_AMBIGUO, {
+            "motivo": "MULTIPLES_CANDIDATOS",
+            "candidatos": candidatos,
+        }
+    if not candidatos:
+        return {}, FUENTE_CUOTAS_SIN_EVIDENCIA, {"motivo": "SIN_FILA_HISTORICA"}
+
+    match_hist = candidatos[0]
+    indice["usados"].add(match_hist)
+    registro = indice["filas"][match_hist]
+    cuotas = _trio_cuotas_valido(
+        registro.get("odd_home"), registro.get("odd_draw"), registro.get("odd_away")
+    )
+    if cuotas is None:
+        return {}, FUENTE_CUOTAS_SIN_EVIDENCIA, {
+            "motivo": "CUOTA_INCOMPLETA",
+            "match_historico": match_hist,
+        }
+    return cuotas, FUENTE_CUOTAS_HISTORICO, {
+        "motivo": "OK",
+        "match_historico": match_hist,
+    }
+
+
+def cuotas_desde_historico(sesion: Session, match_id: str) -> Tuple[Dict[str, float], str]:
+    """
+    [P0 #1.2] Cuota de mercado desde `historical_matches` para un partido de la bóveda.
+
+    Devuelve `({'L': odd_home, 'E': odd_draw, 'V': odd_away}, "HISTORICAL_MATCHES")` o
+    `({}, "SIN EVIDENCIA")` si el partido no está en `historical_matches`, si sus cuotas están
+    incompletas/incoherentes o si la bóveda no porta la tabla. Devuelve `({}, "JOIN_AMBIGUO")`
+    cuando el JOIN no es unívoco: jamás se adivina la fila.
+
+    Función de PURA LECTURA: no escribe, no imputa y no promedia cuotas.
+    """
+    cuotas, fuente, _ = _resolver_cuota_historica(sesion, match_id)
+    return cuotas, fuente
 
 
 def _desenlace_real_1x2(score_home: int, score_away: int) -> str:
@@ -591,7 +826,12 @@ def _construir_reporte_calibracion(
     triada_por_jornada: Dict[int, Dict[str, int]] = {}
     # [LN-QBE-125] Registros de Brier indexados por partido: la muestra calibrada se agrega con la
     # MISMA aritmética que la global, sin segunda verdad ni recálculo.
-    registros_por_partido: Dict[str, Tuple[Dict[str, Any], Dict[str, Any]]] = {}
+    registros_por_partido: Dict[str, Tuple[Dict[str, Any], Optional[Dict[str, Any]]]] = {}
+    # [P0 #1.3 / P0 #5] Procedencia de la cuota de mercado: un contador entero por fuente y la
+    # lista declarada de JOINs ambiguos. Cero partido con cuota imputada.
+    conteo_fuente_cuotas: Dict[str, int] = {}
+    motivos_sin_cuota: Dict[str, int] = {}
+    join_ambiguos: List[str] = []
 
     filas = session.query(Match).order_by(Match.matchday_num.asc(), Match.id.asc()).all()
     marcadores_recuperados = 0
@@ -639,12 +879,31 @@ def _construir_reporte_calibracion(
         p_local, p_empate, p_visitante = p_prima
         desenlace = _desenlace_real_1x2(goles_local, goles_visitante)
 
-        cuotas = _cuotas_1x2_factuales(fixture) if fixture else {}
-        q_local, q_empate, q_visitante = desmarcar_cuotas_proporcional(
-            float(cuotas.get("L", 0.0) or 0.0),
-            float(cuotas.get("E", 0.0) or 0.0),
-            float(cuotas.get("V", 0.0) or 0.0),
-        )
+        # [P0 #1.3] PRIORIDAD DECLARADA DE LA CUOTA DE MERCADO:
+        #   1. `fixtures_snapshots.matches_json.cuotas|momios` válida (J14 / captura).
+        #   2. `historical_matches.odd_*` válida (corpus histórico).
+        #   3. `{}` + `SIN EVIDENCIA` (jamás 1/3, jamás 0.0, jamás promedio).
+        cuotas, fuente_cuotas = ({}, FUENTE_CUOTAS_SIN_EVIDENCIA)
+        motivo_sin_cuota = "SIN_FIXTURE"
+        if fixture:
+            cuotas, fuente_cuotas = _cuotas_1x2_con_fuente(fixture)
+        if not cuotas:
+            cuotas, fuente_cuotas, diagnostico = _resolver_cuota_historica(session, id_partido)
+            motivo_sin_cuota = str(diagnostico.get("motivo") or "SIN_EVIDENCIA")
+            if fuente_cuotas == FUENTE_CUOTAS_JOIN_AMBIGUO:
+                join_ambiguos.append(id_partido)
+        conteo_fuente_cuotas[fuente_cuotas] = conteo_fuente_cuotas.get(fuente_cuotas, 0) + 1
+        if fuente_cuotas != FUENTE_CUOTAS_FIXTURES and fuente_cuotas != FUENTE_CUOTAS_HISTORICO:
+            motivos_sin_cuota[motivo_sin_cuota] = motivos_sin_cuota.get(motivo_sin_cuota, 0) + 1
+
+        if cuotas:
+            q_local, q_empate, q_visitante = desmarcar_cuotas_proporcional(
+                float(cuotas["L"]), float(cuotas["E"]), float(cuotas["V"])
+            )
+        else:
+            # Ausencia DECLARADA: el vector de mercado no existe. No se invoca el desmarque (su
+            # guarda fiduciaria degradaría a 1/3) y el partido queda fuera del Brier de mercado.
+            q_local, q_empate, q_visitante = None, None, None
 
         # [LN-QBE-125] Cold Start SINCERO — derogación expresa de la sustitución del *Axioma del
         # Prior de Mercado* ([LN-QBE-100]): un partido que declara ignorancia fáctica S(I)=0 se
@@ -689,10 +948,14 @@ def _construir_reporte_calibracion(
             "p_local": p_local, "p_empate": p_empate,
             "p_visitante": p_visitante, "resultado": desenlace,
         }
-        registro_mkt = {
-            "p_local": q_local, "p_empate": q_empate,
-            "p_visitante": q_visitante, "resultado": desenlace,
-        }
+        # El registro de mercado SÓLO existe si hay cuota válida: los partidos sin cuota quedan
+        # excluidos del Brier de mercado (P0 #1.3), no puntuados contra un prior imputado.
+        registro_mkt: Optional[Dict[str, Any]] = None
+        if cuotas:
+            registro_mkt = {
+                "p_local": q_local, "p_empate": q_empate,
+                "p_visitante": q_visitante, "resultado": desenlace,
+            }
 
         jornada = int(fila.matchday_num)
         # [LN-QBE-100 · REFACTOR-TRIADA] Conteo entero del vértice consumado y de la procedencia
@@ -732,8 +995,13 @@ def _construir_reporte_calibracion(
             "q_empate": q_empate,
             "q_visitante": q_visitante,
             "momios": cuotas,
+            "fuente_cuotas": fuente_cuotas,
             "brier_qbe": calcular_brier_multicategorico([registro_qbe]),
-            "brier_mercado": calcular_brier_multicategorico([registro_mkt]),
+            "brier_mercado": (
+                calcular_brier_multicategorico([registro_mkt])
+                if registro_mkt is not None
+                else None
+            ),
             "acierto": tipo_resultado in ("FAVORITO", "EMPATE"),
             # [LN-QBE-100] Sello de suficiencia S(I) del contrato de captura (fixture legado sin
             # el campo ⇒ `None` ⇒ 1: la ausencia de señal no degrada el partido).
@@ -763,7 +1031,8 @@ def _construir_reporte_calibracion(
             ),
         })
         registros_qbe.setdefault(jornada, []).append(registro_qbe)
-        registros_mkt.setdefault(jornada, []).append(registro_mkt)
+        if registro_mkt is not None:
+            registros_mkt.setdefault(jornada, []).append(registro_mkt)
         # [LN-QBE-125] Índice por partido para segmentar la muestra calibrada sin recalcular.
         registros_por_partido[id_partido] = (registro_qbe, registro_mkt)
 
@@ -776,7 +1045,9 @@ def _construir_reporte_calibracion(
         underdog_n = sum(1 for p in partidos if p["tipo_resultado"] == "UNDERDOG")
 
         bs_qbe = calcular_brier_multicategorico(registros_qbe[jornada])
-        bs_mkt = calcular_brier_multicategorico(registros_mkt[jornada])
+        # Brier de mercado sobre las jornadas con al menos una cuota válida; una jornada sin
+        # cuota no inventa un vector de mercado (su Brier queda en 0.0 por guarda de vacío).
+        bs_mkt = calcular_brier_multicategorico(registros_mkt.get(jornada, []))
 
         # [LN-QBE-100 · REFACTOR-TRIADA] Desglose cuantitativo puro de la jornada: porcentaje por
         # vértice (P_max · P_mid · P_low ≡ 100%) y conteos enteros del rescate secundario.
@@ -845,7 +1116,11 @@ def _construir_reporte_calibracion(
     resumen_calibrado = _agregar_resumen_calibracion(
         partidos_calibrados,
         [registros_por_partido[p["id_partido"]][0] for p in partidos_calibrados],
-        [registros_por_partido[p["id_partido"]][1] for p in partidos_calibrados],
+        [
+            registro
+            for p in partidos_calibrados
+            if (registro := registros_por_partido[p["id_partido"]][1]) is not None
+        ],
         [j["jornada"] for j in jornadas
          if any(p["suficiencia_S_I"] == 1 for p in j["partidos"])],
         partidos_pendientes,
@@ -870,6 +1145,34 @@ def _construir_reporte_calibracion(
             marcadores_recuperados,
         )
 
+    # [P0 #1.3 / P0 #5] Resumen DECLARADO de la procedencia de cuotas. `n_sin_cuota` es aritmética
+    # pura del universo (no un contador aparte): todo partido sin cuota válida queda fuera del
+    # Brier de mercado y dentro del Brier del modelo.
+    n_con_cuota_fixtures = int(conteo_fuente_cuotas.get(FUENTE_CUOTAS_FIXTURES, 0))
+    n_con_cuota_historica = int(conteo_fuente_cuotas.get(FUENTE_CUOTAS_HISTORICO, 0))
+    n_sin_cuota = len(partidos_planos) - n_con_cuota_fixtures - n_con_cuota_historica
+    indice_historico = session.info.get(_CLAVE_INDICE_HISTORICO) or {}
+    resumen_cuotas = {
+        "n_con_cuota_fixtures": n_con_cuota_fixtures,
+        "n_con_cuota_historica": n_con_cuota_historica,
+        "n_sin_cuota": n_sin_cuota,
+        "n_join_ambiguo": len(join_ambiguos),
+        "join_ambiguos": sorted(join_ambiguos),
+        "fuente_cuotas": dict(sorted(conteo_fuente_cuotas.items())),
+        "motivos_sin_cuota": dict(sorted(motivos_sin_cuota.items())),
+        "n_brier_mercado": len(todos_mkt),
+        "historico": {
+            "disponible": bool(indice_historico.get("disponible", False)),
+            "total_filas": int(indice_historico.get("total", 0)),
+            "cuotas_odd_mayor_1": int(indice_historico.get("con_odd_mayor_1", 0)),
+            "cuotas_validas": int(indice_historico.get("validas", 0)),
+            "cuotas_invalidas": int(indice_historico.get("invalidas", 0)),
+            "filas_consumidas": len(indice_historico.get("usados", ())),
+            "filas_huerfanas": int(indice_historico.get("total", 0))
+            - len(indice_historico.get("usados", ())),
+        },
+    }
+
     return {
         # [ARCH-1.4.38] Alias SELLADO de la temporada (tres consumidores lo leen): byte-idéntico al
         # agregado global, que es lo que siempre significó.
@@ -877,6 +1180,7 @@ def _construir_reporte_calibracion(
         # [LN-QBE-125 · ARCH-1.4.65] Doble agregado declarado: informado (S=1) vs completo.
         "resumen_global": resumen_global,
         "resumen_calibrado": resumen_calibrado,
+        "cuotas": resumen_cuotas,
         "jornadas": jornadas,
     }
 

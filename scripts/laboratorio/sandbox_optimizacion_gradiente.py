@@ -119,6 +119,10 @@ class UniversoInsuficiente(ErrorLaboratorio):
     """La bóveda no publica el universo o la evidencia mínima para optimizar."""
 
 
+class ConteoNoCoincide(UniversoInsuficiente):
+    """El universo cargado no coincide con el `n_esperado` declarado (P0 #2)."""
+
+
 class FalloOptimizacion(ErrorLaboratorio):
     """El optimizador no convergió o devolvió un vector no finito."""
 
@@ -332,6 +336,9 @@ class Universo:
     sha_snapshot: str
     ruta_snapshot: str
     brier_inicial: float = 0.0
+    # [P0 #2] Conteo exigido efectivo (--n-esperado / --universo-completo) y su procedencia.
+    n_esperado_declarado: int = 0
+    universo_completo: bool = False
 
     @property
     def n(self) -> int:
@@ -394,18 +401,26 @@ def _trio_captura(fixture: Dict[str, Any]) -> Optional[Tuple[float, float, float
     return local, empate, visita
 
 
-def cargar_universo(ruta_snapshot: Path) -> Universo:
+def cargar_universo(
+    ruta_snapshot: Path,
+    n_esperado: Optional[int] = None,
+    universo_completo: bool = False,
+) -> Universo:
     """
     Reconstruye EXACTAMENTE el universo del Visor: `_construir_reporte_calibracion` del
     Observatorio ([LN-QBE-127]) sobre `observatory_snapshot.db`, más la matriz de 27 celdas
     del sandbox [LN-QBE-126] (trazas soberanas + macro + H2H, cero imputación).
 
-    Guardas ruidosas: universo ≠ 124, P′ incompleta o Brier desalineado del Visor ⇒ aborto.
+    [P0 #2] `n_esperado` parametriza el conteo exigido (default `N_ESPERADO = 124`, backward-compat
+    con J14). `universo_completo=True` acepta el conteo real de la bóveda y lo declara.
+
+    Guardas ruidosas: universo ≠ conteo declarado, P′ incompleta o Brier desalineado ⇒ aborto.
     """
     from app.routes.backtesting import _construir_reporte_calibracion  # import perezoso
 
     ruta = Path(ruta_snapshot).resolve()
     sha_antes = sha256_archivo(ruta)
+    esperado = int(n_esperado) if n_esperado is not None else N_ESPERADO
     motor = _motor_solo_lectura(ruta)
     sesion = sessionmaker(bind=motor)()
     try:
@@ -419,10 +434,10 @@ def cargar_universo(ruta_snapshot: Path) -> Universo:
 
     micro = [partido for jornada in reporte.get("jornadas", []) for partido in jornada["partidos"]]
     total = len(micro)
-    if total != N_ESPERADO:
-        raise UniversoInsuficiente(
-            f"🚨 Universo {total} ≠ {N_ESPERADO} declarado por el Visor: la bóveda cambió de "
-            "jornada. Actualice N_ESPERADO con decreto, no con un parche silencioso."
+    if not universo_completo and total != esperado:
+        raise ConteoNoCoincide(
+            f"🚨 Universo {total} ≠ {esperado} declarado por el Visor: la bóveda cambió de "
+            "jornada. Use --n-esperado N o --universo-completo; no un parche silencioso."
         )
 
     ids: List[str] = []
@@ -510,6 +525,8 @@ def cargar_universo(ruta_snapshot: Path) -> Universo:
         brier_canonico=brier_canonico,
         sha_snapshot=sha_antes,
         ruta_snapshot=str(ruta),
+        n_esperado_declarado=(total if universo_completo else esperado),
+        universo_completo=bool(universo_completo),
     )
     universo.brier_inicial = brier_global(
         probabilidades_sombra(
@@ -912,6 +929,79 @@ def ejecutar_prueba_guardia() -> int:
 
 
 # ═════════════════════════════════════════════════════════════════════════════════════════════
+# PRE-VUELO — [P0 #3] --dry-run: carga, verifica, imprime y sale (cero análisis)
+# ═════════════════════════════════════════════════════════════════════════════════════════════
+def ruta_reporte(argumentos: argparse.Namespace, nombre: str, defecto: Path) -> Path:
+    """[P0 #3.2] `--salida` redirige el JSON; sin flag se conserva `data/output/`."""
+    if getattr(argumentos, "salida", None) is None:
+        return defecto
+    salida = Path(argumentos.salida).resolve()
+    # [P0 #3.2] Prohibido pisar el reporte del piloto: `--salida` debe apuntar a otro directorio.
+    if salida == (RAIZ_PROYECTO / "data" / "output").resolve():
+        raise SystemExit(
+            "🚨 --salida no puede ser data/output/: sobrescribiría el reporte del piloto. "
+            "Use otro directorio."
+        )
+    salida.mkdir(parents=True, exist_ok=True)
+    return salida / f"{nombre}_reporte.json"
+
+
+def _imprimir_dry_run(universo: Universo, sha_despues: str) -> int:
+    """[P0 #3.1] Verificación de carga del universo: nada de optimización ni de σ."""
+    observado = ~np.isnan(universo.crudo)
+    n_con_evidencia = int(universo.tiene_evidencia.sum())
+    n_sin_evidencia = universo.n - n_con_evidencia
+    coberturas = {
+        dimension: int(observado[:, j].sum())
+        for j, dimension in enumerate(DIMENSIONES_OPTIMIZABLES)
+    }
+    excluidas = [
+        (dimension, cobertura)
+        for dimension, cobertura in coberturas.items()
+        if universo.n and cobertura / universo.n < 0.80
+    ]
+    lineas = [
+        _linea(),
+        "🧪 DRY-RUN — SANDBOX DE OPTIMIZACIÓN (solo carga y verificación)",
+        _linea(),
+        f"   Snapshot          : {universo.ruta_snapshot}",
+        f"   SHA-256 (carga)   : {universo.sha_snapshot}",
+        f"   n                 : {universo.n}",
+        f"   n_esperado        : {universo.n_esperado_declarado}"
+        f"{' (--universo-completo)' if universo.universo_completo else ''}",
+        f"   n_con_evidencia   : {n_con_evidencia}",
+        f"   n_sin_evidencia   : {n_sin_evidencia}",
+        f"   Dimensiones       : {universo.d} ({', '.join(DIMENSIONES_OPTIMIZABLES)})",
+        f"   Orígenes P′       : {dict(sorted(universo.origenes.items()))}",
+        "   Cobertura por dimensión:",
+    ]
+    for dimension, cobertura in coberturas.items():
+        pct = (cobertura / universo.n) * 100.0 if universo.n else 0.0
+        lineas.append(f"      · {dimension:<8} {cobertura}/{universo.n} ({pct:.2f}%)")
+    lineas.append("   Variables con cobertura <80% (declaradas, no imputadas):")
+    if excluidas:
+        for dimension, cobertura in excluidas:
+            pct = (cobertura / universo.n) * 100.0 if universo.n else 0.0
+            lineas.append(f"      · {dimension:<8} {cobertura}/{universo.n} ({pct:.2f}%)")
+    else:
+        lineas.append("      · ninguna")
+    lineas += [
+        f"   SHA-256 (después) : {sha_despues}",
+        f"   Snapshot inmutable: {'IDÉNTICO' if sha_despues == universo.sha_snapshot else 'CAMBIÓ 🚨'}",
+        f"   Conteo            : "
+        f"{'COINCIDE' if universo.n == universo.n_esperado_declarado else 'NO COINCIDE 🚨'}",
+        "   Análisis ejecutado: NINGUNO (SLSQP, barrido y CV no se invocan)",
+        _linea(),
+    ]
+    print("\n".join(lineas))
+    if sha_despues != universo.sha_snapshot:
+        return 2
+    if universo.n != universo.n_esperado_declarado:
+        return 3
+    return 0
+
+
+# ═════════════════════════════════════════════════════════════════════════════════════════════
 # MAIN
 # ═════════════════════════════════════════════════════════════════════════════════════════════
 def _parsear_argumentos(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
@@ -929,22 +1019,56 @@ def _parsear_argumentos(argv: Optional[Sequence[str]] = None) -> argparse.Namesp
     parser.add_argument(
         "--sin-barrido", action="store_true", help="Omite la sensibilidad a la ganancia g."
     )
+    conteo = parser.add_mutually_exclusive_group()
+    conteo.add_argument(
+        "--n-esperado",
+        type=int,
+        default=None,
+        help=f"Exige exactamente N partidos (default: {N_ESPERADO}).",
+    )
+    conteo.add_argument(
+        "--universo-completo",
+        action="store_true",
+        help="Acepta el conteo real de la bóveda y lo declara (sustituye N_ESPERADO).",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Solo carga y verifica. No ejecuta análisis.",
+    )
+    parser.add_argument(
+        "--salida",
+        default=None,
+        type=Path,
+        help="Directorio de salida para --json. Si None, usa data/output/ (compatibilidad).",
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     argumentos = _parsear_argumentos(argv)
-    if argumentos.probar_guardia:
+    if argumentos.probar_guardia and not argumentos.dry_run:
         return ejecutar_prueba_guardia()
 
     try:
-        universo = cargar_universo(Path(argumentos.snapshot))
+        universo = cargar_universo(
+            Path(argumentos.snapshot),
+            n_esperado=argumentos.n_esperado,
+            universo_completo=argumentos.universo_completo,
+        )
     except ViolacionBetaFiduciaria as error:
         print(f"\n{error}\n", file=sys.stderr)
         return 2
-    except (UniversoInsuficiente, ErrorLaboratorio) as error:
+    except ConteoNoCoincide as error:
         print(f"\n{error}\n", file=sys.stderr)
         return 3
+    except (UniversoInsuficiente, ErrorLaboratorio) as error:
+        print(f"\n{error}\n", file=sys.stderr)
+        return 4 if argumentos.dry_run else 3
+
+    if argumentos.dry_run:
+        sha_dry = sha256_archivo(Path(universo.ruta_snapshot))
+        return _imprimir_dry_run(universo, sha_dry)
 
     try:
         ganancias = (GANANCIA_SOMBRA,) if argumentos.sin_barrido else BARRIDO_GANANCIA
@@ -995,7 +1119,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             },
             "universo": {
                 "n": universo.n,
-                "n_esperado": N_ESPERADO,
+                "n_esperado": universo.n_esperado_declarado,
+                "universo_completo": universo.universo_completo,
                 "con_evidencia": int(universo.tiene_evidencia.sum()),
                 "origenes_p_prima": universo.origenes,
                 "brier_inicial": round(universo.brier_inicial, 6),
@@ -1019,11 +1144,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             "barrido_ganancia": barrido,
             "validacion_cruzada": cv,
         }
-        RUTA_SALIDA_JSON.parent.mkdir(parents=True, exist_ok=True)
-        RUTA_SALIDA_JSON.write_text(
+        ruta_salida = ruta_reporte(argumentos, "sandbox_optimizacion", RUTA_SALIDA_JSON)
+        ruta_salida.parent.mkdir(parents=True, exist_ok=True)
+        ruta_salida.write_text(
             json.dumps(reporte, ensure_ascii=False, indent=2), encoding="utf-8"
         )
-        print(f"\n📄 Reporte exportado: {RUTA_SALIDA_JSON}")
+        print(f"\n📄 Reporte exportado: {ruta_salida}")
     return 0
 
 

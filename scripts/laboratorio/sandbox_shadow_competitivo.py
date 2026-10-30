@@ -44,12 +44,13 @@ import json
 import math
 import sys
 import warnings
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import numpy as np
 from scipy.optimize import Bounds, linprog, minimize
+from sqlalchemy import text
 from sqlalchemy.orm import Session, sessionmaker
 
 RAIZ_PROYECTO = Path(__file__).resolve().parents[2]
@@ -69,6 +70,7 @@ from scripts.laboratorio.sandbox_optimizacion_gradiente import (  # noqa: E402
     _indice_fixtures,
     _motor_solo_lectura,
     _trio_captura,
+    ruta_reporte,
     sha256_archivo,
 )
 from src.core.contracts.portfolio_math import calcular_brier_multicategorico  # noqa: E402
@@ -137,6 +139,10 @@ class UniversoInsuficiente(ErrorJuez):
     """La bóveda no sostiene el experimento."""
 
 
+class ConteoNoCoincide(UniversoInsuficiente):
+    """El universo cargado no coincide con el `n_esperado` declarado (P0 #2)."""
+
+
 class FalloOptimizacion(ErrorJuez):
     """SLSQP no convergió o devolvió un punto fuera de β."""
 
@@ -161,6 +167,17 @@ class Muestra:
     q_mercado: np.ndarray
     sha_snapshot: str
     ruta_snapshot: str
+    # [P0 #2/#3] Trazabilidad del pre-vuelo: cobertura de TODO el catálogo candidato (no sólo las
+    # celdas seleccionadas), exclusiones declaradas, conteo esperado y resumen de cuotas.
+    cobertura_todas: Dict[str, int] = field(default_factory=dict)
+    excluidas: List[Dict[str, Any]] = field(default_factory=list)
+    n_esperado: int = 0
+    universo_completo: bool = False
+    resumen_cuotas: Dict[str, Any] = field(default_factory=dict)
+    # [Rerun Doble] Procedencia xG certificada (ORC-08) y temporada de cada partido, para
+    # estratificar σ y etiquetar outliers sin una segunda consulta a la bóveda.
+    opta: np.ndarray = field(default_factory=lambda: np.zeros(0, dtype=bool))
+    temporadas: List[str] = field(default_factory=list)
 
     @property
     def n(self) -> int:
@@ -175,11 +192,16 @@ def _indice_dimensiones() -> Dict[str, str]:
 
 
 def _matriz_celdas(sesion: Session, micro: List[Dict[str, Any]], celdas: Sequence[str]):
-    """Extrae el diferencial local − visitante de cada celda (contexto: magnitud propia)."""
+    """Extrae el diferencial local − visitante de cada celda (contexto: magnitud propia).
+
+    Devuelve también la máscara `xg_es_real_opta` de cada partido (ORC-08), leída de la traza
+    soberana: es la fuente ÚNICA del sello de procedencia xG.
+    """
     soberanas = _distribuciones_vigentes(sesion)
     h2h = _indice_h2h_stats(sesion)
     crudo = np.full((len(micro), len(celdas)), np.nan)
     delta_alt = np.zeros(len(micro))
+    opta = np.zeros(len(micro), dtype=bool)
     for indice, partido in enumerate(micro):
         distribucion = soberanas.get(str(partido["id_partido"]))
         if distribucion is None:
@@ -188,6 +210,7 @@ def _matriz_celdas(sesion: Session, micro: List[Dict[str, Any]], celdas: Sequenc
         insumos = traza.get("insumos_factivados")
         if not isinstance(insumos, dict):
             continue
+        opta[indice] = bool(insumos.get("xg_es_real_opta"))
         delta_alt[indice] = _numero(insumos.get("delta_alt_metros")) or 0.0
         for columna, celda in enumerate(celdas):
             local, visita, bilateral = _par_magnitudes(
@@ -198,43 +221,72 @@ def _matriz_celdas(sesion: Session, micro: List[Dict[str, Any]], celdas: Sequenc
                     crudo[indice, columna] = float(local) - float(visita)
             elif local is not None:
                 crudo[indice, columna] = float(local)
-    return crudo, delta_alt
+    return crudo, delta_alt, opta
 
 
-def cargar_muestra(ruta_snapshot: Path) -> Muestra:
-    """Universo del Visor + diferenciales + cobertura; aborta si algo no cuadra."""
+def cargar_muestra(
+    ruta_snapshot: Path,
+    n_esperado: Optional[int] = None,
+    universo_completo: bool = False,
+) -> Muestra:
+    """Universo del Visor + diferenciales + cobertura; aborta si algo no cuadra.
+
+    [P0 #2] `n_esperado` parametriza el conteo exigido (default `N_ESPERADO = 124`, backward-compat
+    con J14). `universo_completo=True` sustituye la exigencia por el conteo real y lo declara.
+    """
     from app.routes.backtesting import _construir_reporte_calibracion
 
     ruta = Path(ruta_snapshot).resolve()
     sha = sha256_archivo(ruta)
+    esperado = int(n_esperado) if n_esperado is not None else N_ESPERADO
     motor = _motor_solo_lectura(ruta)
     sesion = sessionmaker(bind=motor)()
     try:
         reporte = _construir_reporte_calibracion(sesion, league_id=1)
         fixtures = _indice_fixtures(sesion)
         micro = [p for jornada in reporte.get("jornadas", []) for p in jornada["partidos"]]
-        if len(micro) != N_ESPERADO:
-            raise UniversoInsuficiente(
-                f"🚨 Universo {len(micro)} ≠ {N_ESPERADO}: la bóveda cambió de jornada."
+        if not universo_completo and len(micro) != esperado:
+            raise ConteoNoCoincide(
+                f"🚨 Universo {len(micro)} ≠ {esperado}: la bóveda cambió de jornada. "
+                "Use --universo-completo para aceptar el conteo real y declararlo."
             )
+        n_declarado = len(micro) if universo_completo else esperado
         catalogo = _indice_dimensiones()
         candidatas = [c for c in DIMENSIONES_ESTRUCTURALES if c in catalogo]
-        crudo_todo, delta_alt = _matriz_celdas(sesion, micro, candidatas)
+        crudo_todo, delta_alt, opta = _matriz_celdas(sesion, micro, candidatas)
+        resumen_cuotas = dict(reporte.get("cuotas") or {})
+        temporadas_map = dict(
+            sesion.execute(text("SELECT id, season_id FROM matches")).all()
+        )
     finally:
         sesion.close()
         motor.dispose()
 
-    cobertura = {
+    cobertura_todas = {
         celda: int(np.sum(~np.isnan(crudo_todo[:, j])))
         for j, celda in enumerate(candidatas)
     }
     umbral = COBERTURA_MINIMA * len(micro)
     seleccionadas: List[str] = []
+    excluidas: List[Dict[str, Any]] = []
     for j, celda in enumerate(candidatas):
         columna = crudo_todo[:, j]
-        if cobertura[celda] < umbral:
+        cobertura = cobertura_todas[celda]
+        if cobertura < umbral:
+            excluidas.append({
+                "celda": celda,
+                "cobertura": cobertura,
+                "pct": round((cobertura / len(micro)) * 100.0, 2) if micro else 0.0,
+                "motivo": f"COBERTURA<{COBERTURA_MINIMA:.0%}",
+            })
             continue
-        if cobertura[celda] and float(np.nanstd(columna)) <= 1e-9:
+        if cobertura and float(np.nanstd(columna)) <= 1e-9:
+            excluidas.append({
+                "celda": celda,
+                "cobertura": cobertura,
+                "pct": round((cobertura / len(micro)) * 100.0, 2) if micro else 0.0,
+                "motivo": "VARIANZA_NULA",
+            })
             continue
         seleccionadas.append(celda)
     if not seleccionadas:
@@ -242,7 +294,7 @@ def cargar_muestra(ruta_snapshot: Path) -> Muestra:
 
     columnas = [candidatas.index(c) for c in seleccionadas]
     crudo = crudo_todo[:, columnas]
-    cobertura_sel = {c: cobertura[c] for c in seleccionadas}
+    cobertura_sel = {c: cobertura_todas[c] for c in seleccionadas}
 
     ids, jornadas, p_base, y, resultados, q_mercado = [], [], [], [], [], []
     for partido in micro:
@@ -262,17 +314,24 @@ def cargar_muestra(ruta_snapshot: Path) -> Muestra:
                 1.0 if resultado == "VISITANTE" else 0.0,
             )
         )
-        q_mercado.append(
-            (float(partido["q_local"]), float(partido["q_empate"]), float(partido["q_visitante"]))
-        )
+        # [P0 #1.3] Sin cuota válida NO hay vector de mercado: NaN, jamás 1/3 ni 0.0.
+        if partido.get("q_local") is None or partido.get("q_empate") is None or partido.get("q_visitante") is None:
+            q_mercado.append((np.nan, np.nan, np.nan))
+        else:
+            q_mercado.append(
+                (float(partido["q_local"]), float(partido["q_empate"]), float(partido["q_visitante"]))
+            )
 
     registros = [
         {"p_local": p[0], "p_empate": p[1], "p_visitante": p[2], "resultado": r}
         for p, r in zip(p_base, resultados)
     ]
+    q_mercado_np = np.asarray(q_mercado, dtype=float)
+    con_mercado = ~np.isnan(q_mercado_np).any(axis=1)
     registros_mercado = [
         {"p_local": q[0], "p_empate": q[1], "p_visitante": q[2], "resultado": r}
-        for q, r in zip(q_mercado, resultados)
+        for q, r, valido in zip(q_mercado, resultados, con_mercado)
+        if valido
     ]
     return Muestra(
         ids=ids,
@@ -286,10 +345,21 @@ def cargar_muestra(ruta_snapshot: Path) -> Muestra:
         delta_alt=delta_alt,
         cobertura=cobertura_sel,
         brier_base=float(calcular_brier_multicategorico(registros)),
-        brier_mercado=float(calcular_brier_multicategorico(registros_mercado)),
-        q_mercado=np.asarray(q_mercado, dtype=float),
+        brier_mercado=(
+            float(calcular_brier_multicategorico(registros_mercado))
+            if registros_mercado
+            else float("nan")
+        ),
+        q_mercado=q_mercado_np,
         sha_snapshot=sha,
         ruta_snapshot=str(ruta),
+        cobertura_todas=cobertura_todas,
+        excluidas=excluidas,
+        n_esperado=n_declarado,
+        universo_completo=bool(universo_completo),
+        resumen_cuotas=resumen_cuotas,
+        opta=opta,
+        temporadas=[str(temporadas_map.get(i) or "") for i in ids],
     )
 
 
@@ -764,7 +834,90 @@ def _parsear(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser.add_argument("--snapshot", default=str(RUTA_SNAPSHOT_DEFECTO))
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--rapido", action="store_true", help="Menos permutaciones y bootstrap.")
+    conteo = parser.add_mutually_exclusive_group()
+    conteo.add_argument(
+        "--n-esperado",
+        type=int,
+        default=None,
+        help=f"Exige exactamente N partidos (default: {N_ESPERADO}).",
+    )
+    conteo.add_argument(
+        "--universo-completo",
+        action="store_true",
+        help="Acepta el conteo real de la bóveda y lo declara (sustituye N_ESPERADO).",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Solo carga y verifica. No ejecuta análisis.",
+    )
+    parser.add_argument(
+        "--salida",
+        default=None,
+        type=Path,
+        help="Directorio de salida para --json. Si None, usa data/output/ (compatibilidad).",
+    )
     return parser.parse_args(argv)
+
+
+def _imprimir_dry_run(muestra: Muestra, sha_despues: str) -> int:
+    """[P0 #3.1] Pre-vuelo: carga, verifica, imprime y sale. Cero análisis."""
+    observado = ~np.isnan(muestra.crudo)
+    n_con_evidencia = int((observado.sum(axis=1) > 0).sum())
+    n_sin_evidencia = muestra.n - n_con_evidencia
+    lineas = [
+        _linea(),
+        "🧪 DRY-RUN — SANDBOX SHADOW COMPETITIVO (solo carga y verificación)",
+        _linea(),
+        f"   Snapshot          : {muestra.ruta_snapshot}",
+        f"   SHA-256 (carga)   : {muestra.sha_snapshot}",
+        f"   n                 : {muestra.n}",
+        f"   n_esperado        : {muestra.n_esperado}"
+        f"{' (--universo-completo)' if muestra.universo_completo else ''}",
+        f"   n_con_evidencia   : {n_con_evidencia}",
+        f"   n_sin_evidencia   : {n_sin_evidencia}",
+        f"   Celdas            : {len(muestra.celdas)} seleccionadas de "
+        f"{len(muestra.cobertura_todas)} candidatas",
+        "   Celdas seleccionadas (cobertura):",
+    ]
+    for celda in muestra.celdas:
+        cobertura = muestra.cobertura.get(celda, 0)
+        pct = (cobertura / muestra.n) * 100.0 if muestra.n else 0.0
+        lineas.append(f"      · {celda}: {cobertura}/{muestra.n} ({pct:.2f}%)")
+    lineas.append("   Variables excluidas:")
+    if muestra.excluidas:
+        for item in muestra.excluidas:
+            lineas.append(
+                f"      · {item['celda']}: {item['cobertura']}/{muestra.n} "
+                f"({item['pct']:.2f}%) — {item['motivo']}"
+            )
+    else:
+        lineas.append("      · ninguna")
+    cuotas = muestra.resumen_cuotas or {}
+    if cuotas:
+        lineas += [
+            "   Cuotas:",
+            f"      · con cuota fixtures   : {cuotas.get('n_con_cuota_fixtures', 0)}",
+            f"      · con cuota histórica  : {cuotas.get('n_con_cuota_historica', 0)}",
+            f"      · sin cuota            : {cuotas.get('n_sin_cuota', 0)}",
+            f"      · JOIN ambiguo         : {cuotas.get('n_join_ambiguo', 0)}",
+            f"      · fuente               : {cuotas.get('fuente_cuotas', {})}",
+            f"      · motivos sin cuota    : {cuotas.get('motivos_sin_cuota', {})}",
+            f"      · inventario histórico : {cuotas.get('historico', {})}",
+        ]
+    lineas += [
+        f"   SHA-256 (después) : {sha_despues}",
+        f"   Snapshot inmutable: {'IDÉNTICO' if sha_despues == muestra.sha_snapshot else 'CAMBIÓ 🚨'}",
+        f"   Conteo            : {'COINCIDE' if muestra.n == muestra.n_esperado else 'NO COINCIDE 🚨'}",
+        "   Análisis ejecutado: NINGUNO (bisección, Davidson y bootstrap no se invocan)",
+        _linea(),
+    ]
+    print("\n".join(lineas))
+    if sha_despues != muestra.sha_snapshot:
+        return 2
+    if muestra.n != muestra.n_esperado:
+        return 3
+    return 0
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -772,14 +925,30 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     n_perm = 40 if argumentos.rapido else N_PERMUTACIONES
     n_boot = 300 if argumentos.rapido else N_BOOTSTRAP
     try:
-        verificar_factibilidad_beta()
-        muestra = cargar_muestra(Path(argumentos.snapshot))
+        muestra = cargar_muestra(
+            Path(argumentos.snapshot),
+            n_esperado=argumentos.n_esperado,
+            universo_completo=argumentos.universo_completo,
+        )
     except BetaInfactible as error:
         print(f"\n{error}\n", file=sys.stderr)
         return 2
-    except UniversoInsuficiente as error:
+    except ConteoNoCoincide as error:
         print(f"\n{error}\n", file=sys.stderr)
         return 3
+    except UniversoInsuficiente as error:
+        print(f"\n{error}\n", file=sys.stderr)
+        return 4
+
+    if argumentos.dry_run:
+        sha_dry = sha256_archivo(Path(muestra.ruta_snapshot))
+        return _imprimir_dry_run(muestra, sha_dry)
+
+    try:
+        verificar_factibilidad_beta()
+    except BetaInfactible as error:
+        print(f"\n{error}\n", file=sys.stderr)
+        return 2
 
     try:
         motor_a = cv_anidada_davidson(muestra)
@@ -840,8 +1009,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             },
             "muestra": {
                 "n": muestra.n,
+                "n_esperado": muestra.n_esperado,
                 "celdas": list(muestra.celdas),
                 "cobertura": muestra.cobertura,
+                "excluidas": muestra.excluidas,
+                "cuotas": muestra.resumen_cuotas,
                 "partidos_con_altitud": int(np.sum(muestra.delta_alt >= UMBRAL_ALTITUD_METROS)),
             },
             "beta": {
@@ -884,9 +1056,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 "permutacion": permutacion,
             },
         }
-        RUTA_SALIDA_JSON.parent.mkdir(parents=True, exist_ok=True)
-        RUTA_SALIDA_JSON.write_text(json.dumps(reporte, ensure_ascii=False, indent=2), encoding="utf-8")
-        print(f"\n📄 Reporte exportado: {RUTA_SALIDA_JSON}")
+        ruta_salida = ruta_reporte(argumentos, "shadow_competitivo", RUTA_SALIDA_JSON)
+        ruta_salida.parent.mkdir(parents=True, exist_ok=True)
+        ruta_salida.write_text(json.dumps(reporte, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"\n📄 Reporte exportado: {ruta_salida}")
     return 0
 
 
