@@ -345,6 +345,8 @@ Las rutas legadas solo pueden aparecer en este mapa o en un bloque de procedenci
 | `[ARCH-1.4.68]` | Motor Cliente de Cuatro Capas del Visor de Calibración: Proyección Pura, Propagación Atómica y Transparencia de Denominador | `qbe_observatory` | SELLADO |
 | `[ARCH-1.4.69]` | Artefacto Congelado del Prior de Apertura 2025 y Resolvedor de Insumos con Mezcla | `qbe_ingestion` | SELLADO |
 | `[ARCH-1.4.70]` | Instrumento CLI-FIRST de Minería de Shannon y Árbol Esparso de Veto | `qbe_business` | SELLADO |
+| `[ARCH-1.4.71]` | Arquitectura del Parser Offline MHTML y Pipeline de Extracción Multianual [ARCH-PILLAR] | `qbe_ingestion` | SELLADO |
+| `[ARCH-1.4.72]` | Pipeline de Inyección Histórica Multianual y Reflection DDL [ARCH-PILLAR] | `qbe_ingestion` | SELLADO |
 | `[ARCH-1.4.73]` | Extractor Histórico Masivo de FotMob | `qbe_ingestion` | SELLADO |
 | `[ARCH-1.5.0]` | Central Persistence Gateway y Unidad de Trabajo (Unit of Work) [DIRGEN-SEALED] [ARCH-PILLAR] | `qbe_ingestion` | SELLADO |
 | `[ARCH-1.5.0-B]` | Aislamiento de Persistencia del Canal Gateway en The Shield [ARCH-PILLAR] [GOVERNANCE-01] | `qbe_storage` | SELLADO |
@@ -408,3 +410,28 @@ _Total: 140 identificadores._
 - Migración: reescritura de topología, reanclaje de rutas y preservación de IDs.
 - Juez: `qbe_core/tests/test_shield_ecosystem_governance.py` (invariante de cuatro pilares).
 - Cierre: suite completa y manifiesto de Fase 4.
+
+---
+
+## 12. PARSER OFFLINE MHTML
+
+### [ARCH-1.4.71] Arquitectura del Parser Offline MHTML y Pipeline de Extracción Multianual [ARCH-PILLAR]
+* **Módulo:** `qbe_ingestion/src/ingestion/parsers/parsear_footystats_mhtml.py`.
+* **Especificación CLI:**
+  - `python -m qbe_ingestion.src.ingestion.parsers.parsear_footystats_mhtml --verificar-solo` (valida integridad de las 12 carpetas sin escribir).
+  - `python -m qbe_ingestion.src.ingestion.parsers.parsear_footystats_mhtml --temporada 2018_2019` (procesa una temporada).
+  - `python -m qbe_ingestion.src.ingestion.parsers.parsear_footystats_mhtml --todas` (procesa las 12 temporadas completas).
+* **Dependencias:** Librería estándar `email`, `re`, `json`, `pathlib` y `bs4` (`BeautifulSoup` con `html.parser`).
+* **[SHIELD]:** `qbe_ingestion/tests/test_shield_mhtml_parser_and_season_integrity.py`
+
+---
+
+## 13. PIPELINE DE INYECCIÓN HISTÓRICA
+
+### [ARCH-1.4.72] Pipeline de Inyección Histórica Multianual y Reflection DDL [ARCH-PILLAR]
+* **Módulo de Carga:** `qbe_ingestion/src/ingestion/loaders/load_historical_footystats.py`.
+* **Especificación CLI:** `--run` (ejecuta la carga completa), `--temporada YYYY_YYYY` (carga selectiva).
+* **Dependencias:** SQLAlchemy Core (para ejecución DML/DDL de alta velocidad, evadiendo el overhead del ORM de sesión en inserciones masivas).
+* **Destino:** `qbe_observatory/data/qbe_historico.db` (Bóveda OLAP).
+* **Excepción CQRS autorizada:** carga bulk directa sobre tablas `historical_*`, transacción `BEGIN IMMEDIATE`, backup WORM previo y `PRAGMA quick_check` al cierre. No toca `matches`, `sovereign_distributions` ni `match_telemetry`.
+* **[SHIELD]:** `qbe_ingestion/tests/test_shield_historical_load_integrity.py`

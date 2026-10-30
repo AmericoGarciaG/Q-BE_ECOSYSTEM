@@ -363,8 +363,10 @@ es el umbral de indiferencia de cobertura. No es una constante universal: depend
 | `[LN-QBE-129]` | Minería de Información Mutua de Shannon y Árbol Esparso de Veto (Descubrimiento de Rupturas P_LOW) | `motor` | SELLADO |
 | `[LN-QBE-130]` | Reglas de Curación HITL y Seeding de Competiciones | `motor` | SELLADO |
 | `[LN-QBE-133]` | Ingesta Fáctica Profunda | `ingesta` | SELLADO |
+| `[LN-QBE-134]` | Protocolo de Ingesta Offline MHTML y Verificación de Integridad de Temporada | `ingesta` | SELLADO |
+| `[LN-QBE-135]` | Protocolo de Carga Masiva Idempotente para Corpus Multianual (12 Temporadas) | `ingesta` | SELLADO |
 
-_Total: 121 identificadores._
+_Total: 123 identificadores._
 
 
 ---
@@ -375,3 +377,49 @@ _Total: 121 identificadores._
 - Migración: 32V canónico, reanclaje a cuatro pilares, tombstone del 44V.
 - Juez de referencia: `qbe_core/tests/test_shield_ecosystem_governance.py` + suite de dominio.
 - Cierre: `53+ passed`, `0 failed`, `EXIT CODE 0`.
+
+---
+
+## 12. PROTOCOLO DE INGESTA OFFLINE MHTML
+
+### ID: [LN-QBE-134] Protocolo de Ingesta Offline MHTML y Verificación de Integridad de Temporada
+
+* **Ω (Resumen):** Establece el estándar de extracción fáctica determinista a partir de volcados offline en formato MIME HTML (`.mhtml`). Consagra el Candado de Integridad de Temporada: prohíbe procesar cualquier volcado cuyo metadato temporal interno en el DOM (`h1` o `data-hash`) no coincida estrictamente con el identificador de la carpeta contenedora. Extrae de forma estructurada calendarios, marcadores finales, cuotas de cierre 1X2, tablas de forma reciente (Last 5) y goles esperados macro ($xG/xGA$) por club-temporada para la serie histórica 2015-2027.
+* **I (Input):** Directorio `data/raw_footystats/{temporada}/` conteniendo archivos `.mhtml`.
+* **P (Process) [ALGO-PROTECTED] [DIRGEN-STRICT]:**
+  1. **Desempaquetado MIME Puro:** Se decodifica el cuerpo `text/html` mediante `email.message_from_binary_file` sin llamadas de red ni dependencias de navegador.
+  2. **Aserción de Integridad Temporal (Fail-Loud):**
+     Se extrae la temporada del DOM analizando `h1.detailed-stats-h1` o `data-hash` y se normaliza a `YYYY_YYYY`.
+     $$\text{Aserción Inviolable: } \text{Temporada}_{\text{DOM}} \equiv \text{NombreCarpeta}$$
+     Si no coinciden, se lanza `SeasonIntegrityError` y se aborta el procesamiento de la carpeta.
+  3. **Extracción de Fixtures y Momios:**
+     - `fecha_utc`: Derivado estrictamente del atributo `data-time` (Unix epoch timestamp).
+     - `home_team`, `away_team`: Extraídos con resolución de `data-team-id`.
+     - `home_goals`, `away_goals`: Parseo de `.ft-score`.
+     - Cuotas de cierre: Parseo de `.stat.odds` (`odd_home`, `odd_draw`, `odd_away`). Queda prohibida la lectura de `div.form-box` como cuota.
+  4. **Extracción de Forma y xG Macro:**
+     - Last 5: PPG, victorias, empates, derrotas desde `Form Table_*.mhtml`.
+     - xG macro (2018+): Tasas agregadas de club desde `xG_*.mhtml`, selladas como `fuente_xg = "FOOTYSTATS_PROPIETARIO"`.
+  5. **Persistencia Estructurada:** Generación de `data/extracted_footystats/temporada_{YYYY}_{YYYY}.json`.
+* **O (Output):** Datasets JSON limpios por temporada y reporte consolidado en consola.
+* **Φ (Transición):** Hacia `data/extracted_footystats/` y base histórica 3NF.
+* **[SHIELD]:** `qbe_ingestion/tests/test_shield_mhtml_parser_and_season_integrity.py`
+
+---
+
+## 13. CARGA MASIVA HISTÓRICA 3NF
+
+### ID: [LN-QBE-135] Protocolo de Carga Masiva Idempotente para Corpus Multianual (12 Temporadas)
+
+* **Ω (Resumen):** Establece la doctrina de inserción relacional masiva para trasladar el corpus histórico (Datasets JSON) hacia la Bóveda Analítica (Base de Datos Histórica). Exige estricta idempotencia transaccional (cero duplicidad ante re-ejecuciones) y mapeo dinámico del esquema (Reflection). Preserva la honestidad de los datos ausentes (`[GOVERNANCE-01]`): si un partido fue cancelado o pertenece al futuro, sus marcadores y cuotas se insertan como `NULL`, prohibiendo la coerción a ceros sintéticos.
+* **I (Input):** Directorio `data/extracted_footystats/*.json` (12 temporadas) y conexión a `qbe_observatory/data/qbe_historico.db`.
+* **P (Process) [ALGO-PROTECTED] [DIRGEN-STRICT]:**
+  1. **Generación de Llave Primaria Determinista:** 
+     Se asigna a cada registro un `match_id` universal basado en hashes o concatenación normalizada: `fs_{temporada}_{match_ref}` para garantizar unicidad. Si el registro de entrada ya trae `match_id` explícito, se respeta.
+  2. **Resolución de Esquema (DDL Dinámico):**
+     Se audita el esquema de la base destino. Si faltan tablas para el almacenamiento de métricas macro (`historical_team_season_stats` para xG o Forma 5P) o cuotas, se ejecutan las sentencias `CREATE TABLE IF NOT EXISTS` garantizando soporte 3NF.
+  3. **Transaccionalidad Atómica por Temporada:**
+     La inserción se ejecuta en bloques (Bulk Insert) encapsulados en un único `COMMIT` por temporada. Si ocurre un error de tipado, se ejecuta `ROLLBACK` total de la temporada afectada.
+* **O (Output):** Base de datos `qbe_historico.db` poblada con 3,870 partidos listos para inferencia estadística.
+* **Φ (Transición):** Hacia modelos de entrenamiento y calibración de Dixon-Coles multianual.
+* **[SHIELD]:** `qbe_ingestion/tests/test_shield_historical_load_integrity.py`

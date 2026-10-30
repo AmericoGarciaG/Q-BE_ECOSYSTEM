@@ -23,4 +23,4 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["src.ingestion", "src.ingestion.providers", "src.ingestion.daemons", "src.ingestion.lab"]
+packages = ["src.ingestion", "src.ingestion.providers", "src.ingestion.daemons", "src.ingestion.lab", "src.ingestion.parsers", "src.ingestion.loaders"]

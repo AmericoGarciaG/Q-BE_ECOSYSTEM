@@ -57,3 +57,18 @@ desktop.ini
 .vscode/
 .idea/
 .vscode/settings.json
+
+# Dumps brutos de FootyStats (59.5 MB)
+data/raw_footystats/
+data/extracted_footystats/temporada_2015_2016.json
+data/extracted_footystats/temporada_2016_2017.json
+data/extracted_footystats/temporada_2017_2018.json
+data/extracted_footystats/temporada_2018_2019.json
+data/extracted_footystats/temporada_2019_2020.json
+data/extracted_footystats/temporada_2020_2021.json
+data/extracted_footystats/temporada_2021_2022.json
+data/extracted_footystats/temporada_2022_2023.json
+data/extracted_footystats/temporada_2023_2024.json
+data/extracted_footystats/temporada_2024_2025.json
+data/extracted_footystats/temporada_2025_2026.json
+data/extracted_footystats/temporada_2026_2027.json

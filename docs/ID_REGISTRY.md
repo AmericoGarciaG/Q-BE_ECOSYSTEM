@@ -7,7 +7,7 @@
 **Marco:** Kybern Industrial Framework v13.5  
 **Expediente:** `SPRINT-FASE4-MIGRACION-REFLEXIVA-BG-04`  
 **Fecha:** 2026-10-28  
-**Filas canónicas:** 258
+**Filas canónicas:** 262
 
 > **Naturaleza.** Tablero canónico de control del registro legislativo. Fuente única de verdad para la asignación de nuevos identificadores (`max + 1` sobre el último ID libre). Un identificador sellado es inmutable y no reasignable. Las anclas apuntan a los libros de `docs/` del ecosistema; las rutas de tests legados se conservan solo como memoria histórica y no se presentan como evidencia vigente.
 
@@ -135,6 +135,8 @@
 | `[LN-QBE-129]` | LOGIC | `docs/LOGIC.md` | Minería de Información Mutua de Shannon y Árbol Esparso de Veto (Descubrimiento de Rupturas P_LOW) | SELLADO |
 | `[LN-QBE-130]` | LOGIC | `docs/LOGIC.md` | Reglas de Curación HITL y Seeding de Competiciones | SELLADO |
 | `[LN-QBE-133]` | LOGIC | `docs/LOGIC.md` | Ingesta Fáctica Profunda | SELLADO |
+| `[LN-QBE-134]` | LOGIC | `docs/LOGIC.md` | Protocolo de Ingesta Offline MHTML y Verificación de Integridad de Temporada | SELLADO |
+| `[LN-QBE-135]` | LOGIC | `docs/LOGIC.md` | Protocolo de Carga Masiva Idempotente para Corpus Multianual (12 Temporadas) | SELLADO |
 | `[ARCH-1.3.1]` | ARCH | `docs/ARCH.md` | Rueda de Inferencia Gemini y Rotador de Llaves Multi-Proyecto [ARCH-PILLAR] | SELLADO |
 | `[ARCH-1.3.2]` | ARCH | `docs/ARCH.md` | Modelo Gemini Canónico Inmutable (`gemini-3.6-flash`) [ARCH-PILLAR] [ANTI-BUG] | SELLADO |
 | `[ARCH-1.3.3]` | ARCH | `docs/ARCH.md` | Gestor Contable Local de Cuotas y Circuit Breaker [ARCH-PILLAR] | SELLADO |
@@ -270,6 +272,8 @@
 | `[ARCH-1.4.68]` | ARCH | `docs/ARCH.md` | Motor Cliente de Cuatro Capas del Visor de Calibración: Proyección Pura, Propagación Atómica y Transparencia de Denominador | SELLADO |
 | `[ARCH-1.4.69]` | ARCH | `docs/ARCH.md` | Artefacto Congelado del Prior de Apertura 2025 y Resolvedor de Insumos con Mezcla | SELLADO |
 | `[ARCH-1.4.70]` | ARCH | `docs/ARCH.md` | Instrumento CLI-FIRST de Minería de Shannon y Árbol Esparso de Veto | SELLADO |
+| `[ARCH-1.4.71]` | ARCH | `docs/ARCH.md` | Arquitectura del Parser Offline MHTML y Pipeline de Extracción Multianual | SELLADO |
+| `[ARCH-1.4.72]` | ARCH | `docs/ARCH.md` | Pipeline de Inyección Histórica Multianual y Reflection DDL | SELLADO |
 | `[ARCH-1.4.73]` | ARCH | `docs/ARCH.md` | Extractor Histórico Masivo de FotMob | SELLADO |
 | `[DES-QBE-074]` | DISEÑO | `docs/DESIGN.md` | Saneamiento Visual de la Tabla de Calibración: Aire, Jerarquía Anidada y Píldora de Atribución | SELLADO |
 | `[DES-QBE-075]` | DISEÑO | `docs/DESIGN.md` | Match Card Híbrido de Calibración: Tres Zonas, Vértice Cromático del Resultado, Barras P′/Mercado y Modal 32V Bajo Demanda | SELLADO |
@@ -282,4 +286,4 @@
 3. **Sellado:** al pasar a verde (`EXIT CODE 0`), la fila migra de `EN FORJA` a `SELLADO` con anclaje simbólico (`docs/LOGIC.md` / `docs/ARCH.md` + símbolo), jamás `archivo:línea`.
 4. **Cobertura:** la migración de Fase 4 no puede reducir el conjunto de IDs. Las filas con estado no canónico se conservan para auditoría y no se promueven sin Juez.
 
-_Total de filas: 259._
+_Total de filas: 263._
