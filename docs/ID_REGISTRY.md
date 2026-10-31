@@ -278,6 +278,8 @@
 | `[DES-QBE-074]` | DISEÑO | `docs/DESIGN.md` | Saneamiento Visual de la Tabla de Calibración: Aire, Jerarquía Anidada y Píldora de Atribución | SELLADO |
 | `[DES-QBE-075]` | DISEÑO | `docs/DESIGN.md` | Match Card Híbrido de Calibración: Tres Zonas, Vértice Cromático del Resultado, Barras P′/Mercado y Modal 32V Bajo Demanda | SELLADO |
 | `[LN-QBE-092]` | LOGIC | `docs/LOGIC.md` | *(Reservado - Conciliación de Mercados Derivados)* | LIBRE |
+| `[LN-QBE-136]` | LOGIC | `docs/LOGIC.md` | Sonda de Captura CDP-MHTML y Perfil Persistente | SELLADO |
+| `[LN-QBE-137]` | LOGIC | `docs/LOGIC.md` | Juez Inmutable de Integridad de Muestras MHTML | SELLADO |
 
 ## PROTOCOLO DE ASIGNACIÓN
 
@@ -286,4 +288,4 @@
 3. **Sellado:** al pasar a verde (`EXIT CODE 0`), la fila migra de `EN FORJA` a `SELLADO` con anclaje simbólico (`docs/LOGIC.md` / `docs/ARCH.md` + símbolo), jamás `archivo:línea`.
 4. **Cobertura:** la migración de Fase 4 no puede reducir el conjunto de IDs. Las filas con estado no canónico se conservan para auditoría y no se promueven sin Juez.
 
-_Total de filas: 263._
+_Total de filas: 265._

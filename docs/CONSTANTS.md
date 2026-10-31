@@ -200,6 +200,14 @@
 
 ---
 
+## 9. DOMINIO DE INGESTA Y SONDAS
+| Símbolo | Nombre Canónico | Valor Exacto | Unidad | Nodo Dueño | Propósito |
+|:---:|---|---|:---:|:---:|---|
+| $\text{Timeout}_{\text{probe}}$ | `PROBE_TIMEOUT_MS` | `60000` | ms | `[LN-QBE-136]` | Tiempo máximo de espera de renderizado DOM antes de abortar. |
+| $\text{Dir}_{\text{probe}}$ | `PROBE_DATA_DIR` | `"data/sondas_exploracion/"` | Ruta | `[LN-QBE-136]` | Directorio de salida para muestras .mhtml. |
+
+---
+
 ## 📎 NOTA DE TRANSCRIPCIÓN (Provenance)
 
 Transcrito **verbatim** desde el Decreto de Consolidación (Sprint 3 — Capa 4), según la Directiva

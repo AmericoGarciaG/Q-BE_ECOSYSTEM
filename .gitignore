@@ -55,6 +55,9 @@ coverage.xml
 .env.*
 !.env.example
 
+# Perfil persistente de Chromium de la sonda CDP-MHTML ([LN-QBE-136])
+.browser_profile/
+
 # Sistema operativo y editores
 .DS_Store
 Thumbs.db

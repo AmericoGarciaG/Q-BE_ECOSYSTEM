@@ -365,8 +365,10 @@ es el umbral de indiferencia de cobertura. No es una constante universal: depend
 | `[LN-QBE-133]` | Ingesta Fáctica Profunda | `ingesta` | SELLADO |
 | `[LN-QBE-134]` | Protocolo de Ingesta Offline MHTML y Verificación de Integridad de Temporada | `ingesta` | SELLADO |
 | `[LN-QBE-135]` | Protocolo de Carga Masiva Idempotente para Corpus Multianual (12 Temporadas) | `ingesta` | SELLADO |
+| `[LN-QBE-136]` | Sonda de Captura CDP-MHTML y Perfil Persistente | `ingesta` | SELLADO |
+| `[LN-QBE-137]` | Juez Inmutable de Integridad de Muestras MHTML | `ingesta` | SELLADO |
 
-_Total: 123 identificadores._
+_Total: 125 identificadores._
 
 
 ---
@@ -423,3 +425,27 @@ _Total: 123 identificadores._
 * **O (Output):** Base de datos `qbe_historico.db` poblada con 3,870 partidos listos para inferencia estadística.
 * **Φ (Transición):** Hacia modelos de entrenamiento y calibración de Dixon-Coles multianual.
 * **[SHIELD]:** `qbe_ingestion/tests/test_shield_historical_load_integrity.py`
+
+---
+
+## 14. SONDA MULTIFUENTE MHTML Y JUEZ DE INTEGRIDAD
+
+### ID: [LN-QBE-136] Sonda de Captura CDP-MHTML y Perfil Persistente
+
+* **Ω (Resumen):** Capturar artefactos web dinámicos (SPA) evadiendo bloqueos antibot mediante navegación humana asistida (Playwright) y extracción binaria directa (Chrome DevTools Protocol) para consolidar el corpus histórico.
+* **I (Input):** `ProbeTarget` (Pydantic V2) con `url`, `provider_name`, `output_dir`.
+* **P (Process) [ALGO-PROTECTED]:**
+  1. Lanzar contexto persistente (`launch_persistent_context`).
+  2. Navegar a la URL y pausar para interacción humana (si el sitio exige captcha).
+  3. Invocar `Page.captureSnapshot` vía CDP con formato 'mhtml'.
+  4. Escribir los bytes directamente en disco. Si la red falla o hay timeout, lanzar `ProbeExtractionError` (Fail-Loud). Cero fallbacks.
+* **O (Output):** `pathlib.Path` del archivo `.mhtml` generado.
+* **Φ (Transición):** Hacia `[LN-QBE-137]` (Auditor Offline).
+
+### ID: [LN-QBE-137] Juez Inmutable de Integridad de Muestras MHTML
+
+* **Ω (Resumen):** Contrato de validación estricta (The Shield) que certifica que los archivos `.mhtml` capturados por la sonda son legibles, contienen payloads MIME válidos y no representan páginas vacías o bloqueos del WAF.
+* **I (Input):** `pathlib.Path` al archivo `.mhtml`.
+* **P (Process) [ALGO-PROTECTED]:** Parseo con la librería `email` de Python. Verificación de la cabecera `Content-Type: multipart/related`. Búsqueda de sub-bloques `text/html`.
+* **O (Output):** Booleano `True` o excepción `MHTMLIntegrityError`.
+* **Φ (Transición):** Hacia `[LN-QBE-134]` (Parser Offline).

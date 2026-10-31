@@ -23,4 +23,10 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["src.ingestion", "src.ingestion.providers", "src.ingestion.daemons", "src.ingestion.lab", "src.ingestion.parsers", "src.ingestion.loaders"]
+packages = ["src.ingestion", "src.ingestion.providers", "src.ingestion.daemons", "src.ingestion.lab", "src.ingestion.parsers", "src.ingestion.loaders", "src.ingestion.probes"]
+
+[tool.pytest.ini_options]
+# Los Jueces Inmutables nombrados `abstract_test_*.py` (p. ej. [LN-QBE-137])
+# deben colectarse también en corridas por directorio, no solo por ruta explícita.
+python_files = ["test_*.py", "*_test.py", "abstract_test_*.py"]
+
