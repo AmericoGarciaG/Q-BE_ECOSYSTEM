@@ -450,8 +450,9 @@ _Total: 143 identificadores._
   - `AKT_Pmpt.md`: Prompt de extracción de contexto saliente.
   - `AKT.md`: Estado dinámico del sprint vigente.
   - `KDB_Act_Pmpt.md`: Prompt de consolidación y versionado en disco.
+  - `RT_Pmpt.md`: Prompt de asunción de mando y continuidad para el Arquitecto entrante.
   - `history/`: Registro inmutable de transiciones históricas archivadas.
-* **Contrato de Integridad:** los cinco archivos rectores deben existir físicamente y superar el umbral mínimo de contenido; `history/` debe existir incluso cuando aún no contiene actas. El archivo de `AKT.md` se realiza por copia y reinicio, nunca por sustracción del activo.
+* **Contrato de Integridad:** los seis archivos rectores deben existir físicamente y superar el umbral mínimo de contenido; `history/` debe existir incluso cuando aún no contiene actas. El archivo de `AKT.md` se realiza por copia y reinicio, nunca por sustracción del activo.
 * **Frontera:** `qbe_core` no consume estos documentos en tiempo de ejecución; el Juez documental vive en `qbe_core/tests/` como guardián de la Base de Gobierno, sin introducir I/O en el núcleo matemático.
 * **[SHIELD]:** `qbe_core/tests/test_shield_ktp_package_integrity.py`
 * **Deuda documental declarada:** `[ARCH-1.4.73]` figura sellado en la tabla maestra y en `docs/ID_REGISTRY.md`, pero carece de sección de cuerpo en este libro. Se preserva su ID y su denominación; la deuda se declara para una reconciliación posterior y no se reasigna.

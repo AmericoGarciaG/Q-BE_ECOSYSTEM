@@ -1,15 +1,16 @@
 # Q-BE ECOSYSTEM — BASE DE CONOCIMIENTO DEL PROYECTO (KDB)
 
 **Documento:** `KDB.md` — Single Pane of Glass  
-**Versión:** 1.0.0  
+**Versión:** 1.1.0  
 **Estado:** `[ALGO-PROTECTED]` — Conocimiento Estable Certificado  
 **Proyecto:** `Q_BE_ECOSYSTEM`  
 **Autoridad Suprema:** Américo García Guerrero (Director Humano)  
 **Marco:** Kybern Industrial Framework v13.5 (DirGen Operational Edition)  
-**Expediente:** `SPRINT-MATERIALIZACION-PAQUETE-KTP-DOCS-39`  
+**Expediente:** `SPRINT-MATERIALIZACION-RT-PMPT-DOCS-40`  
 **Nodos:** `[LN-QBE-138]` / `[ARCH-1.4.74]`  
 **Juez:** `qbe_core/tests/test_shield_ktp_package_integrity.py`  
 **Última consolidación:** 2026-10-30  
+**Actualización KTP:** 2026-10-31  
 **Fuente de la consolidación:** `docs/KTP/AKT.md` (Sprint 38)
 
 ---
@@ -295,9 +296,22 @@ La temporada `2026_2027` está en curso: 153 partidos cargados al corte. No se e
 |---|---|---|---|
 | **A. Despacho** | Arquitecto saliente | Ejecuta `AKT_Pmpt.md`. | `AKT.md` con el delta del turno. |
 | **B. Consolidación** | Constructor | Ejecuta `KDB_Act_Pmpt.md`; actualiza `KDB.md`; copia `AKT.md` a `history/`; reinicia el activo. | `KDB.md` versionado, acta histórica y `AKT.md` vigente. |
-| **C. Asunción** | Arquitecto entrante | Lee `KDB.md` y el último `AKT.md`; emite Eco de Comprensión. | Continuidad sin historial de chats. |
+| **C. Asunción** | Arquitecto entrante | Ejecuta `RT_Pmpt.md` con `KDB.md` y `AKT.md`; aplica Alto al Fuego Inicial; emite Eco de Comprensión Integral de 7 puntos y espera orden. | Continuidad sin historial de chats. |
 
-**Invariante de archivo:** se copia, no se mueve. `history/` es inmutable. `AKT.md` siempre existe.
+### 9.1 Inventario de artefactos rectores (estructura séxtuple)
+
+| Artefacto | Función | Fase |
+|---|---|---|
+| `KTP_Guide.md` | Manual operativo y FSM de transferencia. | Todas |
+| `KDB.md` | Base de conocimiento estable. | B / C |
+| `AKT_Pmpt.md` | Prompt de extracción saliente. | A |
+| `AKT.md` | Delta activo del turno. | A / B |
+| `KDB_Act_Pmpt.md` | Prompt de consolidación en disco. | B |
+| `RT_Pmpt.md` | Prompt de asunción de mando entrante. | C |
+| `history/` | Registro inmutable de actas archivadas. | B |
+
+**Invariante de existencia:** los seis archivos rectores y el directorio `history/` deben existir siempre.  
+**Invariante de archivo:** se copia, no se mueve. `history/` es inmutable. `AKT.md` y `RT_Pmpt.md` siempre existen.
 
 ---
 
@@ -323,6 +337,7 @@ La temporada `2026_2027` está en curso: 153 partidos cargados al corte. No se e
 | Guía operativa | `docs/KTP/KTP_Guide.md` |
 | Prompt de despacho | `docs/KTP/AKT_Pmpt.md` |
 | Prompt de consolidación | `docs/KTP/KDB_Act_Pmpt.md` |
+| Prompt de asunción | `docs/KTP/RT_Pmpt.md` |
 | Juez | `qbe_core/tests/test_shield_ktp_package_integrity.py` |
 | Acta activa | `docs/KTP/AKT.md` |
 | Archivo histórico | `docs/KTP/history/` |

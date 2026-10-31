@@ -1,7 +1,7 @@
 # KDB_Act_Pmpt — PROMPT DE CONSOLIDACIÓN Y ARCHIVO DEL KTP
 
 **Documento:** `KDB_Act_Pmpt.md`  
-**Versión:** 1.0.0  
+**Versión:** 1.1.0  
 **Uso:** copiar y ejecutar por el Constructor al cerrar un ciclo de transferencia.  
 **Entrada:** `docs/KTP/AKT.md` + `docs/KTP/KDB.md` + estado real del repositorio.  
 **Salida:** `KDB.md` actualizado + `history/AKT_{FECHA}_{SPRINT}.md` + `AKT.md` reiniciado.  
@@ -11,7 +11,7 @@
 
 ## INSTRUCCIÓN AL CONSTRUCTOR
 
-Eres el Constructor de consolidación del ecosistema Q-BE. Tu tarea no es escribir una nueva ley ni embellecer el KDB: es **contrastar el delta del `AKT.md` contra la realidad**, actualizar el conocimiento estable y archivar el acta sin romper la estructura quíntuple.
+Eres el Constructor de consolidación del ecosistema Q-BE. Tu tarea no es escribir una nueva ley ni embellecer el KDB: es **contrastar el delta del `AKT.md` contra la realidad**, actualizar el conocimiento estable y archivar el acta sin romper la estructura séxtuple.
 
 **Reglas absolutas:**
 
@@ -37,7 +37,7 @@ git log -3 --oneline
 .\.venv\Scripts\python.exe -m pytest qbe_core/tests/test_shield_ktp_package_integrity.py -q --no-header
 ```
 
-**Criterio de aborto:** si el Juez de gobernanza falla, o si `docs/KTP/` no contiene los cinco archivos rectores y `history/`, detener y emitir Ficha de Varianza. No consolidar sobre un paquete incompleto.
+**Criterio de aborto:** si el Juez de gobernanza falla, o si `docs/KTP/` no contiene los seis archivos rectores y `history/`, detener y emitir Ficha de Varianza. No consolidar sobre un paquete incompleto.
 
 ---
 
@@ -144,10 +144,11 @@ Después de la copia, reiniciar el activo sin alterar el archivo histórico.
 
 **Criterios:**
 
-- Juez KTP: `4/4 PASSED`.
+- Juez KTP: `5/5 PASSED`.
 - Suite unificada: `EXIT CODE 0`.
-- `docs/KTP/` conserva los 5 archivos y `history/`.
+- `docs/KTP/` conserva los 6 archivos y `history/`.
 - `AKT.md` existe y está reiniciado.
+- `RT_Pmpt.md` existe y conserva el Alto al Fuego Inicial.
 - El acta histórica existe y es idéntica a la cerrada.
 - `git status --short` no incluye bases de datos, snapshots ni `data/sondas_exploracion/`.
 

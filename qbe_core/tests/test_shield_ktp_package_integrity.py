@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 def test_invarianza_existencia_paquete_ktp_completo():
-    """[INVARIANZA 1 - ESTRUCTURA KTP]: docs/KTP debe contener los 5 archivos canónicos y el directorio history/."""
+    """[INVARIANZA 1 - ESTRUCTURA KTP]: docs/KTP debe contener los 6 archivos canónicos y el directorio history/."""
     raiz = Path(__file__).resolve().parent.parent.parent
     ktp_dir = raiz / "docs" / "KTP"
     
@@ -21,7 +21,8 @@ def test_invarianza_existencia_paquete_ktp_completo():
         "KDB.md",
         "AKT_Pmpt.md",
         "AKT.md",
-        "KDB_Act_Pmpt.md"
+        "KDB_Act_Pmpt.md",
+        "RT_Pmpt.md"  # Sexto archivo canónico obligatorio
     ]
     
     for arc in archivos_requeridos:
@@ -70,3 +71,18 @@ def test_invarianza_akt_estado_real_sprint38():
     assert "3,870" in contenido or "3870" in contenido, "AKT.md debe registrar los 3,870 partidos históricos"
     assert "12 temporadas" in contenido or "12 Temporadas" in contenido
     assert "qbe_historico.db" in contenido
+
+def test_invarianza_rt_pmpt_declara_alto_al_fuego_y_autoridad_suprema():
+    """[INVARIANZA 5 - RT_PMPT CANÓNICO]: RT_Pmpt.md debe exigir Alto al Fuego y juramento al Director Humano."""
+    raiz = Path(__file__).resolve().parent.parent.parent
+    rt_path = raiz / "docs" / "KTP" / "RT_Pmpt.md"
+
+    assert rt_path.exists(), "Falta docs/KTP/RT_Pmpt.md"
+    with open(rt_path, "r", encoding="utf-8") as f:
+        contenido = f.read()
+
+    assert "Américo García Guerrero" in contenido, "RT_Pmpt.md no declara la Autoridad Suprema"
+    assert "Director Humano" in contenido
+    assert "ALTO AL FUEGO INICIAL" in contenido or "Alto al Fuego" in contenido
+    assert "Eco de Comprensión Integral" in contenido
+    assert "qbe_core" in contenido and "qbe_business" in contenido
