@@ -367,8 +367,9 @@ es el umbral de indiferencia de cobertura. No es una constante universal: depend
 | `[LN-QBE-135]` | Protocolo de Carga Masiva Idempotente para Corpus Multianual (12 Temporadas) | `ingesta` | SELLADO |
 | `[LN-QBE-136]` | Sonda de Captura CDP-MHTML y Perfil Persistente | `ingesta` | SELLADO |
 | `[LN-QBE-137]` | Juez Inmutable de Integridad de Muestras MHTML | `ingesta` | SELLADO |
+| `[LN-QBE-138]` | Protocolo de Memoria Institucional Modular y Transferencia de Arquitectura (KTP Package) | `gobierno` | SELLADO |
 
-_Total: 125 identificadores._
+_Total: 126 identificadores._
 
 
 ---
@@ -449,3 +450,24 @@ _Total: 125 identificadores._
 * **P (Process) [ALGO-PROTECTED]:** Parseo con la librería `email` de Python. Verificación de la cabecera `Content-Type: multipart/related`. Búsqueda de sub-bloques `text/html`.
 * **O (Output):** Booleano `True` o excepción `MHTMLIntegrityError`.
 * **Φ (Transición):** Hacia `[LN-QBE-134]` (Parser Offline).
+
+---
+
+## 15. PROTOCOLO DE MEMORIA INSTITUCIONAL MODULAR Y TRANSFERENCIA (KTP PACKAGE)
+
+### ID: [LN-QBE-138] Protocolo de Memoria Institucional Modular y Transferencia de Arquitectura (KTP Package)
+
+* **Ω (Resumen):** Establece la doctrina de transferencia de contexto y gobernanza asincrónica mediante el paquete estructurado `docs/KTP/`. Desacopla la base de conocimiento duradera del proyecto (`KDB.md`) del reporte de contexto dinámico del turno activo (`AKT.md`). Prohíbe la acumulación de deudas históricas superadas en los protocolos de relevo y estandariza los prompts de extracción de memoria (`AKT_Pmpt.md`) y consolidación fáctica (`KDB_Act_Pmpt.md`), garantizando continuidad inmediata sin pérdida de intención ni alucinaciones.
+* **I (Input):** Estado de Git HEAD, resultados de The Shield, base de datos viva y registro de decisiones de la sesión.
+* **P (Process) [ALGO-PROTECTED] [DIRGEN-STRICT]:**
+  1. **Estructura Quíntuple Inviolable:** El paquete `docs/KTP/` debe contener exactamente los cinco archivos rectores: `KTP_Guide.md`, `KDB.md`, `AKT_Pmpt.md`, `AKT.md`, `KDB_Act_Pmpt.md` y el subdirectorio `history/`.
+  2. **Ciclo de Relevo Fiduciario:**
+     - **Fase A (Despacho):** El Arquitecto saliente ejecuta `AKT_Pmpt.md` generando el delta de su turno en `AKT.md`.
+     - **Fase B (Consolidación):** El Constructor ejecuta `KDB_Act_Pmpt.md`, actualiza `KDB.md` con los datos empíricos de Git/Shield y archiva `AKT.md` en `history/AKT_{FECHA}_{SPRINT}.md`. El archivo se materializa por copia; el activo `AKT.md` se reinicia en el mismo acto para preservar la estructura quíntuple.
+     - **Fase C (Asunción):** El Arquitecto entrante recibe `KDB.md` y el último `AKT.md`, emitiendo su Eco de Comprensión sin requerir el historial de chats anteriores.
+  3. **Custodia de IDs:** Los nodos de este subsistema se registran con `max + 1` sobre la familia correspondiente. Ningún ID sellado se reasigna ni se reutiliza.
+  4. **Cero Invención:** Todo dato sin evidencia se declara `SIN EVIDENCIA`, se somete a cuarentena o se veta; nunca se sustituye por un valor sintético.
+  5. **Archivo Inmutable:** Los archivos de `history/` no se editan ni se eliminan. El nombre canónico es `AKT_{YYYY-MM-DD}_{SPRINT}.md`.
+* **O (Output):** Paquete `docs/KTP/` materializado y trazabilidad histórica blindada.
+* **Φ (Transición):** Hacia la operación continua de relevos y onboarding de nuevas instancias.
+* **[SHIELD]:** `qbe_core/tests/test_shield_ktp_package_integrity.py`

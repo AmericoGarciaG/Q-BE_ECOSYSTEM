@@ -348,6 +348,7 @@ Las rutas legadas solo pueden aparecer en este mapa o en un bloque de procedenci
 | `[ARCH-1.4.71]` | Arquitectura del Parser Offline MHTML y Pipeline de Extracción Multianual [ARCH-PILLAR] | `qbe_ingestion` | SELLADO |
 | `[ARCH-1.4.72]` | Pipeline de Inyección Histórica Multianual y Reflection DDL [ARCH-PILLAR] | `qbe_ingestion` | SELLADO |
 | `[ARCH-1.4.73]` | Extractor Histórico Masivo de FotMob | `qbe_ingestion` | SELLADO |
+| `[ARCH-1.4.74]` | Topología y Subsistema Documental de Transferencia KTP [ARCH-PILLAR] | `docs` | SELLADO |
 | `[ARCH-1.5.0]` | Central Persistence Gateway y Unidad de Trabajo (Unit of Work) [DIRGEN-SEALED] [ARCH-PILLAR] | `qbe_ingestion` | SELLADO |
 | `[ARCH-1.5.0-B]` | Aislamiento de Persistencia del Canal Gateway en The Shield [ARCH-PILLAR] [GOVERNANCE-01] | `qbe_storage` | SELLADO |
 | `[ARCH-1.5.1]` | Esquema Relacional 3NF Multi-Torneo — Especificación Canónica de Columnas [ARCH-PILLAR] [DIRGEN-STRICT] | `qbe_storage` | SELLADO |
@@ -399,7 +400,7 @@ Las rutas legadas solo pueden aparecer en este mapa o en un bloque de procedenci
 | `[ARCH-1.7.0]` | Lanzador de Servidor con Sonda de Salud (run_app.py) [ARCH-PILLAR] (H10) | `qbe_ingestion` | SELLADO |
 | `[ARCH-1.7.1]` | Piso Mínimo de Ventanilla ($2.00 MXN) y Escalamiento Proporcional [BIZ-LOGIC] [ALGO-PROTECTED] (H1) | `qbe_ingestion` | SELLADO |
 
-_Total: 140 identificadores._
+_Total: 143 identificadores._
 
 
 ---
@@ -435,3 +436,22 @@ _Total: 140 identificadores._
 * **Destino:** `qbe_observatory/data/qbe_historico.db` (Bóveda OLAP).
 * **Excepción CQRS autorizada:** carga bulk directa sobre tablas `historical_*`, transacción `BEGIN IMMEDIATE`, backup WORM previo y `PRAGMA quick_check` al cierre. No toca `matches`, `sovereign_distributions` ni `match_telemetry`.
 * **[SHIELD]:** `qbe_ingestion/tests/test_shield_historical_load_integrity.py`
+
+---
+
+## 14. SUBSISTEMA DOCUMENTAL DE TRANSFERENCIA KTP
+
+### [ARCH-1.4.74] Topología y Subsistema Documental de Transferencia KTP [ARCH-PILLAR]
+* **Ubicación Canónica:** `docs/KTP/`.
+* **Naturaleza:** subsistema documental de gobierno; no ejecuta lógica de negocio, no abre conexiones de base de datos y no cruza fronteras CQRS. Su única función es preservar y transferir la intención legislada entre turnos.
+* **Especificación de Artefactos:**
+  - `KTP_Guide.md`: Guía de procedimiento y FSM de transferencia.
+  - `KDB.md`: Base de datos de conocimiento y mapa de arquitectura del ecosistema.
+  - `AKT_Pmpt.md`: Prompt de extracción de contexto saliente.
+  - `AKT.md`: Estado dinámico del sprint vigente.
+  - `KDB_Act_Pmpt.md`: Prompt de consolidación y versionado en disco.
+  - `history/`: Registro inmutable de transiciones históricas archivadas.
+* **Contrato de Integridad:** los cinco archivos rectores deben existir físicamente y superar el umbral mínimo de contenido; `history/` debe existir incluso cuando aún no contiene actas. El archivo de `AKT.md` se realiza por copia y reinicio, nunca por sustracción del activo.
+* **Frontera:** `qbe_core` no consume estos documentos en tiempo de ejecución; el Juez documental vive en `qbe_core/tests/` como guardián de la Base de Gobierno, sin introducir I/O en el núcleo matemático.
+* **[SHIELD]:** `qbe_core/tests/test_shield_ktp_package_integrity.py`
+* **Deuda documental declarada:** `[ARCH-1.4.73]` figura sellado en la tabla maestra y en `docs/ID_REGISTRY.md`, pero carece de sección de cuerpo en este libro. Se preserva su ID y su denominación; la deuda se declara para una reconciliación posterior y no se reasigna.

@@ -7,7 +7,7 @@
 **Marco:** Kybern Industrial Framework v13.5  
 **Expediente:** `SPRINT-FASE4-MIGRACION-REFLEXIVA-BG-04`  
 **Fecha:** 2026-10-28  
-**Filas canónicas:** 262
+**Filas canónicas:** 267
 
 > **Naturaleza.** Tablero canónico de control del registro legislativo. Fuente única de verdad para la asignación de nuevos identificadores (`max + 1` sobre el último ID libre). Un identificador sellado es inmutable y no reasignable. Las anclas apuntan a los libros de `docs/` del ecosistema; las rutas de tests legados se conservan solo como memoria histórica y no se presentan como evidencia vigente.
 
@@ -275,11 +275,13 @@
 | `[ARCH-1.4.71]` | ARCH | `docs/ARCH.md` | Arquitectura del Parser Offline MHTML y Pipeline de Extracción Multianual | SELLADO |
 | `[ARCH-1.4.72]` | ARCH | `docs/ARCH.md` | Pipeline de Inyección Histórica Multianual y Reflection DDL | SELLADO |
 | `[ARCH-1.4.73]` | ARCH | `docs/ARCH.md` | Extractor Histórico Masivo de FotMob | SELLADO |
+| `[ARCH-1.4.74]` | ARCH | `docs/ARCH.md` | Topología y Subsistema Documental de Transferencia KTP [ARCH-PILLAR] | SELLADO |
 | `[DES-QBE-074]` | DISEÑO | `docs/DESIGN.md` | Saneamiento Visual de la Tabla de Calibración: Aire, Jerarquía Anidada y Píldora de Atribución | SELLADO |
 | `[DES-QBE-075]` | DISEÑO | `docs/DESIGN.md` | Match Card Híbrido de Calibración: Tres Zonas, Vértice Cromático del Resultado, Barras P′/Mercado y Modal 32V Bajo Demanda | SELLADO |
 | `[LN-QBE-092]` | LOGIC | `docs/LOGIC.md` | *(Reservado - Conciliación de Mercados Derivados)* | LIBRE |
 | `[LN-QBE-136]` | LOGIC | `docs/LOGIC.md` | Sonda de Captura CDP-MHTML y Perfil Persistente | SELLADO |
 | `[LN-QBE-137]` | LOGIC | `docs/LOGIC.md` | Juez Inmutable de Integridad de Muestras MHTML | SELLADO |
+| `[LN-QBE-138]` | LOGIC | `docs/LOGIC.md` | Protocolo de Memoria Institucional Modular y Transferencia de Arquitectura (KTP Package) | SELLADO |
 
 ## PROTOCOLO DE ASIGNACIÓN
 
@@ -288,4 +290,4 @@
 3. **Sellado:** al pasar a verde (`EXIT CODE 0`), la fila migra de `EN FORJA` a `SELLADO` con anclaje simbólico (`docs/LOGIC.md` / `docs/ARCH.md` + símbolo), jamás `archivo:línea`.
 4. **Cobertura:** la migración de Fase 4 no puede reducir el conjunto de IDs. Las filas con estado no canónico se conservan para auditoría y no se promueven sin Juez.
 
-_Total de filas: 265._
+_Total de filas: 267._
