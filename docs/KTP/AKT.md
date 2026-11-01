@@ -1,128 +1,110 @@
 # AKT — REPORTE ACTIVO DE TRANSFERENCIA
 
-**Sprint:** `SPRINT-41-TRANSICION-Y-CONSISTENCIA-BG`<br>
-**Fecha:** 2026-10-31<br>
+**Sprint:** `SPRINT-45-EXPANSION-CAUSAL-Y-RESCATE-EN-VIVO`<br>
+**Fecha:** 2026-11-01<br>
 **Autoridad:** Américo García Guerrero (Director Humano)<br>
-**Arquitecto saliente:** Agente Constructor Kybern / Arquitecto de Materialización<br>
-**Estado:** `PENDIENTE DE ASUNCIÓN DE MANDO (PRUEBA DE FUEGO KTP)`<br>
-**Régimen:** `[DIRGEN-STRICT]` — Documentación Institucional y Memoria de Transición<br>
-**Nodos de referencia:** `[LN-QBE-138]` / `[ARCH-1.4.74]`
+**Arquitecto saliente:** Constructor Kybern / Extracción causal y auditoría de bóveda<br>
+**Estado:** `PENDIENTE DE CONSOLIDACIÓN`<br>
+**Régimen:** `[DIRGEN-STRICT]` — documentación de transferencia; jurisdicción exclusiva `docs/KTP/AKT.md`<br>
+**Nodos:** `[LN-QBE-138]` / `[ARCH-1.4.74]`
 
-> **Naturaleza de este documento.** Este AKT es un delta de transferencia, no una memoria histórica ni un resumen narrativo. Su destinatario es un Arquitecto entrante con ventana de contexto limpia. Si para asumir el mando necesita reconstruir el chat, este delta falló.
-
----
+> **Nota de evidencia (Fail-Loud).** Este delta no certifica como concluido lo que no tiene evidencia. Al corte: `C01-C08` no existe en la Base de Gobierno ni en el código; el Daemon `Centinela` no está operando; no se emitió Ficha de Varianza; no existe split Train/Test. Todo lo anterior se declara abajo con su estado real.
 
 ## 1. SPRINT ACTUAL
 
-- **Nombre:** `SPRINT-41-TRANSICION-Y-CONSISTENCIA-BG`.
-- **Objetivo:** consagrar el **Principio de Identidad Fiduciaria** (Apego al Negocio $\equiv$ Apego a la Base de Gobierno), diseñar la detección determinista de **Reglas Huérfanas** vía AST hacia `docs/KTP/GL_update.md` y preparar la calibración del nuevo modelo sobre las 12 temporadas históricas.
-- **Alcance:** `docs/KTP/AKT.md` como vehículo de transferencia; doctrina aplicable a `docs/GOVERNANCE.md`, `docs/LOGIC.md`, `docs/ID_REGISTRY.md` y `scripts/auditoria/`. **No se modifica código de producción en este sprint.**
-- **Régimen:** `[DIRGEN-STRICT]` para gobierno, documentación normativa y Jueces. Cero margen creativo sobre constantes, algoritmos o fronteras CQRS.
-- **Fecha de inicio / cierre:** 2026-10-31 / 2026-10-31 (delta emitido; la asunción de mando queda pendiente).
-- **Criterio de asunción:** el Arquitecto entrante debe leer `docs/KTP/KDB.md`, este `AKT.md` y `docs/KTP/KTP_Guide.md`, emitir su Eco de Comprensión y verificar la Sección 5 con los comandos indicados antes de tocar cualquier archivo.
-
----
+- **Nombre:** `SPRINT-45-EXPANSION-CAUSAL-Y-RESCATE-EN-VIVO`.
+- **Objetivo:** rescatar la ingesta en vivo, auditar la cobertura de la bóveda histórica y materializar el catálogo de 8 variables compuestas (`C01-C08`) para la calibración cruzada (Train/Test).
+- **Alcance:** `docs/KTP/AKT.md` como vehículo de transferencia; lectura de solo lectura de `qbe_observatory/data/qbe_historico.db` y del estado Git. **No se modifica código en `src/`, no se altera `KDB.md` ni la Base de Gobierno fuera de KTP.**
+- **Régimen:** `[DIRGEN-STRICT]` para documentación, datos y Jueces. Cero datos sintéticos; ausencia declarada como `SIN EVIDENCIA`.
+- **Fecha de inicio / cierre:** 2026-11-01 / PENDIENTE.
+- **Criterio de asunción:** el Arquitecto entrante debe leer `docs/KTP/KDB.md`, este `AKT.md` y `docs/KTP/KTP_Guide.md`, emitir su Eco de Comprensión y verificar la Sección 5 antes de tocar cualquier archivo.
 
 ## 2. HITOS CONCLUIDOS
 
-| Hito | Evidencia | Estado |
-|---|---|---|
-| Monorepo `Q_BE_ECOSYSTEM` materializado en cuatro pilares desacoplados | `qbe_core`, `qbe_business` (`:8000`), `qbe_observatory` (`:8001`), `qbe_ingestion` (`:8002`) + `qbe_storage` transversal; `docs/GOVERNANCE.md` §5 | COMPLETADO |
-| Ingesta de 12 temporadas históricas en crudo | `data/raw_footystats/`; 12 filas `OK` en `historical_load_log` (2015_2016 a 2026_2027) | COMPLETADO |
-| Corpus oficial de partidos y cuotas 1X2 | `historical_matches`: **3,870** partidos; **3,726** con `odd_home`, `odd_draw` y `odd_away` no nulos | COMPLETADO |
-| Carga masiva e idempotente en SQLite 3NF | `qbe_observatory/data/qbe_historico.db`; 12 filas `OK` en `historical_load_log`; 217 filas en `historical_team_season_stats`; Sprint 38 | COMPLETADO |
-| Paquete documental KTP con sus **6 artefactos rectores** | `docs/KTP/`: `KTP_Guide.md`, `KDB.md`, `AKT_Pmpt.md`, `AKT.md`, `KDB_Act_Pmpt.md`, `RT_Pmpt.md`; `RT_Pmpt.md` con 3,657 bytes y trackeado; `history/` existente | COMPLETADO |
-| Juez de integridad del paquete KTP | `pytest qbe_core/tests/test_shield_ktp_package_integrity.py -v` → **5/5 PASSED** en **0.06s** | COMPLETADO |
-| The Shield unificado en verde | `pytest qbe_core/tests qbe_business/tests qbe_ingestion/tests qbe_observatory/tests qbe_storage/tests -q --no-header` → **161 passed / 0 failed**, 1 warning, **47.20s**, **EXIT CODE 0** | COMPLETADO |
-| Juez de gobernanza del ecosistema | `pytest qbe_core/tests/test_shield_ecosystem_governance.py -q --no-header` → **3/3 PASSED** en **0.02s** | COMPLETADO |
-| Cierre del circuito canónico KTP | Commit `05ca4e4` — `docs(ktp): Materialización de RT_Pmpt.md y cierre de circuito canónico KTP` | COMPLETADO |
+> **Fail-Loud:** las dos filas ordenadas por la Directiva se registran con su estado real, no como avance simulado. `C01-C08` no tiene ID, Juez ni código; el Daemon no está operando.
 
-> **Cierre de la discrepancia del delta anterior.** El AKT previo registraba `RT_Pmpt.md` vacío y un Juez de **4/4**. El commit `05ca4e4` materializó el sexto artefacto y el Juez amplió su colección a cinco invariantes. La evidencia vigente es **6/6 artefactos con contenido** y **5/5 PASSED**; no queda discrepancia estructural en el paquete.
-
----
+| Hito | ID / Juez | Evidencia | Estado |
+|---|---|---|---|
+| Implementación del Catálogo Compuesto (`C01-C08`) | ID: **SIN ASIGNAR** (próximo libre `[LN-QBE-148]`, no sellado) · Juez: **NO MATERIALIZADO** | No existe `C01`–`C08` en `docs/LOGIC.md`, `docs/ID_REGISTRY.md` ni en `qbe_core/`; la búsqueda en `docs/` y `qbe_core/` no devuelve coincidencias y los únicos matches están en base64 del MHTML de muestra. No hay columnas, tabla ni contrato de las 8 variables. | **NO INICIADO — SIN EVIDENCIA** |
+| Migración y Operación del Daemon en Vivo (`Centinela`) | `[VAULT-DAEMON-001]` / `[VAULT-DAEMON-001-B]` · Juez de operación en vivo: **NO EXISTE**; solo paridad de imports | Fuente en `qbe_ingestion/src/ingestion/daemons/centinela_deportivo.py`; no existe `scripts/daemons/`; sin proceso Python visible; sin tarea programada asociada (filtro `qbe`/`centinela`/`daemon`); sin log de operación localizado. | **DETENIDO — NO OPERANDO** |
+| Extracción causal minuto a minuto (2015-2016) | `[LN-QBE-141]`–`[LN-QBE-145]` · Jueces: `test_shield_minuto_a_minuto_parser.py`, `test_shield_descubrimiento_ligamx.py`, `test_shield_orquestador_extraccion.py` | **301** partidos con **13,443** eventos en `historical_match_events`; muestra de 49 eventos: América 3-3 Monterrey (`fs_2015_2016_z85264`, J16 Clausura 2016). | **COMPLETADO TÉCNICO — SIN COMMIT** |
+| Derivación de 32 variables causales (9 derivadas / 23 `SIN EVIDENCIA`) | `[LN-QBE-146]` · Juez: `test_shield_derivacion_causal.py` | **301** filas en `historical_match_causal_vars`; `derivadas = 9` en 301/301; `sin_evidencia` con 23 variables. | **COMPLETADO TÉCNICO — SIN COMMIT** |
+| Calibración in-sample 2015-2016 | `[LN-QBE-147]` · Juez: `test_shield_calibracion.py` | 301 partidos; Brier base `0.65546144` → optimizado `0.59896449` (Δ `-0.05649695`; mejora `8.62%`); mercado `0.64031362`; acta `2026-11-01T06:54:38Z` en `data/reportes/calibracion_2015_2016.json`. | **COMPLETADO (IN-SAMPLE) — SIN TRAIN/TEST** |
 
 ## 3. DECISIONES TOMADAS
 
 | Decisión | Razón | Impacto | Anclaje |
 |---|---|---|---|
-| **D1. Principio de Identidad Fiduciaria** | Se descarta la auditoría directa contra los PDFs de los Volúmenes I, II y III para evitar gasto de tokens y complejidad innecesaria. La Base de Gobierno es la única fuente operativa. | Se decreta que **Apego al Negocio $\equiv$ Apego Estricto a la Base de Gobierno (`docs/`)**. Todo requerimiento debe estar legislado en `LOGIC.md` y registrado en `ID_REGISTRY.md`. Si no está en la BG, no existe para el sistema. | `docs/GOVERNANCE.md` §1 (regla 1: “La Base de Gobierno manda”); `docs/LOGIC.md`; `docs/ID_REGISTRY.md`; `KTP-03`, `KTP-09`. Formalización expresa pendiente: Deuda 2. |
-| **D2. Teorema de Paridad Canónica Biunívoca** | Evitar que código crítico que mueve dinero o probabilidades quede sin trazabilidad legislativa. | Toda función de cálculo de probabilidad, triaje de estrategias o asignación de capital en `src/` debe portar una etiqueta canónica `[LN-QBE-XXX]`, respaldada por un Juez Inmutable en The Shield. Sin etiqueta o con ID inexistente, la función es infractora. | `docs/GOVERNANCE.md` §3.1 (`KTP-04`, `KTP-07`) y §7 (custodia de IDs); Juez futuro `test_shield_canonical_parity.py` (aún no materializado). **No se asigna ID nuevo en este delta**: el sellado corresponde a la custodia. |
-| **D3. Clasificación binaria de infracciones** | Distinguir el código que elude la ley de la ley que no tiene materialización; ambas rompen la paridad, pero exigen acciones distintas. | **Regla Huérfana (Código Furtivo):** código en `src/` que afecta dinero o probabilidades sin etiqueta o con ID inexistente en la BG; el auditor la volcará automáticamente a `docs/KTP/GL_update.md`. **Brecha Legislativa (Letra Muerta):** nodo en `LOGIC.md` sin código o sin test asociado. | `docs/LOGIC.md`; `docs/ID_REGISTRY.md`; `KTP-03` (ley antes que código) y `KTP-04` (Juez en RED). |
-| **D4. Automatización 0-Tokens (`GL_update.md`)** | La auditoría manual de paridad consume tokens y es no determinista; el cierre de sprint exige evidencia reproducible en tiempo acotado. | Crear `scripts/auditoria/auditar_paridad_bg.py`: script Python determinista que escanea el código vía AST, corre en ~0.5s y genera la bandeja `docs/KTP/GL_update.md` para que el Director apruebe o elimine reglas huérfanas. No usa LLM, no modifica `src/`, no decide: solo detecta y propone. | Deuda 1; `KTP-07` (evidencia reproducible); `KTP-10` (cierre y reversibilidad). |
-| **D5. Captura de reglas conversacionales** | Las decisiones tomadas en chat se pierden si no se capturan antes de cerrar el turno; el delta debe poder absorberlas sin depender del historial. | Enmendar `AKT_Pmpt.md` para incluir una sección obligatoria de captura de decisiones de chat antes de que se pierdan en el historial. La enmienda es de plantilla, no de este delta: **no se modificó `AKT_Pmpt.md` en este sprint** porque la jurisdicción solo autoriza `AKT.md`. Queda como deuda metodológica del siguiente ciclo. | `docs/KTP/AKT_Pmpt.md` (plantilla vigente de 7 puntos); `[LN-QBE-138]` / `[ARCH-1.4.74]`. |
-
-### 3.1 Consecuencia operativa de la doctrina
-
-La ecuación rectora del sprint es:
-
-$$\text{Apego al Negocio} \equiv \text{Apego Estricto a la Base de Gobierno }(docs/)$$
-
-De ella se derivan tres consecuencias que el Arquitecto entrante debe aplicar sin reinterpretar:
-
-1. **La BG es el contrato, no la documentación de apoyo.** Un PDF, una nota de chat o una memoria verbal no legislan. Si un requerimiento no está en `LOGIC.md` con su ID en `ID_REGISTRY.md`, el sistema no lo reconoce y el código que lo implemente es sospechoso de fuga.
-2. **La paridad es biunívoca.** No basta con que el código tenga etiqueta: la etiqueta debe existir en la BG. No basta con que la ley exista: debe tener materialización y Juez. Cualquier lado sin el otro es una infracción binaria, no una “deuda cosmética”.
-3. **La detección debe ser determinista y barata.** El script de paridad es un instrumento de cierre, no un motor generativo. Su salida es una bandeja de revisión humana; la aprobación o eliminación de una regla huérfana es potestad del Director.
-
-### 3.2 Frontera de la decisión
-
-Estas decisiones **no autorizan** a etiquetar código existente de forma masiva, ni a inventar IDs para “cerrar” la paridad, ni a modificar `GOVERNANCE.md`, `LOGIC.md` o `ID_REGISTRY.md` en este sprint. La única materialización autorizada es este `AKT.md`. Cualquier etiquetado o enmienda normativa pertenece al Sprint de Consistencia de la Base de Gobierno y exige su propio Juez.
-
----
+| **D1. No inventar `C01-C08`.** | No existe especificación, ID sellado, Juez ni columnas en la bóveda. Materializarlas por inferencia violaría `[GOVERNANCE-01]` y el régimen `[DIRGEN-STRICT]`. | El catálogo queda como deuda ALTA y Prioridad 2; no se usa en la calibración de este turno. | `docs/KTP/AKT_Pmpt.md` regla 1; `AGENTS.md`; `[LN-QBE-146]`. |
+| **D2. No declarar operativo el Daemon.** | No hay proceso, tarea programada, log ni Juez de operación en vivo. La fuente existe, pero la migración/operación no está evidenciada. | El Daemon queda `DETENIDO`; la ingesta en vivo no se considera rescatada. | `[VAULT-DAEMON-001]`; `qbe_ingestion/tests/test_parity_ingestion_daemons.py`. |
+| **D3. No presentar el Brier in-sample como Train/Test.** | `[LN-QBE-147]` no implementa partición temporal; el acta usa los 301 partidos completos de 2015-2016. | La mejora de 8.62% mide ajuste in-sample, no capacidad predictiva; el overfitting queda sin dictamen. | `docs/LOGIC.md` §20, limitación declarada de `[LN-QBE-147]`. |
+| **D4. No emitir Ficha de Varianza sin fallo documentado.** | No consta intento de rescate del Daemon ni fallo de red/credenciales en este turno. Emitirla sin evidencia sería fabricar un incidente. | No hay `DIRGEN_VARIANCE_REQUEST.md`; solo la plantilla/parte histórico. Si el rescate falla por credenciales, se emite y se enlaza. | `docs/DIRGEN_VARIANCE_REQUEST_TEMPLATE.md`; `AGENTS.md`, Protocolo Anti-Bandazos. |
 
 ## 4. DEUDAS ABIERTAS
 
 | Deuda | Severidad | Impacto | Siguiente acción | Responsable |
 |---|---|---|---|---|
-| **Deuda 1 — Script de paridad y bandeja `GL_update.md` ausentes** | ALTA | Sin `auditar_paridad_bg.py` no hay detección reproducible de Reglas Huérfanas ni evidencia de paridad al cierre. El Teorema de Paridad Canónica queda como doctrina sin instrumento. El directorio `scripts/auditoria/` aún no existe. | Materializar `scripts/auditoria/auditar_paridad_bg.py` y el generador de `docs/KTP/GL_update.md`; crear `test_shield_canonical_parity.py`; ejecutar el primer escaneo. | Constructor / Arquitecto |
-| **Deuda 2 — Principio de Identidad Fiduciaria no formalizado en `GOVERNANCE.md`** | MEDIA | La doctrina existe en este delta, pero no está legislada en el libro de gobierno; un Arquitecto entrante podría no encontrarla si solo lee `GOVERNANCE.md`. | Añadir el artículo del Principio de Identidad Fiduciaria y el Teorema de Paridad Canónica a `docs/GOVERNANCE.md`, con su Juez de gobernanza actualizado. | Arquitecto |
-| **Deuda 3 — Tres scripts de laboratorio con imports legados** | BAJA | Los scripts no arrancan bajo la topología actual: importan `src.core...` / `src.storage...`, rutas del monolito derogado. No afectan producción ni The Shield, pero rompen la reproducibilidad del laboratorio. | Reconectar `scripts/laboratorio/sandbox_h2h_pipeline.py`, `scripts/laboratorio/sandbox_volumen_porteria_pipeline.py` y `scripts/investigacion/manus_qbe_model.py` a `qbe_core` / `qbe_storage`; smoke test de importación y `--help`. | Constructor |
+| **¿Se emitió `DIRGEN_VARIANCE_REQUEST.md` durante este sprint?** | ALTA | **NO — sin enlace.** El archivo no existe; solo están `docs/DIRGEN_VARIANCE_REQUEST_TEMPLATE.md` y el parte histórico resuelto `VAR-2026-J7-HOMOLOGACION` (2026-10-14), ajeno al Sprint 45. No consta fallo de red/credenciales del Daemon. | Si el rescate del Daemon falla por red/credenciales, emitir el parte y enlazarlo aquí antes de tocar código. | Arquitecto |
+| Catálogo Compuesto `C01-C08` no materializado | ALTA | No hay 8 variables compuestas (ej. Reacción post-gol), ni ID, ni Juez, ni columnas en la BD; la calibración cruzada no puede ejecutarse sobre ese catálogo. | Definir especificación, asignar ID sellado, crear Juez Inmutable, migrar columnas y poblar 301 partidos. | Director / Arquitecto |
+| Daemon en vivo `Centinela` detenido | ALTA | La ingesta en vivo no está rescatada; no hay proceso ni tarea programada. La causa raíz no está diagnosticada. | Diagnosticar red/credenciales/entorno, arrancar el Daemon y dejar log; o emitir Ficha de Varianza. | Arquitecto / Infraestructura |
+| Sin split Train/Test | ALTA | El Brier `0.65546144 → 0.59896449` es in-sample; no hay evidencia fuera de muestra ni dictamen de overfitting. | Implementar partición temporal y ejecutar calibración cruzada; si no hay Test, declarar `SIN EVIDENCIA`. | Arquitecto |
+| Cobertura histórica incompleta | ALTA | **0** temporadas con 32 variables; solo `2015_2016` con 9 variables y 301/334 partidos. Las otras 11 temporadas no tienen eventos. | Extraer eventos de las 11 temporadas restantes o declarar el alcance de la calibración. | Ingesta / Arquitecto |
+| Sonda `auditar_boveda_historica.py` ausente | MEDIA | No existe el instrumento canónico de auditoría de cobertura; la auditoría de §4.1 se hizo con consulta SQL de solo lectura. | Materializar la sonda y su Juez; ejecutarla contra `qbe_historico.db`. | Constructor |
+| Pipeline causal sin commit | MEDIA | 301 vectores, 13,443 eventos y los módulos nuevos del pipeline causal viven en el working tree; no son reproducibles desde Git. | Commit atómico con tests y actualización de BG; no mezclar con datos crudos. | Constructor |
 
-> **Nota de ubicación (corrección fáctica):** el expediente ubica estos tres scripts en `qbe_observatory/scripts/`. La inspección real los encuentra en `scripts/laboratorio/` y `scripts/investigacion/`; `qbe_observatory/scripts/` solo contiene `refresh_snapshot.py` e `__init__.py`. Se conserva la deuda, se corrige la ruta.
+### 4.1 Auditoría de Cobertura Histórica
 
-> **Regla de este delta:** no se listan deudas cerradas. Lo que ya se cerró vive en `history/` o en el commit, no aquí.
+**Pregunta rectora:** ¿qué temporadas tienen el vector completo de 32 variables y cuáles solo la cobertura de 9 variables derivada de eventos?
 
----
+- **Temporadas con 32 variables (Completas):** **NINGUNA** (0 de 12).
+- **Temporadas con 9 variables (Minuto a Minuto):** **`2015_2016`** (301 de 334 partidos; 13,443 eventos; 9 derivadas / 23 `SIN EVIDENCIA`).
+
+| Temporada | Partidos | Con eventos | Con vector causal | 32 vars | 9 vars |
+|---|---:|---:|---:|---:|---:|
+| `2015_2016` | 334 | 301 | 301 | 0 | 301 |
+| `2016_2017`–`2026_2027` (11 temporadas) | 3,536 | 0 | 0 | 0 | 0 |
+| **Total** | **3,870** | **301** | **301** | **0** | **301** |
+
+- **Lectura fiduciaria:** no existe ninguna temporada con las 32 variables. La única cobertura causal es `2015_2016`, y cubre 9 de 32 variables en el 90.12% de sus partidos (301/334). Las 23 variables restantes están declaradas `SIN EVIDENCIA`; no se imputan.
+- **Muestra de referencia:** 49 eventos de América 3-3 Monterrey (`fs_2015_2016_z85264`), J16 Clausura 2016; rango de fechas de los eventos: `2015-07-25T00:30:00Z` a `2016-05-08T22:00:00Z`.
+- **Consecuencia:** la calibración de 301 partidos es una calibración de 9 variables, no de 32. No se puede afirmar que el modelo esté calibrado sobre el catálogo completo.
 
 ## 5. ESTADO FÁCTICO GIT / SHIELD
 
 - **Branch:** `feature/fase2-observatory`.
-- **HEAD de inspección:** `05ca4e4` — 2026-10-31 10:58:25 -0600 — `docs(ktp): Materialización de RT_Pmpt.md y cierre de circuito canónico KTP`. Es el padre del commit de este delta.
-- **Working tree (pre-commit):** limpio; `git status --short` no devuelve entradas. El único cambio de este delta será `docs/KTP/AKT.md`.
-- **Juez de gobernanza:** **3/3 PASSED** en 0.02s (`pytest qbe_core/tests/test_shield_ecosystem_governance.py -q --no-header`).
-- **Juez KTP:** **5/5 PASSED** en 0.06s (`pytest qbe_core/tests/test_shield_ktp_package_integrity.py -v`). Los cinco invariantes cubren estructura séxtuple, KDB, topología, estado fáctico del AKT y `RT_Pmpt.md`.
-- **Suite unificada:** `pytest qbe_core/tests qbe_business/tests qbe_ingestion/tests qbe_observatory/tests qbe_storage/tests -q --no-header` → **161 passed / 0 failed**, 1 warning, **47.20s**, **EXIT CODE 0**. Warning: `StarletteDeprecationWarning` por `httpx` en `fastapi/testclient.py`; no afecta el resultado.
-- **Pre-vuelo de cartelera:** **no aplica** en este delta: no se modificaron motores estocásticos, ingesta ni datos. No se ejecutó `coherence_auditor --check`.
-- **Bóveda fáctica:** **3,870** partidos en `qbe_observatory/data/qbe_historico.db`; **3,726** con cuotas 1X2 completas; **12** temporadas con estado `OK` en `historical_load_log` (2015_2016 a 2026_2027); **217** filas en `historical_team_season_stats`.
-- **Línea base financiera (declarada por Dirección, no auditada):** ROI **+5.85%**; Drawdown **1.5%**; Bankroll inicial **$10,000**. Se consigna con provenance, no como resultado empírico. Cualquier presentación pública debe citar esta condición.
-- **Datos no verificados / discrepancias de evidencia:**
-  1. **Línea base financiera:** declarada por Dirección, sin acta reproducible; no auditada por el Constructor.
-  2. **Cobertura xG:** no verificada en este delta. La calibración multianual deberá declararla `SIN EVIDENCIA` si no existe cobertura suficiente.
-  3. **`GL_update.md`:** no existe todavía porque el auditor de paridad aún no ha sido materializado (Deuda 1). No se presenta como artefacto entregado.
-  4. **Auditoría de PDFs:** no realizada por decisión D1; la BG es la única fuente operativa.
-- **Estado del repositorio para transferencia:** el paquete `docs/KTP/` está completo (6/6 artefactos con contenido), el Juez KTP está en **5/5** y el árbol queda limpio antes de este delta. El residuo `RT_Pmpt.md` del turno anterior quedó cerrado y trackeado en `05ca4e4`.
-
----
+- **HEAD:** `fac1bb0` — 2026-10-31 11:09:10 -0600 — `docs(ktp): Actualización de delta activo AKT.md para prueba de fuego KTP (Consistencia BG)`.
+- **Working tree:** **SUCIO**. Modificados: `docs/ARCH.md`, `docs/GOVERNANCE.md`, `docs/ID_REGISTRY.md`, `docs/KTP/AKT.md`, `docs/KTP/KDB.md`, `docs/LOGIC.md`, 14 módulos de `qbe_core/src/core/` y `qbe_ingestion/src/ingestion/loaders/__init__.py`. No trackeados: `data/raw_ligamx_min_x_min/`, `data/reportes/`, `docs/KTP/GL_update.md`, `docs/KTP/history/AKT_2026-10-31_SPRINT-41-TRANSICION-Y-CONSISTENCIA-BG.md`, `qbe_core/src/core/normalization/ligamx_alias.py`, `qbe_core/src/core/sovereign/calibrar_perturbacion.py`, `qbe_core/src/core/sovereign/derivar_variables_causales.py`, tests nuevos de derivación/calibración/parser/orquestador, parser y loader de eventos, y `scripts/auditoria/`.
+- **Juez de gobernanza:** **3/3 PASSED** (`pytest qbe_core/tests/test_shield_ecosystem_governance.py -q --no-header`).
+- **Juez KTP:** **5/5 PASSED** (`pytest qbe_core/tests/test_shield_ktp_package_integrity.py -v`).
+- **Suite unificada:** `pytest qbe_core/tests qbe_business/tests qbe_ingestion/tests qbe_observatory/tests qbe_storage/tests -q --no-header` → **NO EJECUTADA EN ESTE TURNO** (fuera del alcance de esta directiva; solo se ejecutaron los Jueces KTP y de gobernanza). No se afirma `EXIT CODE 0`.
+- **Pre-vuelo de cartelera:** **no aplica** en este turno: solo se modificó `docs/KTP/AKT.md`; no se tocaron motores estocásticos, ingesta ni datos.
+- **Bóveda fáctica:** **3,870** partidos; **3,726** con cuotas 1X2 completas; **12 temporadas** (`2015_2016` a `2026_2027`); **301** partidos con eventos (**13,443** eventos); **301** filas en `historical_match_causal_vars`; **217** filas en `historical_team_season_stats`; **0** filas con xG por partido (`xg_home`/`xg_away` no poblados). DB: `qbe_observatory/data/qbe_historico.db`.
+- **Sonda de auditoría de la bóveda:** comando canónico previsto:
+  ```powershell
+  .\.venv\Scripts\python.exe scripts/auditoria/auditar_boveda_historica.py --db qbe_observatory/data/qbe_historico.db
+  ```
+  Estado: **NO MATERIALIZADO**. El archivo no existe y el comando no se ejecutó. La cobertura de §4.1 se obtuvo con consulta SQL de solo lectura (`PRAGMA query_only=ON`, URI `?immutable=1`) sobre `historical_matches`, `historical_match_events` y `historical_match_causal_vars`.
+- **Estado del Daemon en Vivo: DETENIDO.** Sin proceso Python visible, sin tarea programada asociada (filtro `qbe`/`centinela`/`daemon`) y sin log de operación localizado. La causa raíz no está diagnosticada; no se observó fallo de red/credenciales en este turno. No se declara `BLOQUEADO` porque no hay evidencia de credenciales faltantes.
+- **Brier Score Train vs. Test:** **NO EJECUTADO.** No existe split Train/Test en `[LN-QBE-147]`; el acta es in-sample. Evidencia in-sample (301 partidos, 2015-2016): Brier base `0.65546144`; optimizado `0.59896449`; Δ `-0.05649695` (mejora `8.62%`); mercado `0.64031362`. **Train:** sin partición formal (se usan los 301 partidos); **Test:** `SIN EVIDENCIA`.
+- **Datos no verificados:** (1) `C01-C08`: sin ID, Juez, contrato ni columnas; (2) operación del Daemon y su causa raíz; (3) Brier Test y overfitting; (4) temporadas con 32 variables (0); (5) xG por partido (0 filas); (6) `auditar_boveda_historica.py` (ausente); (7) suite unificada (no ejecutada); (8) línea base financiera `+5.85%` / `1.5%` / `$10,000`: declarada por Dirección, no auditada.
 
 ## 6. BACKLOG INMEDIATO
 
 | Prioridad | Tarea | Criterio de aceptación |
-| ---: | --- | --- |
-| 1 | Enmendar `docs/GOVERNANCE.md` con el Principio de Identidad Fiduciaria y el Teorema de Paridad Canónica. | Artículo normativo publicado; Juez de gobernanza actualizado y en verde; sin IDs inventados. |
-| 2 | Construir `scripts/auditoria/auditar_paridad_bg.py` y crear el Juez `test_shield_canonical_parity.py`. | El script escanea AST, detecta etiquetas `[LN-QBE-XXX]` y IDs inexistentes, y el Juez falla en RED antes de la materialización y pasa en GREEN después. |
-| 3 | Ejecutar el primer escaneo de paridad para generar `docs/KTP/GL_update.md`. | Bandeja generada en ~0.5s, con reglas huérfanas y brechas legislativas clasificadas; consumo de tokens = 0. |
-| 4 | Iniciar la calibración multianual del modelo Q-BE sobre los 3,870 partidos de `qbe_historico.db`. | Acta de calibración con corte temporal, Brier Score, baseline de mercado y curvas por temporada; xG declarado `SIN EVIDENCIA` si no hay cobertura. |
-
----
+|---:|---|---|
+| 1 | **Estado del Daemon en Vivo:** si no está operando automáticamente, documentar el bloqueo técnico exacto para que el Arquitecto entrante sepa si debe intervenir infraestructura. | Proceso vivo + tarea programada + log de operación, o `DIRGEN_VARIANCE_REQUEST.md` con causa raíz (red/credenciales/entorno) y enlace. |
+| 2 | **Validar que las 8 variables `C01-C08` (ej. Reacción post-gol) están correctamente pobladas en la BD.** | Especificación en `LOGIC.md`, ID sellado en `ID_REGISTRY.md`, Juez Inmutable en verde, 8 columnas/tabla y 301 partidos poblados sin nulos no explicados. |
+| 3 | **Ejecutar la Calibración Cruzada y reportar si el modelo sufre de Overfitting.** | Split temporal Train/Test (2015-2016 → 2016-2017), Brier Train y Test, Δ y veredicto de overfitting. Prerrequisito: 2016-2017 tiene **0** eventos; sin extracción, el Test no existe y se declara `SIN EVIDENCIA`. |
 
 ## 7. SIGUIENTE MOVIMIENTO
 
-- **Acción única:** ejecutar el **Sprint de Consistencia de la Base de Gobierno**: crear `scripts/auditoria/auditar_paridad_bg.py`, materializar el Juez de Paridad Canónica en The Shield, enmendar `GOVERNANCE.md` y emitir el primer `docs/KTP/GL_update.md`.
-- **Comando / punto de entrada:** `scripts/auditoria/auditar_paridad_bg.py` (a crear; aún no existe).
-- **Resultado esperado:** detección de Reglas Huérfanas y Brechas Legislativas en ~0.5s, con **cero gasto de tokens**, bandeja `GL_update.md` generada y paridad certificada por un Juez Inmutable.
-- **Riesgo principal:** que el análisis AST confunda llamadas dinámicas, alias, decoradores o etiquetas embebidas en strings con funciones reales, produciendo falsos positivos o falsos negativos. El script debe declarar su alcance, usar allowlist explícita y no “corregir” código.
-- **Criterio de aborto:** si el AST no puede resolver una llamada crítica sin ambigüedad, o si el Juez de paridad y la BG discrepan sobre qué es una función crítica, **detener** y emitir `DIRGEN_VARIANCE_REQUEST.md` con coordenadas, evidencia, diagnóstico causal, alternativas y recomendación. No se parchea a ciegas bajo `[DIRGEN-STRICT]`.
-- **Definición de terminado:** script + Juez + artículo en `GOVERNANCE.md` + primer `GL_update.md` + The Shield completo en **EXIT CODE 0**.
+- **Acción única:** revisar la **Auditoría de Cobertura Histórica** de §4.1 y aprobar o rechazar la muestra Train/Test `2015-2016 → 2016-2017`.
+- **Comando / punto de entrada:** `docs/KTP/AKT.md` §4.1; `scripts/auditoria/ejecutar_calibracion.py` solo ejecuta in-sample (`--temporada 2015-2016`). No existe CLI Train/Test.
+- **Resultado esperado:** decisión firmada: (a) aprobar `2015-2016` como Train y ordenar la extracción de `2016-2017` para Test; o (b) declarar `SIN EVIDENCIA` y no calibrar. En ambos casos, el Daemon queda operando o con Ficha de Varianza.
+- **Riesgo principal:** overfitting. La única evidencia es in-sample (301 partidos, 9/32 variables) y la mejora de 8.62% no tiene contraparte fuera de muestra.
+- **Criterio de aborto:** si el Daemon no se puede rescatar por falta de credenciales, emitir `DIRGEN_VARIANCE_REQUEST.md` y proceder a calibrar solo con el histórico. Si no hay Test, no se afirma capacidad predictiva ni se declara superación del mercado.
+- **Definición de terminado:** cobertura firmada + decisión Train/Test + Daemon `OPERANDO` o Ficha de Varianza + Juez KTP en verde + suite unificada con `EXIT CODE 0`.
 
 ---
 
-> **Firma de transferencia.** Delta emitido por el Agente Constructor Kybern el 2026-10-31. La asunción de mando queda **PENDIENTE** hasta que el Arquitecto entrante emita su Eco de Comprensión, verifique la Sección 5 y confirme que puede operar sin reconstruir el historial. Este AKT no sustituye a `KDB.md`; es el delta del turno.
+> **Firma de transferencia.** Delta emitido por el Constructor Kybern el 2026-11-01. La asunción de mando queda **PENDIENTE** hasta que el Arquitecto entrante emita su Eco de Comprensión, verifique la Sección 5 y confirme que puede operar sin reconstruir el historial. Este AKT no sustituye a `KDB.md`; es el delta del turno.

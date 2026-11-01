@@ -8,6 +8,7 @@ Base de Gobierno: Kybern Framework v12.0 [ARCH-1.3.4] / Tratado Volumen I (Secci
 from typing import List
 
 
+# [LN-QBE-077] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def operador_seccional_andre(x: int, y: int) -> float:
     """
     [Sección 5.20.2] Fórmula Cerrada de Désiré André para activación de ventaja +2:
@@ -26,6 +27,7 @@ def operador_seccional_andre(x: int, y: int) -> float:
     return max(0.0, min(1.0, prob))
 
 
+# [LN-QBE-077] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def calcular_probabilidad_pago_anticipado(matriz_2d: List[List[float]], es_local: bool = True) -> float:
     """
     [Sección 5.20.3] Integra el Operador de André sobre la matriz 2D consolidada:

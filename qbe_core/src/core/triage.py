@@ -9,6 +9,7 @@ antes de invocar la extracción fáctica o el análisis estocástico profundo.
 from typing import List, Dict, Any, Tuple
 
 
+# [LN-QBE-060-B] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def evaluar_viabilidad_cuotas(
     momio_l: float,
     momio_e: float,
@@ -60,6 +61,7 @@ def evaluar_viabilidad_cuotas(
     return False, "Volado sin margen de cobertura bilateral (+EV nulo en cuotas)"
 
 
+# [LN-QBE-060-B] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def procesar_triaje_partidos(partidos_raw: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Procesa una lista de partidos crudos y separa los candidatos aprobados de los descartados,

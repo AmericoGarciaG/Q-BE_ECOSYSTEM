@@ -36,6 +36,7 @@ TAU_H2H_DEEP = 540.0
 KAPPA_H2H_DEEP = math.log(2.0) / TAU_H2H_DEEP  # ≈ 0.00128338 días⁻¹
 
 
+# [LN-QBE-020-C] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def _campo(partido: Any, nombre: str) -> Any:
     """Lectura tolerante de un enfrentamiento histórico (Mapping u objeto tipado)."""
     if isinstance(partido, dict):
@@ -124,6 +125,7 @@ def calcular_matriz_h2h_empirica(
     )
 
 
+# [LN-QBE-020-C] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def _marcador(partido: Any) -> Tuple[int, int]:
     """Extrae (goles_local, goles_visita) del enfrentamiento histórico."""
     return int(_campo(partido, "goles_local")), int(_campo(partido, "goles_visita"))

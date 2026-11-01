@@ -28,6 +28,53 @@ De este axioma se derivan seis reglas no negociables:
 
 ---
 
+## 1.1. PRINCIPIO DE IDENTIDAD FIDUCIARIA Y TEOREMA DE PARIDAD CANÓNICA BIUNÍVOCA
+
+**Estado:** `[ALGO-PROTECTED]` — Artículo constitucional.
+**Nodos custodios:** `[LN-QBE-139]` Auditor de Paridad Estática AST / `[LN-QBE-140]` Juez Inmutable de Paridad Canónica.
+
+### 1.1.1. Principio de Identidad Fiduciaria
+
+La Base de Gobierno (`docs/`) es la única fuente operativa del ecosistema. Ningún requerimiento, cálculo, triaje o asignación de capital es legítimo si no está legislado en ella. Se consagra la identidad:
+
+$$\text{Apego al Negocio} \equiv \text{Apego Estricto a la Base de Gobierno }(\text{docs/})$$
+
+De este principio se derivan cuatro mandatos:
+
+1. **Fuente única.** `docs/LOGIC.md` y `docs/ID_REGISTRY.md` son el contrato normativo; un PDF, una nota de chat o una memoria verbal no legislan.
+2. **Etiqueta canónica obligatoria.** Toda función de cálculo crítico —probabilidad, triaje de estrategias o asignación de capital— en `qbe_core/src/core/` o `qbe_business/src/` DEBE portar una etiqueta `[LN-QBE-XXX]` en su docstring o comentario inmediato. La etiqueta DEBE existir en `docs/LOGIC.md` y en `docs/ID_REGISTRY.md`.
+3. **Respaldo de Juez.** Ninguna etiqueta se considera certificada sin un Juez Inmutable en The Shield. La ausencia de Juez convierte la etiqueta en una declaración no verificada.
+4. **Prohibición de cierre cosmético.** Queda prohibido etiquetar código de forma masiva, inventar IDs o modificar el Juez para obtener un verde artificial.
+
+### 1.1.2. Teorema de Paridad Canónica Biunívoca
+
+Sea `F_crit` el conjunto de funciones de cálculo crítico e `ID_crit` el conjunto de nodos legislados que las gobiernan. La paridad canónica exige una correspondencia biunívoca:
+
+$$\forall f \in F_{crit},\ \exists!\, id \in ID_{crit} : \text{etiqueta}(f)=id$$
+$$\forall id \in ID_{crit},\ \exists\, f \in F_{crit} : \text{etiqueta}(f)=id$$
+
+La relación es biunívoca en el sentido fiduciario: ninguna función crítica queda sin ley y ninguna ley crítica queda sin materialización. El incumplimiento se clasifica en dos infracciones binarias:
+
+| Infracción | Definición | Consecuencia |
+|---|---|---|
+| **Regla Huérfana** | Función crítica sin etiqueta, o con etiqueta cuyo ID no existe en la BG. | Se vuelca a `docs/KTP/GL_update.md` para dictamen del Director. |
+| **Brecha Legislativa** | Nodo de cálculo crítico sin materialización o sin Juez asociado. | Se declara deuda normativa y se somete a la Tríada. |
+
+La detección es competencia exclusiva de `[LN-QBE-139]`; su certificación es competencia exclusiva de `[LN-QBE-140]`. El instrumento es `scripts/auditoria/auditar_paridad_bg.py`: determinista, de solo lectura sobre el código y de cero consumo generativo. Su única escritura autorizada es la bandeja `docs/KTP/GL_update.md`.
+
+### 1.1.3. Taxonomía de infracciones de paridad
+
+| Clase | Nombre | Patrón canónico |
+|:---:|---|---|
+| **I** | Fabricación Sintética | `except:` o `except Exception:` que devuelve `0.0`, un marcador o una cuota fabricada. |
+| **II** | Contradicción Numérica | Literal o constante que diverge de `docs/CONSTANTS.md` o de la ley numérica vigente. |
+| **III** | Colisión de Literales | Dos funciones incompatibles comparten la misma etiqueta, o una etiqueta se reutiliza fuera de su nodo. |
+| **IV** | Heurísticas Permisivas | Condicionales ad hoc por equipo, fecha o partido que eluden una ley general. |
+
+**Corolario de cierre.** La paridad solo se certifica cuando ambos conjuntos de infracciones son vacíos. Mientras existan hallazgos, el Director resuelve por **VÍA A (Erradicación)** o **VÍA B (Formalización)**; el Auditor no corrige, no interpreta y no decide.
+
+---
+
 ## 2. PRINCIPIOS DE INGENIERÍA
 
 ### 2.1 Sándwich neuro-simbólico invertido
@@ -78,6 +125,34 @@ Los pilares no comparten sesiones SQLAlchemy, objetos mutables en memoria ni arc
 ### 3.2 Regla de precedencia
 
 Ante conflicto entre velocidad y gobernanza, prevalece la gobernanza. Ante conflicto entre un test y una ley, prevalece la ley; el test se corrige solo si la ley cambió por Ficha de Varianza aprobada. Ante conflicto entre un atajo de implementación y una frontera CQRS, prevalece la frontera.
+
+### 3.5. Protocolo de Ejecución del Censo de Paridad Canónica
+
+**Estado:** `[ALGO-PROTECTED]` — Artículo operativo.<br>
+**Nodos custodios:** `[LN-QBE-139]` Auditor de Paridad Estática / `[LN-QBE-140]` Juez Inmutable de Paridad Canónica.<br>
+**Instrumento:** `scripts/auditoria/auditar_paridad_bg.py`.<br>
+**Bandeja:** `docs/KTP/GL_update.md`.
+
+El **Censo de Paridad Canónica** es la ejecución determinista del Auditor sobre `qbe_core/src/core/` y `qbe_business/src/`, con serialización obligatoria de la bandeja `GL_update.md`. No es un análisis opcional ni un informe de cortesía: es una compuerta de gobernanza.
+
+| Elemento | Regla |
+|---|---|
+| Comando canónico | `.\.venv\Scripts\python.exe scripts\auditoria\auditar_paridad_bg.py qbe_core/src/core qbe_business/src` |
+| Salida | `docs/KTP/GL_update.md` |
+| Criterio de autorización | 0 hallazgos de Clase I, II, III y IV |
+| Evidencia de cierre | Comando, fecha, salida y hash de `GL_update.md` |
+
+**Momentos de invocación obligatoria:**
+
+1. **Cierre de Sprint.** El Censo se ejecuta antes de emitir el `AKT.md` de cierre. Sin Censo y sin `GL_update.md` en 0 hallazgos no hay AKT de cierre ni consolidación válida.
+2. **Pre-commit de Núcleo.** El Censo se ejecuta antes de cualquier `commit` que modifique `qbe_core/src/core/` o `qbe_business/src/`. El commit declara el resultado; si la bandeja no está en 0, el commit se bloquea.
+3. **Bajo Demanda.** El Censo se ejecuta de forma obligatoria cuando lo solicite el Director Humano, el Arquitecto o el Juez, o ante sospecha de regla huérfana o brecha legislativa. No es periódico ni sustituye a los otros dos momentos; su resultado se adjunta al expediente y se somete a dictamen.
+
+**Reglas de la compuerta:**
+
+1. **Cero hallazgos.** `GL_update.md` debe reportar 0 hallazgos de Clase I a IV, con las **VÍA B ya aplicadas y selladas**, para autorizar el cierre. Un cierre con la bandeja abierta es inválido.
+2. **Alto al Fuego.** Un hallazgo de **Clase I (Fabricación Sintética)** o **Clase II (Contradicción Numérica)** detiene el sprint automáticamente. No se emite `AKT.md` de cierre, no se hace commit y se emite `DIRGEN_VARIANCE_REQUEST.md` si la resolución exige cambiar la ley o el código protegido. Los hallazgos de Clase III o IV impiden el cierre hasta su resolución por VÍA A o VÍA B.
+3. **Trazabilidad.** El cierre registra comando, fecha, salida y hash de `GL_update.md`. El Censo no corrige, no interpreta y no decide: detecta, clasifica y propone.
 
 ---
 

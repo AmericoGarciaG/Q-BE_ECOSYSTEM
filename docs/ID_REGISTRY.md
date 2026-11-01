@@ -7,7 +7,7 @@
 **Marco:** Kybern Industrial Framework v13.5  
 **Expediente:** `SPRINT-FASE4-MIGRACION-REFLEXIVA-BG-04`  
 **Fecha:** 2026-10-28  
-**Filas canónicas:** 267
+**Filas canónicas:** 271
 
 > **Naturaleza.** Tablero canónico de control del registro legislativo. Fuente única de verdad para la asignación de nuevos identificadores (`max + 1` sobre el último ID libre). Un identificador sellado es inmutable y no reasignable. Las anclas apuntan a los libros de `docs/` del ecosistema; las rutas de tests legados se conservan solo como memoria histórica y no se presentan como evidencia vigente.
 
@@ -282,6 +282,15 @@
 | `[LN-QBE-136]` | LOGIC | `docs/LOGIC.md` | Sonda de Captura CDP-MHTML y Perfil Persistente | SELLADO |
 | `[LN-QBE-137]` | LOGIC | `docs/LOGIC.md` | Juez Inmutable de Integridad de Muestras MHTML | SELLADO |
 | `[LN-QBE-138]` | LOGIC | `docs/LOGIC.md` | Protocolo de Memoria Institucional Modular y Transferencia de Arquitectura (KTP Package) | SELLADO |
+| `[LN-QBE-139]` | LOGIC | `docs/LOGIC.md` | Auditor de Paridad Estática AST y Generador de Bandeja `GL_update.md` | SELLADO |
+| `[LN-QBE-140]` | LOGIC | `docs/LOGIC.md` | Juez Inmutable de Paridad Canónica y Detección de Reglas Huérfanas | SELLADO |
+| `[LN-QBE-141]` | LOGIC | `docs/LOGIC.md` | Parser Offline de Eventos Minuto a Minuto (Jugada a Jugada) | SELLADO |
+| `[LN-QBE-142]` | LOGIC | `docs/LOGIC.md` | Sonda de Descubrimiento de Partidos y URLs Minuto a Minuto (ligamx.net) | SELLADO |
+| `[LN-QBE-143]` | LOGIC | `docs/LOGIC.md` | Orquestador de Extracción Masiva de Eventos (ligamx.net → Bóveda OLAP) | SELLADO |
+| `[LN-QBE-144]` | LOGIC | `docs/LOGIC.md` | Almacén de Eventos Históricos (`historical_match_events`) | SELLADO |
+| `[LN-QBE-145]` | LOGIC | `docs/LOGIC.md` | Diccionario Canónico de Alias de Liga MX (`ligamx.net` → bóveda) | SELLADO |
+| `[LN-QBE-146]` | LOGIC | `docs/LOGIC.md` | Motor de Derivación de Variables Causales | SELLADO |
+| `[LN-QBE-147]` | LOGIC | `docs/LOGIC.md` | Motor de Calibración y Perturbación de Variables Causales | SELLADO |
 
 ## PROTOCOLO DE ASIGNACIÓN
 
@@ -290,4 +299,4 @@
 3. **Sellado:** al pasar a verde (`EXIT CODE 0`), la fila migra de `EN FORJA` a `SELLADO` con anclaje simbólico (`docs/LOGIC.md` / `docs/ARCH.md` + símbolo), jamás `archivo:línea`.
 4. **Cobertura:** la migración de Fase 4 no puede reducir el conjunto de IDs. Las filas con estado no canónico se conservan para auditoría y no se promueven sin Juez.
 
-_Total de filas: 267._
+_Total de filas: 276._

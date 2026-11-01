@@ -10,6 +10,7 @@ from difflib import SequenceMatcher
 from typing import Dict, Iterable, List, Optional, Tuple
 
 
+# [LN-QBE-012] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 class NormalizationException(Exception):
     """[LN-QBE-012 / Saneamiento O-09] Identidad no resoluble con certeza."""
 
@@ -91,6 +92,7 @@ _CANONICAL_ALIASES: Dict[str, str] = {
 _CANONICAL_TEAM_NAMES: List[str] = sorted({name for name in _CANONICAL_ALIASES.values()}, key=len, reverse=True)
 
 
+# [LN-QBE-012] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def _normalize_text(value: str) -> str:
     text = value.strip().lower()
     text = text.replace("á", "a").replace("é", "e").replace("í", "i").replace("ó", "o").replace("ú", "u").replace("ñ", "n")
@@ -100,6 +102,7 @@ def _normalize_text(value: str) -> str:
     return text
 
 
+# [LN-QBE-012] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def _levenshtein_distance(a: str, b: str) -> int:
     if a == b:
         return 0
@@ -118,6 +121,7 @@ def _levenshtein_distance(a: str, b: str) -> int:
     return prev[-1]
 
 
+# [LN-QBE-012] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def canonicalize_team_name(team_name: Optional[str]) -> str:
     """Normaliza nombres de clubes del mercado o scraper a un nombre canónico oficial."""
     if team_name is None:
@@ -154,10 +158,12 @@ normalizar_nombre_club = canonicalize_team_name
 
 
 
+# [LN-QBE-012] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def canonicalize_match_teams(local: Optional[str], visitante: Optional[str]) -> Tuple[str, str]:
     return canonicalize_team_name(local), canonicalize_team_name(visitante)
 
 
+# [LN-QBE-012] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def canonicalize_records(records: Iterable[Dict[str, object]]) -> List[Dict[str, object]]:
     normalized: List[Dict[str, object]] = []
     for record in records:

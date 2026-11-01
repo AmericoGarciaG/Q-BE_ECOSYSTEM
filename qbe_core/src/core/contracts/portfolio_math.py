@@ -243,6 +243,7 @@ def calcular_ganancia_cobertura_v0(
     return round((g * (1.0 - p_x)) - (b * p_x), 2)
 
 
+# [LN-QBE-070] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def construir_veto_mercado_no_disponible() -> dict:
     """[LN-QBE-060-B / P1-3] Veto fiduciario único por ausencia o invalidez de cuotas."""
     return {
@@ -796,6 +797,7 @@ def asignar_capital_monotono_cartera(
 from pydantic import BaseModel, ConfigDict
 
 
+# [LN-QBE-070] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 class PortfolioParameters(BaseModel):
     """[ARCH-1.4.30] Parámetros gobernantes del dimensionamiento de cartera."""
     model_config = ConfigDict(extra="ignore")
@@ -926,6 +928,7 @@ def liquidar_orden_post_evento(
 # [DIRGEN-STRICT] Transparencia verbatim de bóveda: cero margen creativo.
 
 
+# [LN-QBE-070] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def desmarcar_cuotas_proporcional(oL: float, oX: float, oV: float) -> Tuple[float, float, float]:
     """
     [VAULT-CORE-007-C] [DIRGEN-STRICT] Desmarque proporcional de vig (consenso Vig-Free).

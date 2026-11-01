@@ -368,9 +368,49 @@ es el umbral de indiferencia de cobertura. No es una constante universal: depend
 | `[LN-QBE-136]` | Sonda de Captura CDP-MHTML y Perfil Persistente | `ingesta` | SELLADO |
 | `[LN-QBE-137]` | Juez Inmutable de Integridad de Muestras MHTML | `ingesta` | SELLADO |
 | `[LN-QBE-138]` | Protocolo de Memoria Institucional Modular y Transferencia de Arquitectura (KTP Package) | `gobierno` | SELLADO |
+| `[LN-QBE-139]` | Auditor de Paridad Estática AST y Generador de Bandeja `GL_update.md` | `gobierno` | SELLADO |
+| `[LN-QBE-140]` | Juez Inmutable de Paridad Canónica y Detección de Reglas Huérfanas | `gobierno` | SELLADO |
+| `[LN-QBE-141]` | Parser Offline de Eventos Minuto a Minuto (Jugada a Jugada) | `ingesta` | SELLADO |
+| `[LN-QBE-142]` | Sonda de Descubrimiento de Partidos y URLs Minuto a Minuto (ligamx.net) | `ingesta` | SELLADO |
+| `[LN-QBE-143]` | Orquestador de Extracción Masiva de Eventos (ligamx.net → Bóveda OLAP) | `ingesta` | SELLADO |
+| `[LN-QBE-144]` | Almacén de Eventos Históricos (`historical_match_events`) | `ingesta` | SELLADO |
+| `[LN-QBE-145]` | Diccionario Canónico de Alias de Liga MX (`ligamx.net` → bóveda) | `ingesta` | SELLADO |
+| `[LN-QBE-146]` | Motor de Derivación de Variables Causales | `motor` | SELLADO |
+| `[LN-QBE-147]` | Motor de Calibración y Perturbación de Variables Causales | `motor` | SELLADO |
 
-_Total: 126 identificadores._
+_Total: 135 identificadores._
 
+---
+
+## 10.1. AUDITOR DE PARIDAD ESTÁTICA AST Y JUEZ DE PARIDAD CANÓNICA
+
+### ID: [LN-QBE-139] Auditor de Paridad Estática AST y Generador de Bandeja `GL_update.md`
+
+* **Ω (Resumen):** Script determinista que escanea el AST de `qbe_core/src/core/` y `qbe_business/src/` para certificar la paridad biunívoca entre el código crítico y la Base de Gobierno. Extrae las etiquetas `[LN-QBE-XXX]`, cruza su existencia contra `docs/LOGIC.md` y `docs/ID_REGISTRY.md` y clasifica las infracciones en Clases I a IV. No usa LLM, no corrige código y no decide: detecta, clasifica y propone.
+* **I (Input):** Directorios `qbe_core/src/core/`, `qbe_business/src/`; libros `docs/LOGIC.md` y `docs/ID_REGISTRY.md`. Para peritaje unitario, una ruta de archivo individual.
+* **P (Process) [ALGO-PROTECTED] [DIRGEN-STRICT]:**
+  1. **Parseo AST:** Lectura de cada archivo con `ast.parse`. Una sintaxis corrupta DEBE propagar `SyntaxError` (fail-loud), sin `try/except` que la silencie.
+  2. **Extracción de etiquetas:** Identificación de `[LN-QBE-XXX]` en el docstring o comentario inmediato de cada función de cálculo crítico.
+  3. **Cruce de conjuntos:** Comparación contra los IDs vigentes de la BG. Una función sin etiqueta, o con ID inexistente, es **Regla Huérfana**. Un nodo crítico sin materialización o sin Juez es **Brecha Legislativa**.
+  4. **Clasificación:** Asignación de Clase I (Fabricación Sintética), Clase II (Contradicción Numérica), Clase III (Colisión de Literales) o Clase IV (Heurísticas Permisivas), conforme a `docs/GOVERNANCE.md` §1.1.3.
+  5. **Generación de bandeja:** Serialización de hallazgos en `docs/KTP/GL_update.md` con archivo, línea, función, clase, evidencia y veredicto pendiente.
+* **O (Output):** Archivo `docs/KTP/GL_update.md` con la tabla de hallazgos y el veredicto `PENDIENTE DEL DIRECTOR`. Es una bandeja de revisión, no una orden de cambio.
+* **Invocación:** Ejecución mandatoria en el Cierre de Sprint y en el pre-commit de Núcleo (`qbe_core` / `qbe_business`); ejecución obligatoria bajo demanda a solicitud del Director Humano, del Arquitecto o del Juez. El Censo y el criterio de 0 hallazgos se rigen por `docs/GOVERNANCE.md` §3.5.
+* **Φ (Transición):** Hacia la Tríada para aprobación de **VÍA A (Erradicación)** o **VÍA B (Formalización)**; luego a la materialización subordinada del Auditor.
+* **Invariantes:** Solo lectura sobre el código; determinista; cero consumo generativo; no modifica `src/` ni `qbe_business/src/`; no reemplaza el dictamen humano.
+* **[SHIELD]:** `qbe_core/tests/test_shield_canonical_parity.py`
+
+### ID: [LN-QBE-140] Juez Inmutable de Paridad Canónica y Detección de Reglas Huérfanas
+
+* **Ω (Resumen):** Juez Inmutable que certifica la Triple Aserción del Auditor: Réplica Analítica, Invarianza Estructural y Anti-Patrón Fail-Loud. Exige que el Auditor detecte exactamente una Regla Huérfana de Clase I en una función mock con `except: return 0.0` sin etiqueta, que no mute el archivo fuente y que una sintaxis corrupta produzca `SyntaxError`.
+* **I (Input):** Clase `AuditarParidadBG` de `[LN-QBE-139]` y una fixture temporal con la función mock.
+* **P (Process) [ALGO-PROTECTED] [DIRGEN-STRICT]:**
+  1. **Réplica Analítica:** Evaluar una función mock con `except: return 0.0` y sin `[LN-QBE-XXX]`; exigir exactamente 1 Regla Huérfana de Clase I.
+  2. **Invarianza Estructural:** Certificar que el Auditor no modifica el archivo original; el hash SHA-256 y el `mtime` deben permanecer idénticos.
+  3. **Anti-Patrón (Sad Path):** Someter al Auditor a un archivo con sintaxis corrupta; exigir una excepción explícita `SyntaxError`, nunca un resultado vacío.
+* **O (Output):** `GREEN` solo si las tres aserciones pasan; `RED` si el Auditor no existe, no detecta, muta el archivo o silencia la sintaxis corrupta.
+* **Φ (Transición):** Hacia la materialización de `[LN-QBE-139]` y el primer `docs/KTP/GL_update.md`.
+* **[SHIELD]:** `qbe_core/tests/test_shield_canonical_parity.py`
 
 ---
 
@@ -471,3 +511,208 @@ _Total: 126 identificadores._
 * **O (Output):** Paquete `docs/KTP/` materializado y trazabilidad histórica blindada.
 * **Φ (Transición):** Hacia la operación continua de relevos y onboarding de nuevas instancias.
 * **[SHIELD]:** `qbe_core/tests/test_shield_ktp_package_integrity.py`
+
+---
+
+## 16. EXTRACCIÓN CAUSAL MINUTO A MINUTO (JUGADA A JUGADA)
+
+### ID: `[LN-QBE-141]` Parser Offline de Eventos Minuto a Minuto (Jugada a Jugada)
+
+* **Ω (Resumen):** Parser determinista y offline del visor «Minuto a Minuto» de `ligamx.net`. Desempaqueta un volcado MHTML, aísla la línea de tiempo canónica «Jugada a Jugada» y extrae los eventos fácticos (gol, tarjeta, córner, tiro, falta, cambio, fuera de lugar, penal, atajada y marcadores de período) con minuto, lado y equipo. Es la fuente causal para la calibración del modelo Q-BE. Cero red, cero navegador, cero datos sintéticos.
+* **I (Input):** `pathlib.Path` a un archivo `.mhtml` con la página `https://ligamx.net/cancha/mxm/{idPartido}/.../minuto-a-minuto-...` capturada. La estructura de referencia es `data/raw_ligamx_min_x_min/MinXMin_2015-2016_Clau_Ame_vs_MTY.mhtml`.
+* **P (Process) [ALGO-PROTECTED] [DIRGEN-STRICT]:**
+  1. **Desempaquetado MIME:** `email.message_from_binary_file` con `policy.default`; se recorre el mensaje y se toma la parte `text/html`; `get_payload(decode=True)` resuelve el *quoted-printable*.
+  2. **Decodificación estricta:** se respeta el `charset` declarado por la parte MIME; si no declara, se usa UTF-8. Se prohíbe `errors="replace"`: un byte inválido aborta con `MinutoAJugadaError`.
+  3. **Aduana estructural:** el documento contiene **dos** `div.jugadasTool`: la línea canónica (con `#timeline_local` y `#timeline_visita`, 49 eventos) y la línea de videos (con `#timelineVideo_local` y `#timelineVideo_visita`, 13 duplicados). Solo se acepta el contenedor que contiene exactamente las dos columnas canónicas; si hay cero o más de uno, se aborta.
+  4. **Extracción de eventos:** se iteran únicamente las filas hijas directas `div.row` con `div.toolJugada`; las filas espaciadoras (solo `div.paso`, sin `.toolJugada`) se ignoran. El `evento_id` se toma del sufijo de la clase `evntLcal_{id}` / `evntVsta_{id}` y se corrobora contra `span.enlace#evnt_{id}`.
+  5. **Clasificación por narrativa:** el tipo se deriva de `span.desc` (no de `div.paso`, que solo existe en la columna local). El catálogo es `gol`, `gol_penal`, `tarjeta_amarilla`, `tarjeta_roja`, `corner`, `falta`, `tiro_a_gol`, `cambio`, `fuera_de_lugar`, `penal`, `atajada`, `inicio_partido`, `inicio_segundo_tiempo`, `final_primer_tiempo`, `final_partido` y `otro` (bucket declarado, nunca descartado).
+  6. **Gramática del minuto:** `N'` → `minuto = N`; `+N'` → `minuto_agregado = N`; `N+M'` → `minuto = N`, `minuto_agregado = M`; `MT`/`MF` → marcador de período. Cualquier otro rótulo aborta.
+  7. **Períodos:** la columna local usa una máquina de estados sobre los cuatro marcadores obligatorios (`inicio_partido`, `final_primer_tiempo`, `inicio_segundo_tiempo`, `final_partido`). La columna visitante no trae marcadores: se aplica la regla numérica `minuto ≤ 45 → 1T`, `minuto ≥ 46 → 2T`, `+N' → 2T`.
+  8. **Metadatos:** `equipo_local` y `equipo_visitante` se leen de `.cara-cara .equipoMin a[href*='/cancha/club/']` vía `data-original-title` (primer bloque local, segundo visitante); el marcador se lee de `.cara-cara .score` con la forma `N - M`.
+* **O (Output):** `parsear_minuto_a_minuto(ruta) -> list[dict]` devuelve 49 eventos para la muestra. Cada evento declara: `evento_id`, `lado` (`local`/`visita`), `equipo` (nulo en eventos neutrales), `minuto_texto`, `minuto`, `minuto_agregado`, `marcador_periodo`, `periodo`, `tipo`, `descripcion`, `video_url`, `paso`, `orden_dom` (orden de aparición en el DOM: columna local y luego visitante). El sobre extendido `parsear_partido(ruta)` añade `equipo_local`, `equipo_visitante`, `marcador_local` y `marcador_visitante`.
+* **Φ (Transición):** Hacia la construcción de variables causales de calibración (goles, tarjetas, córners y ritmo por franja) y hacia el corpus histórico de `qbe_observatory`.
+* **Invariantes:** offline puro; cero mocks; cero datos sintéticos; el número de eventos de la muestra es 49; los IDs son únicos; la línea de videos nunca se mezcla; `qbe_core` no se importa ni se modifica.
+* **Fail-Loud:** aborta si falta el archivo, la parte `text/html`, la decodificación estricta, el contenedor canónico, alguna de las dos columnas, los cuatro marcadores, la descripción, el minuto, el `evento_id`, la corroboración `span.enlace` o si hay IDs duplicados o un minuto fuera de gramática.
+* **[SHIELD]:** `qbe_ingestion/tests/test_shield_minuto_a_minuto_parser.py`
+
+### ID: `[LN-QBE-142]` Sonda de Descubrimiento de Partidos y URLs Minuto a Minuto (ligamx.net)
+
+* **Ω (Resumen):** Sonda determinista de descubrimiento que navega `ligamx.net/cancha/partidos`, resuelve los identificadores de temporada, torneo y jornada desde `voTmpTrns.DatosJSON`, consulta el widget `PRTL_Partidos` y construye las URLs canónicas de «Minuto a Minuto» para cada partido. Es la puerta de entrada al corpus causal; no descarga eventos ni interpreta el DOM de la línea de tiempo.
+* **I (Input):** Argumentos CLI `--temporada` (ej. `2015-2016`), `--torneo` (ej. `Clausura`) y `--jornada` (ej. `16`); sesión HTTP de Playwright contra el sitio público.
+* **P (Process) [ALGO-PROTECTED] [DIRGEN-STRICT]:**
+  1. **Navegación stealth:** Chromium con `User-Agent` de escritorio y `--disable-blink-features=AutomationControlled`; el UA por defecto de Playwright es bloqueado por el WAF (HTTP 500 «Web Page Blocked»).
+  2. **Captura del HTML servidor:** se captura el cuerpo de la respuesta documental de `page.goto(/cancha/partidos)` —el HTML prístino del servidor, antes de que el JS reescriba la plantilla— y se conservan las cookies de la sesión. Ese HTML contiene la plantilla `vsurlMrcdrActls` y el mapa `voTmpTrns.DatosJSON`.
+  3. **Resolución de identificadores:** se filtra `Temporada == {temporada}`, `Torneo == {torneo}` y `Division == "LIGA MX"`; debe existir exactamente una fila. De ella salen `IDTemporada`, `IDTorneo` e `IDDivision`.
+  4. **Consulta del widget:** se sustituyen `<IDDIVISION>`, `<IDJORNADA>`, `<IDTEMPORADA>` e `<IDTORNEO>` en la plantilla, se codifica el servicio en base64 (reemplazando el primer `/` por `@`) y se hace `GET /ws/{servicio}`. La respuesta debe contener `DatosJSON` con al menos un partido. El widget alterna de forma transitoria entre la cartelera y `[{}]`; se reintenta de forma acotada (4 intentos, 0.4 s) y, si persiste, se aborta.
+  5. **Construcción determinista de URLs:** para cada partido se arma
+     `https://ligamx.net/cancha/mxm/{idPartido}/{base64({"idClublocal": "{idLocal}", "idClubvisita": "{idVisita}", "idPartido": "{idPartido}", "pestana": "3"})}`.
+     El enlace `.lnk-minute` del sitio no tiene `href`; esta forma es la que resuelve de forma estable.
+  6. **Verificación opcional:** con `--verificar`, cada URL se descarga y se exige HTTP 200 y presencia de `section.jugadaSeccion`; los nombres de ambos clubes se contrastan en la salida del widget.
+* **O (Output):** Tabla legible o JSON (`--json`) con `id_partido`, `local`, `visitante`, `goles_local`, `goles_visitante` y `url_minuto_a_minuto`. Para la muestra, la jornada 16 del Clausura 2016 devuelve 9 partidos, incluido `67047 América 3-3 Monterrey`.
+* **Φ (Transición):** Hacia la captura MHTML (`[LN-QBE-136]`) y el parser offline (`[LN-QBE-141]`).
+* **Invariantes:** solo lectura sobre el sitio; sin login; sin IDs de partido codificados en la lógica; sin datos sintéticos; determinista en la construcción de URLs; falla ruidosamente si no resuelve la temporada/torneo, si el widget no devuelve partidos o si la verificación no coincide.
+* **[SHIELD]:** `qbe_ingestion/tests/test_shield_descubrimiento_ligamx.py` (constructor puro de URLs) y ejecución de `scripts/auditoria/descubrir_partidos_ligamx.py --verificar`.
+
+---
+
+## 17. ORQUESTACIÓN MASIVA Y ALMACENAMIENTO DE EVENTOS
+
+### ID: `[LN-QBE-144]` Almacén de Eventos Históricos (`historical_match_events`)
+
+* **Ω (Resumen):** Persistencia idempotente de la línea de tiempo factual de un partido en la bóveda OLAP. Recibe la llave canónica `match_id` y la lista de eventos del parser `[LN-QBE-141]`, asegura el esquema por Reflection DDL (`CREATE TABLE IF NOT EXISTS` + `PRAGMA table_info`), valida la integridad referencial y ejecuta una inserción masiva `INSERT OR IGNORE` dentro de una única transacción `BEGIN IMMEDIATE`. No transforma la evidencia ni inventa filas.
+* **I (Input):** `db_path` (`qbe_observatory/data/qbe_historico.db`), `match_id` (`TEXT`, clave de `historical_matches`) y `eventos: list[dict]` con el contrato de `[LN-QBE-141]`. Para la CLI, la lista puede llegar como JSON (`--eventos-json`) o resolverse por Join Determinista (`--temporada/--local/--visitante/--marcador`).
+* **P (Process) [ALGO-PROTECTED] [DIRGEN-STRICT]:**
+  1. **Aduana de entrada:** la lista debe ser no vacía; cada evento debe declarar `evento_id`, `lado` ∈ {`local`, `visita`}, `tipo`, `minuto_texto`, `descripcion` y `orden_dom`. Cualquier faltante aborta con `EventoInvalidoError` antes de abrir transacción.
+  2. **Reflection DDL:** se ejecuta el DDL canónico de `[ARCH-1.5.1]` §15.2; las columnas faltantes se agregan con `ALTER TABLE ... ADD COLUMN` tras leer `PRAGMA table_info`, sin recrear la tabla ni perder datos.
+  3. **Integridad referencial explícita:** `SELECT 1 FROM historical_matches WHERE match_id = ?`; si no hay fila, se aborta con `MatchResolutionError` (SQLite no fuerza FK por defecto).
+  4. **Inserción masiva:** `INSERT OR IGNORE` con `executemany` sobre `(match_id, evento_id)`; se cuentan insertados como delta de `total_changes` e ignorados como diferencia.
+  5. **Atomicidad:** una sola transacción `BEGIN IMMEDIATE` / `COMMIT`; cualquier excepción ejecuta `ROLLBACK` y propaga.
+* **O (Output):** `{"match_id": str, "recibidos": int, "insertados": int, "ignorados": int, "total_en_tabla": int}`. En la CLI, además, tablero de consola y código de salida `0`.
+* **Φ (Transición):** Hacia el consumo causal del observatorio (goles, tarjetas, córners y ritmo por franja) y hacia el orquestador `[LN-QBE-143]`.
+* **Invariantes:** idempotencia estricta por `(match_id, evento_id)`; cero duplicados; cero datos sintéticos; cero escrituras en `matches`, `sovereign_distributions` ni `match_telemetry`; `qbe_core` no se importa ni se modifica; el `match_id` proviene siempre de una fila existente de la bóveda.
+* **Fail-Loud:** aborta si la lista está vacía, si un evento incumple el contrato, si el `match_id` no existe en `historical_matches`, si el DDL no se puede aplicar o si la transacción falla.
+* **Resolución de `match_id` por Join Determinista (contrato de §15.3):** `resolver_match_id(db_path | connection, temporada, equipo_local, equipo_visitante, goles_local, goles_visitante)` normaliza la temporada a `YYYY_YYYY`, canoniza los clubes a slug y exige **exactamente una** fila de `historical_matches`. Cero o más de una coincidencias lanzan `MatchResolutionError`; nunca se aproxima ni se fabrica la llave.
+* **[SHIELD]:** `qbe_ingestion/tests/test_shield_orquestador_extraccion.py`
+
+### ID: `[LN-QBE-143]` Orquestador de Extracción Masiva de Eventos (ligamx.net → Bóveda OLAP)
+
+* **Ω (Resumen):** Orquestador de lote que recorre un rango de jornadas, descubre los partidos con la sonda `[LN-QBE-142]`, descarga el HTML del visor «Minuto a Minuto» con Playwright (UA stealth reutilizando el contexto de la sonda), lo parsea con `parsear_partido_desde_html` (`[LN-QBE-141]`, extensión pura documentada en §17.3), canoniza los clubes con `[LN-QBE-145]`, resuelve el `match_id` por Join Determinista y persiste los eventos con `[LN-QBE-144]`. Es Fail-Loud por partido: registra el fallo, continúa con el siguiente y emite un resumen final con todos los fallos; nunca los oculta ni los convierte en éxitos.
+* **I (Input):** `--temporada` (ej. `2015-2016`), `--torneo` (ej. `Clausura`), `--jornada_inicio`, `--jornada_fin`; opcionales `--db` (bóveda destino), `--reporte-json` (bitácora del lote) y `--headed` (diagnóstico visual).
+* **P (Process) [ALGO-PROTECTED] [DIRGEN-STRICT]:**
+  1. **Fase 1 — Descubrimiento:** `range(jornada_inicio, jornada_fin + 1)`; cada jornada se resuelve con `descubrir(temporada, torneo, jornada)` (`[LN-QBE-142]`). La sonda abre y cierra su propia sesión de Playwright, por lo que el rango completo se descubre antes de abrir la sesión de descarga (dos `sync_playwright` anidados en el mismo hilo no son válidos). Una jornada que aborta se registra como fallo de jornada y el lote continúa.
+  2. **Fase 2 — Descarga:** para cada partido descubierto, navegación documental con Playwright y captura del **DOM renderizado** (`page.content()`), con el `User-Agent` de escritorio y las cookies de sesión del WAF. Se exige HTTP 200 y se espera `div.jugadasTool .toolJugada`: el HTML crudo del servidor no trae `toolJugada` ni `data-original-title` (los inyecta el JS), y la captura canónica de `[LN-QBE-136]` es justamente un volcado CDP del DOM ya renderizado. El HTML se procesa en memoria (nunca se materializa un MHTML de 14 MB).
+  3. **Parseo:** `parsear_partido_desde_html(html)` devuelve el sobre (equipos, marcador, 49 eventos en la muestra). El parser es el único intérprete del DOM.
+  4. **Canonización de nombres:** `resolver_alias_ligamx(...)` (`[LN-QBE-145]`) traduce `equipo_local` y `equipo_visitante` del sobre a los nombres canónicos de la bóveda. El Join Determinista no se modifica: solo recibe nombres limpios.
+  5. **Resolución de llave:** `resolver_match_id(...)` con la temporada normalizada y el sobre ya canonizado (equipos y marcador); 0 o >1 candidatos abortan **ese** partido con `MatchResolutionError`.
+  6. **Persistencia:** `cargar_eventos(db_path, match_id, eventos)`; el resultado (`insertados`/`ignorados`) se registra por partido.
+  7. **Fail-Loud por partido:** toda excepción se captura **solo** para registrarla con tipo, mensaje, jornada, `id_partido` y URL; el lote continúa. Al cierre se emite tabla de resultados, resumen (`procesados`, `ok`, `fallidos`, `eventos_insertados`, `eventos_ignorados`) y, si se pidió, la bitácora JSON.
+  8. **Código de salida:** `0` si y solo si no hubo fallos; `1` si hubo al menos uno (el resumen los enumera).
+* **O (Output):** Tabla de lote (jornada, `id_partido`, local, visitante, estado, eventos, insertados, ignorados, error), resumen final y bitácora JSON opcional. Para la muestra: Jornada 16 del Clausura 2016 → 9 partidos, 49 eventos en `América 3-3 Monterrey` (`match_id` `fs_2015_2016_z85264`).
+* **Φ (Transición):** Hacia el corpus causal de calibración del observatorio; el orquestador no calcula ni interpreta probabilidades.
+* **Invariantes:** cero mocks en producción; cero datos sintéticos; una sola sesión de descarga por lote (la sonda abre y cierra la suya por jornada); el HTML se procesa en memoria; los fallos nunca se silencian; `qbe_core` no se importa ni se modifica; no se escribe fuera de `historical_match_events`.
+* **Fail-Loud:** jornada irresoluble, HTTP distinto de 200, HTML sin estructura canónica, sobre sin equipos/marcador, resolución de `match_id` ambigua o vacía, o fallo de persistencia: se registran con evidencia y el resumen final los declara.
+* **[SHIELD]:** `qbe_ingestion/tests/test_shield_orquestador_extraccion.py`
+
+### 17.3 Extensión pura del Parser `[LN-QBE-141]`: `parsear_partido_desde_html`
+
+* **Motivo:** el orquestador `[LN-QBE-143]` obtiene el HTML del visor en memoria; materializar un MIME de 14 MB por partido sería un desperdicio de I/O y una fuente de fragilidad.
+* **Contrato:** `parsear_partido_desde_html(html: str) -> dict` devuelve exactamente el mismo sobre que `parsear_partido(ruta)`, reutilizando la misma función interna de extracción sobre el árbol `BeautifulSoup`. `parsear_partido(ruta)` pasa a ser «desempaquetar MIME y delegar»; su contrato, mensajes y Juez no cambian.
+* **Invariantes:** la lógica de extracción no se duplica; las validaciones (contenedor canónico, columnas, marcadores, gramática del minuto, IDs únicos) son las mismas; un `html` vacío o no textual aborta con `MinutoAJugadaError`.
+* **Fail-Loud:** idéntico al de `[LN-QBE-141]`.
+* **[SHIELD]:** `qbe_ingestion/tests/test_shield_minuto_a_minuto_parser.py` (intacto) y `qbe_ingestion/tests/test_shield_orquestador_extraccion.py` (invariante de equivalencia MHTML ↔ HTML).
+
+### 17.4 Contratos de Resiliencia del Orquestador `[LN-QBE-143]`
+
+Consecuencia de la Ficha de Varianza del 2026-11-01 (cuelgue aparente del lote por esperas sin tope). Estos contratos son **obligatorios** para toda ejecución del orquestador:
+
+| Contrato | Valor canónico | Semántica |
+|---|---|---|
+| `TIMEOUT_MS` | `30000` | Tope único de navegación (`goto`), de espera de render (`div.jugadasTool .toolJugada`) y `set_default_timeout` de contexto y página. Un tiempo agotado se traduce a `DescargaError` y **se registra como fallo del partido**; nunca cuelga el lote. |
+| `PAUSA_DEFECTO_S` | `2.0` | Pausa entre partidos consecutivos (`time.sleep`), configurable con `--pausa`. Evita la ráfaga que degrada la cartelera (WAF). |
+| `CHECKPOINT_DEFECTO` | `qbe_ingestion/data/reportes/checkpoint.json` | Estado reanudable del lote: `temporada`, `torneo`, rango de jornadas, `completados` (claves `temporada|torneo|id_partido`) y `ultimo_partido`. Se escribe de forma **atómica** (tmp + replace) después de cada partido. |
+| `--resume` | bandera | Omite los partidos ya marcados como `completados`. Un partido en `FALLO` **no** se marca completado: se reintenta en la siguiente reanudación. Un lote que sólo omite no borra el `ultimo_partido` previo. |
+
+* **Invariantes:** el checkpoint vive bajo un directorio ignorado por git; la ausencia de checkpoint con `--resume` equivale a lote nuevo (no aborta); la clave de reanudación incluye torneo, por lo que Apertura y Clausura no se pisan.
+* **Fail-Loud:** un checkpoint ilegible se descarta (se reinicia el lote) pero se registra en el resumen; un timeout nunca se convierte en partido exitoso.
+* **[SHIELD]:** `qbe_ingestion/tests/test_shield_orquestador_extraccion.py`
+
+---
+
+## 18. DICCIONARIO CANÓNICO DE ALIAS DE LIGA MX
+
+### ID: `[LN-QBE-145]` Diccionario Canónico de Alias de Liga MX (`ligamx.net` → bóveda)
+
+* **Ω (Resumen):** Traducción determinista entre el nombre de pantalla que publica `ligamx.net` y el nombre canónico que usa la bóveda OLAP (`historical_matches.home_team` / `away_team`). Es una tabla estática y cerrada: **cero fuzzy matching, cero normalización implícita, cero heurísticas**. Existe porque el Join Determinista de `[ARCH-1.5.1]` §15.3 exige coincidencia exacta de slug: `Jaguares` no es `Chiapas` y `M. Morelia` no es `Morelia`, aunque el partido sea el mismo.
+* **I (Input):** `nombre_pantalla: str` — el nombre tal como lo entrega el parser `[LN-QBE-141]` (o la cartelera `[LN-QBE-142]`).
+* **P (Process) [ALGO-PROTECTED] [DIRGEN-STRICT]:**
+  1. **Validación de tipo:** un valor que no sea `str` aborta con `TypeError` (Fail-Loud); no se coacciona.
+  2. **Búsqueda exacta:** `ALIAS_LIGAMX.get(nombre_pantalla)`. La clave es la cadena completa y literal; no hay plegado de mayúsculas, acentos, puntuación ni distancia de edición.
+  3. **Fallback de identidad:** si la clave no está en el diccionario, se devuelve **el nombre original sin modificar**. El silencio no es una decisión: la ausencia de alias se manifestará como `MatchResolutionError` en el Join Determinista, nunca como una llave aproximada.
+* **O (Output):** `nombre_canonico: str` — uno de los 18 nombres canónicos de la temporada 2015-2016 de la bóveda (`América`, `Atlas`, `Chiapas`, `Cruz Azul`, `Dorados`, `Guadalajara`, `León`, `Monterrey`, `Morelia`, `Pachuca`, `Puebla`, `Pumas UNAM`, `Querétaro`, `Santos Laguna`, `Tigres UANL`, `Tijuana`, `Toluca`, `Veracruz`) o el original si no hay alias.
+* **Φ (Transición):** Hacia `resolver_match_id` (`[LN-QBE-144]`) dentro del orquestador `[LN-QBE-143]`; el Join no cambia su lógica, solo recibe nombres limpios.
+* **Invariantes:** el diccionario es estático (se versiona con el código, no se calcula en ejecución); **todo valor** del diccionario debe existir literalmente como nombre canónico en `historical_matches`; el mapeo es función pura (misma entrada → misma salida, sin I/O, sin estado); el orden de las claves es irrelevante; ninguna clave se resuelve por aproximación.
+* **Fail-Loud:** `TypeError` ante entrada no textual. Un nombre desconocido no se adivina: retorna el original y el Join Determinista aborta el partido con `MatchResolutionError`, que el orquestador registra en el resumen.
+* **Deuda declarada:** el diccionario cubre las variantes **observadas** en la extracción de la temporada 2015-2016 (`Jaguares`, `M. Morelia`, `Tigres`, `Tigres de la U.A.N.L.`, `Club Tijuana`, `Pumas`, `Universidad Nacional`, `Puebla F.C.`, `Dorados de Sinaloa`). Una variante nueva que aparezca en otra temporada NO se resolverá por aproximación: se declarará como fallo de Join y exigirá una ampliación legislada del diccionario.
+* **[SHIELD]:** `qbe_ingestion/tests/test_shield_orquestador_extraccion.py`
+
+---
+
+## 19. MOTOR DE VARIABLES CAUSALES
+
+### ID: `[LN-QBE-146]` Motor de Derivación de Variables Causales
+
+* **Ω (Resumen):** Función pura que convierte la línea de tiempo factual de un partido (`historical_match_events`) en el vector canónico de **32 variables** del catálogo `[LN-QBE-120]`. Deriva por conteo directo o por proximidad temporal lo que la narrativa «Jugada a Jugada» prueba, y **declara `SIN EVIDENCIA`** lo que no es inferible de eventos (posesión, xG, pases): no imputa, no modela y no interpola. Es el puente entre la evidencia causal y el script de calibración (Brier Score).
+* **I (Input):** `match_id: str` (llave de la bóveda) y `eventos: Sequence[Mapping]` con el contrato de `[LN-QBE-141]` (`evento_id`, `lado` ∈ {`local`,`visita`}, `tipo`, `minuto`, `minuto_agregado`, `periodo`, `orden_dom`).
+* **P (Process) [ALGO-PROTECTED] [DIRGEN-STRICT]:**
+  1. **Aduana:** `match_id` textual no vacío y lista no vacía; cada evento debe declarar `lado`, `tipo` y `orden_dom`. Un faltante aborta con `DerivacionError` (nunca se devuelve un vector vacío).
+  2. **Conteo por lado:** se acumulan las magnitudes de conteo directo por `lado`.
+  3. **Proximidad temporal (pelota parada):** un gol (`gol` o `gol_penal`) se marca como de pelota parada si el **evento inmediatamente anterior del mismo lado** es `corner` o `penal` y ocurre dentro de `5` minutos (`minuto_efectivo = minuto + minuto_agregado`; sin minuto base no hay ventana). `orden_dom` del visor es cronológico **inverso** (0 = final del partido), por lo que el «anterior» se resuelve recorriendo de mayor a menor. La regla es determinista y no usa distancia semántica. En la muestra justifica el gol de Monterrey al 10' (penal señalado al 7') y el de América al 36' (córner al 35').
+  4. **Duales:** `V13` es el espejo exacto de `V07` (remates recibidos); `V22` es el espejo de `V21`.
+  5. **Sin cocientes:** la narrativa no censa atajadas (el evento `atajada` es «gran atajada», no un recuento de paradas), por lo que `V18` no se imputa: se declara `SIN EVIDENCIA`.
+  6. **Ensamblado:** se emite un diccionario con las 32 claves `V01`…`V32`; cada valor es `{"local": float|None, "visita": float|None}`.
+* **Reglas por variable (catálogo `[LN-QBE-120]`, §2.1):**
+
+| Variable | Regla | Estado |
+|---|---|---|
+| `V01` Posesión | no inferible de eventos | `SIN EVIDENCIA` |
+| `V02` Toques en área | no inferible | `SIN EVIDENCIA` |
+| `V03` Pases precisos | no inferible | `SIN EVIDENCIA` |
+| `V04` Pases largos | no inferible | `SIN EVIDENCIA` |
+| `V05` Faltas cometidas | conteo `falta` | derivada |
+| `V06` xG | no inferible | `SIN EVIDENCIA` |
+| `V07` Tiros al arco (SoT) | conteo `tiro_a_gol` + `gol` + `gol_penal` | derivada |
+| `V08` Big chances creadas | no inferible | `SIN EVIDENCIA` |
+| `V09` Big chances falladas | no inferible | `SIN EVIDENCIA` |
+| `V10` xGOT | no inferible | `SIN EVIDENCIA` |
+| `V11` xA | no inferible | `SIN EVIDENCIA` |
+| `V12` xGA | no inferible (orden explícita) | `SIN EVIDENCIA` |
+| `V13` SoTA | dual exacto de `V07` | derivada |
+| `V14` Acciones defensivas | no inferible | `SIN EVIDENCIA` |
+| `V15` Intercepciones | no inferible | `SIN EVIDENCIA` |
+| `V16` Big chances concedidas | `FUERA DE FUENTE` en el catálogo | `SIN EVIDENCIA` |
+| `V17` Goles evitados | no inferible (modelado) | `SIN EVIDENCIA` |
+| `V18` Save % | no inferible: `atajada` narra «gran atajada», no un censo de paradas | `SIN EVIDENCIA` |
+| `V19` Salidas / líbero | no inferible | `SIN EVIDENCIA` |
+| `V20` Clean sheets | `1` si el rival anotó `0` | derivada |
+| `V21` Goles a favor de pelota parada | gol precedido por `corner`/`penal` del mismo lado (≤ 5 min) | derivada |
+| `V22` Goles recibidos de pelota parada | dual de `V21` | derivada |
+| `V23` Córners | conteo `corner` | derivada |
+| `V24` Penales | conteo `penal` (señalados a favor) | derivada |
+| `V25` Tarjetas | conteo `tarjeta_amarilla` + `tarjeta_roja` | derivada |
+| `V26` Récord H2H | requiere historia | `SIN EVIDENCIA` |
+| `V27` ΔG H2H | requiere historia | `SIN EVIDENCIA` |
+| `V28` Récord visitante en sede | requiere historia | `SIN EVIDENCIA` |
+| `V29` Altitud | dato de fixture | `SIN EVIDENCIA` |
+| `V30` Días de descanso | dato de calendario | `SIN EVIDENCIA` |
+| `V31` Forma 5P | requiere historia | `SIN EVIDENCIA` |
+| `V32` Varianza ΔxPTS | requiere modelo | `SIN EVIDENCIA` |
+
+* **O (Output):** `dict[str, dict[str, float | None]]` con las 32 claves. **9 derivadas** (`V05`, `V07`, `V13`, `V20`, `V21`, `V22`, `V23`, `V24`, `V25`), **23 `SIN EVIDENCIA`**. Persistencia: una fila por partido en `historical_match_causal_vars` (columnas `vNN_local` / `vNN_visita`, más `sin_evidencia`, `derivadas`, `fuente_datos`, `cargado_utc`).
+* **Φ (Transición):** Hacia el script de calibración (Brier Score) y la ingeniería de variables del observatorio.
+* **Invariantes:** función pura (sin I/O, sin red, sin BD, sin reloj); `qbe_core` no importa `sqlalchemy`, `requests`, `playwright`, `src.storage` ni `src.ingestion`; las 32 claves siempre están presentes; `None` ≠ `0.0` (ausencia declarada vs. cero factual); el conteo es del **lado**, nunca del partido agregado.
+* **Fail-Loud:** lista vacía, `match_id` inválido, evento sin `lado`/`tipo`/`orden_dom`, o `lado` fuera del dominio ⇒ `DerivacionError`.
+* **Limitación declarada:** superada por enmienda del Director (Sprint 44): `V07`/`V13` **incluyen `gol_penal`** como remate al arco. En la muestra, América 3-3 Monterrey pasa de 17 a **18 remates** (10 local / 8 visita).
+* **[SHIELD]:** `qbe_core/tests/test_shield_derivacion_causal.py`
+
+---
+
+## 20. CALIBRACIÓN EMPÍRICA Y PERTURBACIÓN DE VARIABLES
+
+### ID: `[LN-QBE-147]` Motor de Calibración y Perturbación de Variables Causales
+
+* **Ω (Resumen):** Motor puro que mide la calidad predictiva del vector causal de `[LN-QBE-146]` contra los resultados reales de la bóveda (Brier Score multiclase) y busca, por **perturbación controlada** de las variables dentro de sus límites físicos, la combinación de ajustes que más reduce el error. Emite un acta auditable con el Brier base, el optimizado y el impacto de cada variable. No entrena un modelo nuevo: calibra el **puente** entre la evidencia causal y la distribución soberana.
+* **I (Input):** lote de partidos con `vector` causal (32 variables por lado), marcador real (`home_goals`, `away_goals`), temporada, `medias` de `V07`/`V13` del lote y `MU_LIGA` (goles por equipo y partido). Las cuotas se aceptan como **referencia de mercado**, nunca como insumo de la optimización.
+* **P (Process) [ALGO-PROTECTED] [DIRGEN-STRICT]:**
+  1. **Puente de calibración (único canal legislado):** con `ataque(lado) = (V07+1)/(media_V07+1)` y `defensa(lado) = (V13+1)/(media_V13+1)`,
+     `λ_local = MU_LIGA · ataque(local)/defensa(visita)` y `λ_visita = MU_LIGA · ataque(visita)/defensa(local)`, acotadas a `[0.05, 6.0]`.
+  2. **Distribución soberana base:** `calcular_matriz_dixon_coles` + `colapsar_matriz_a_simplex` (`[VAULT-CORE-004]`). No se reimplementa la matemática del núcleo.
+  3. **Brier Score base:** media del lote de `Σ₃ (pᵢ − yᵢ)²` por partido (0 a 2).
+  4. **Perturbación controlada:** búsqueda voraz y determinista de factores multiplicativos **globales** por pareja (variable, lado), con `factores ∈ {0.85, 1.15}` y hasta 20 pasos. El factor **acumulado** por pareja se acota a la banda física `[0.5, 2.0]` (impide anular una variable y degenerar el puente). Cada candidato se acota además a los límites físicos de la variable y sólo se acepta si reduce **estrictamente** el Brier del lote.
+  5. **Acta:** secuencia completa de movimientos (`brier_previo`, `brier_nuevo`, `delta`), impacto acumulado por variable ordenado por reducción, `top3` y factores finales.
+* **Límites físicos (invariante):** `V05 ≤ 40`, `V07/V13 ≤ 25`, `V21/V22 ≤ 10`, `V23 ≤ 20`, `V24 ≤ 5`, `V25 ≤ 15`; todos `≥ 0`; factor acumulado por pareja en `[0.5, 2.0]`. `V20` es binaria y queda fuera de la perturbación. Ninguna perturbación puede producir valores negativos, posesión > 100 % ni remates imposibles.
+* **O (Output):** acta `{brier_base, brier_optimizado, delta, mejora_relativa, movimientos, impacto_por_variable, top3, factores_finales}`; en la CLI se materializa en `data/reportes/calibracion_2015_2016.json`.
+* **Φ (Transición):** Hacia la verificación fuera de muestra (temporada siguiente) y hacia el ajuste del puente en `[LN-QBE-146]`.
+* **Invariantes:** función pura y determinista (mismas entradas ⇒ mismo acta); el optimizador **nunca** empeora el Brier base (los movimientos se aceptan sólo si mejoran); `qbe_core` no importa `sqlalchemy`, `requests`, `playwright`, `src.storage` ni `src.ingestion`; las cuotas no participan en la optimización.
+* **Fail-Loud:** lote vacío, marcador no entero o negativo, vector sin `V07`/`V13`, `MU_LIGA ≤ 0`, medias negativas o factores no positivos ⇒ `CalibracionError`.
+* **Limitación declarada:** la calibración es **in-sample** (misma temporada 2015-2016); la mejora del Brier mide ajuste al puente, no capacidad predictiva fuera de muestra. El puente sólo canaliza `V07`/`V13`; las demás variables perturbables se exploran y, si no tienen canal, su delta es `0.0` y así se declaran.
+* **[SHIELD]:** `qbe_core/tests/test_shield_calibracion.py`

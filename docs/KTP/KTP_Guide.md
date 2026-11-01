@@ -210,6 +210,7 @@ Una transferencia se considera cerrada solo si se cumplen todos:
 8. No hay cambios en código de producción ni escrituras en bases vivas.
 9. El manifiesto Git Diff solo contiene los archivos del expediente.
 10. Toda cifra financiera declarada tiene provenance; toda cifra no verificada se marca `SIN EVIDENCIA`.
+11. El Censo de Paridad Canónica se ejecutó en el momento que corresponda (Cierre de Sprint, pre-commit de núcleo o bajo demanda) y `GL_update.md` reporta 0 hallazgos (Clases I–IV).
 
 ---
 
@@ -241,6 +242,7 @@ Una transferencia se considera cerrada solo si se cumplen todos:
 - [ ] Juez KTP 5/5.
 - [ ] Suite unificada `EXIT CODE 0`.
 - [ ] Pre-vuelo `0 🔴`.
+- [ ] ¿Se ha ejecutado `auditar_paridad_bg.py` y `GL_update.md` reporta 0 hallazgos?
 - [ ] Manifiesto Git Diff emitido.
 
 ---

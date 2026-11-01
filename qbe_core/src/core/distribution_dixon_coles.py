@@ -38,10 +38,12 @@ def calcular_matriz_dixon_coles(
     rho_admisible = max(cota_inf, min(cota_sup, rho))
 
     # 2. Distribución de Poisson base
+    # [LN-QBE-040] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
     def pois_prob(lmb: float, k: int) -> float:
         return (math.exp(-lmb) * (lmb ** k)) / math.factorial(k)
 
     # 3. Factor de corrección tau(x, y)
+    # [LN-QBE-040] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
     def tau_factor(x: int, y: int) -> float:
         if x == 0 and y == 0:
             return 1.0 - (lambda_h * lambda_a * rho_admisible)
@@ -75,6 +77,7 @@ def calcular_matriz_dixon_coles(
     return matriz
 
 
+# [LN-QBE-040] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def colapsar_matriz_a_simplex(matriz_2d: List[List[float]]) -> Tuple[float, float, float]:
     """
     [Sección 5.7 a 5.10] Colapso geométrico exacto de regiones disjuntas sobre el Símplex Delta^2:

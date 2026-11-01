@@ -91,6 +91,7 @@ def _bloque_factico(raw_match_data: Dict[str, Any], clave: str) -> Dict[str, Any
     return bloque if isinstance(bloque, dict) else {}
 
 
+# [VAULT-CORE-005] [LN-QBE-118] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def _tasa_insumo(bloque: Dict[str, Any], clave: str) -> Optional[float]:
     """[ARCH-1.4.41] Tasa canónica = acumulado / PJ; `None` si la fuente no publica el insumo."""
     precomputada = bloque.get(f"{clave}_rate")
@@ -438,6 +439,7 @@ def _bloque_macro_stats(cache_macro_stats: Any) -> Dict[str, Any]:
     }
 
 
+# [VAULT-CORE-005] [LN-QBE-118] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 class StochasticAuditTrace(BaseModel):
     """Traza forense inmutable de la generación de la distribución soberana."""
     match_id: str
@@ -484,6 +486,7 @@ class StochasticAuditTrace(BaseModel):
     )
 
 
+# [VAULT-CORE-005] [LN-QBE-118] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 class SovereignDistributionOutput(BaseModel):
     """Contrato formal de salida de la Capa Probabilística Soberana."""
     match_id: str
@@ -515,6 +518,7 @@ class SovereignDistributionOutput(BaseModel):
     )
 
 
+# [VAULT-CORE-005] [LN-QBE-118] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def evaluar_suficiencia_informativa(raw_match_data: Dict[str, Any]) -> bool:
     """
     [Sección 2.13.1] Evalúa la función indicadora S(I_i) in {0, 1}.
@@ -607,6 +611,7 @@ def _factores_forma_bayesiana(raw_match_data: Dict[str, Any], mu_liga: float) ->
     return round(a_home, 4), round(d_away, 4), round(a_away, 4), round(d_home, 4)
 
 
+# [VAULT-CORE-005] [LN-QBE-118] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def derivar_factores_estructurales(raw_match_data: Dict[str, Any], mu_liga: float = 2.65) -> Tuple[float, float, float, float]:
     """
     [Sección 4.5 y 4.6] Convierte métricas de Nivel 1 en factores log-diferenciales centrados en media cero:
@@ -824,6 +829,7 @@ def fusionar_simplex_con_h2h(
     }
 
 
+# [VAULT-CORE-005] [LN-QBE-118] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def generar_distribucion_soberana(
     match_id: str,
     raw_match_data: Dict[str, Any],

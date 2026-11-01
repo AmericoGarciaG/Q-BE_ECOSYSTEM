@@ -11,10 +11,12 @@ from src.models.raw_input import H2HMatchRaw
 from src.models.analytics import H2HDecayResult
 
 
+# [LN-QBE-020] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 class TemporalDecayEngine:
     TAU_HALF_LIFE_DAYS = 180.0
     KAPPA = math.log(2.0) / TAU_HALF_LIFE_DAYS  # ~0.0038509775
 
+    # [LN-QBE-020] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
     @classmethod
     def compute_decay(
         cls,
@@ -114,6 +116,7 @@ class TemporalDecayEngine:
             gf_h2h_visita=gf_h2h_visita
         )
 
+    # [LN-QBE-020] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
     @classmethod
     def _classify_outcome(cls, m: H2HMatchRaw, fav_norm: str, gl: Optional[int], gv: Optional[int]) -> str:
         # Prioridad 1: Marcador explícito

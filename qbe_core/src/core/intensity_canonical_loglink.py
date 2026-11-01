@@ -44,6 +44,7 @@ def obtener_bono_fortaleza_plaza(home_team_slug: Optional[str]) -> float:
     return min(TECHO_DELTA_GAMMA_PLAZA, max(0.0, float(bono)))
 
 
+# [VAULT-CORE-001] [LN-QBE-038] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def calcular_alpha_ligadura(mu_liga: float = 2.65, gamma_home: float = 0.15) -> float:
     """
     [Sección 4.9.1] Ecuación de Ligadura Estructural de Q-BE:
@@ -58,6 +59,7 @@ def calcular_alpha_ligadura(mu_liga: float = 2.65, gamma_home: float = 0.15) -> 
 KAPPA_NET = 0.2500  # [VAULT-CORE-001] Compresión hiperbólica PURA (absoluta, adimensional)
 
 
+# [VAULT-CORE-001] [LN-QBE-038] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def aplicar_damping_hiperbolico(factor_crudo: float, sigma_liga: float = 1.0,
                                 kappa_mult: Optional[float] = None,
                                 kappa_net: float = KAPPA_NET) -> float:

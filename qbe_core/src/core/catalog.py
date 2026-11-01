@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from typing import Dict
 
 
+# [LN-QBE-109] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 @dataclass(frozen=True)
 class StrategyDefinition:
     codigo: str
@@ -178,6 +179,7 @@ ALIAS_ALTITUDES: Dict[str, str] = {
 }
 
 
+# [LN-QBE-109] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def slug_canonico_altitud(slug: Optional[str]) -> Optional[str]:
     """Resuelve el slug vivo al slug canónico del catálogo de altitudes (alias declarado)."""
     if not slug:
@@ -188,6 +190,7 @@ def slug_canonico_altitud(slug: Optional[str]) -> Optional[str]:
     return ALIAS_ALTITUDES.get(clave)
 
 
+# [LN-QBE-109] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def altitud_estadio(slug: str) -> float:
     """Retorna la altitud en msnm del estadio del club. Fallback 0.0 si es desconocido.
     

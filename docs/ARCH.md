@@ -456,3 +456,81 @@ _Total: 143 identificadores._
 * **Frontera:** `qbe_core` no consume estos documentos en tiempo de ejecución; el Juez documental vive en `qbe_core/tests/` como guardián de la Base de Gobierno, sin introducir I/O en el núcleo matemático.
 * **[SHIELD]:** `qbe_core/tests/test_shield_ktp_package_integrity.py`
 * **Deuda documental declarada:** `[ARCH-1.4.73]` figura sellado en la tabla maestra y en `docs/ID_REGISTRY.md`, pero carece de sección de cuerpo en este libro. Se preserva su ID y su denominación; la deuda se declara para una reconciliación posterior y no se reasigna.
+
+---
+
+## 15. ESQUEMA RELACIONAL 3NF MULTI-TORNEO
+
+### [ARCH-1.5.1] Esquema Relacional 3NF Multi-Torneo — Especificación Canónica de Columnas [ARCH-PILLAR] [DIRGEN-STRICT]
+
+* **Bóveda:** `qbe_observatory/data/qbe_historico.db` (SQLite). Régimen `[DIRGEN-STRICT]`: el DDL de esta sección es la transcripción canónica; ningún módulo puede divergir de él.
+* **Naturaleza:** esquema de consulta (lado Q del CQRS). La escritura bulk se ejerce únicamente por la excepción CQRS autorizada de `[ARCH-1.4.72]`; este libro no autoriza escrituras desde `qbe_core` ni desde el lado de comando.
+
+#### 15.1 Familia `historical_*` (corpus fáctico)
+
+| Tabla | Clave primaria | Grano | Origen |
+|---|---|---|---|
+| `historical_matches` | `match_id` | un partido | `[ARCH-1.4.72]` · FootyStats |
+| `historical_team_season_stats` | `(temporada, team_slug)` | club-temporada | `[ARCH-1.4.72]` · FootyStats |
+| `historical_load_log` | `temporada` | temporada cargada | `[ARCH-1.4.72]` |
+| `historical_match_events` | `(match_id, evento_id)` | evento de la línea de tiempo | `[LN-QBE-144]` · ligamx.net |
+
+#### 15.2 `historical_match_events` — Almacén de eventos minuto a minuto
+
+* **Origen fáctico:** visor «Minuto a Minuto» de `ligamx.net`, parseado offline por `[LN-QBE-141]` y persistido por `[LN-QBE-144]`.
+* **DDL canónico:**
+
+```sql
+CREATE TABLE IF NOT EXISTS historical_match_events (
+    match_id        TEXT    NOT NULL,
+    evento_id       TEXT    NOT NULL,
+    minuto_texto    TEXT    NOT NULL,
+    minuto_entero   INTEGER,
+    minuto_agregado INTEGER,
+    periodo         TEXT,
+    tipo_evento     TEXT    NOT NULL,
+    equipo          TEXT    NOT NULL CHECK (equipo IN ('local', 'visita')),
+    descripcion     TEXT    NOT NULL,
+    orden_dom       INTEGER NOT NULL,
+    fuente_datos    TEXT    NOT NULL DEFAULT 'LIGAMX_MXM',
+    cargado_utc     TEXT    NOT NULL,
+    PRIMARY KEY (match_id, evento_id),
+    FOREIGN KEY (match_id) REFERENCES historical_matches (match_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_hist_events_match
+    ON historical_match_events (match_id, orden_dom);
+```
+
+* **Columnas (especificación canónica):**
+
+| Columna | Tipo | Nulo | Semántica |
+|---|---|---|---|
+| `match_id` | TEXT | NO | FK → `historical_matches.match_id`. Clave de la bóveda, resuelta por Join Determinista (§15.3). |
+| `evento_id` | TEXT | NO | Identificador del sitio (`evntLcal_N` / `evntVsta_N`); único por partido. |
+| `minuto_texto` | TEXT | NO | Rótulo literal del minuto (`12'`, `+3'`, `45+2'`, `MT`, `MF`). Se preserva sin normalizar: es la evidencia. |
+| `minuto_entero` | INTEGER | SÍ | Minuto base interpretado; `NULL` en `+N'`, `MT` y `MF`. Nunca se imputa. |
+| `minuto_agregado` | INTEGER | SÍ | Tiempo añadido interpretado; `NULL` si el rótulo no lo declara. |
+| `periodo` | TEXT | SÍ | `1T`, `2T`, `MT`, `MF`; `NULL` solo si el parser no pudo derivarlo (no ocurre en la columna canónica). |
+| `tipo_evento` | TEXT | NO | Catálogo de `[LN-QBE-141]` (`gol`, `gol_penal`, `tarjeta_amarilla`, `tarjeta_roja`, `corner`, `falta`, `tiro_a_gol`, `cambio`, `fuera_de_lugar`, `penal`, `atajada`, `inicio_partido`, `inicio_segundo_tiempo`, `final_primer_tiempo`, `final_partido`, `otro`). |
+| `equipo` | TEXT | NO | Dominio cerrado `local`/`visita` (el `lado` del parser). El nombre del club no se duplica: se resuelve por `match_id` → `historical_matches`. |
+| `descripcion` | TEXT | NO | Narrativa oficial del sitio, en UTF-8 estricto. |
+| `orden_dom` | INTEGER | NO | Orden de aparición en el DOM canónico (columna local y luego visitante). |
+| `fuente_datos` | TEXT | NO | Procedencia declarada (`LIGAMX_MXM`). |
+| `cargado_utc` | TEXT | NO | Marca ISO-8601 Z de la transacción que insertó la fila. |
+
+* **Justificación 3NF:** la clave primaria compuesta identifica el evento sin ambigüedad; todos los atributos dependen de la clave completa (`descripcion` y `minuto_texto` del par, no de `match_id` aislado); no existen dependencias transitivas, porque el nombre de club, la temporada y el marcador viven en `historical_matches` y se alcanzan por FK.
+* **Idempotencia:** `INSERT OR IGNORE` sobre `(match_id, evento_id)`. Recargar un partido no duplica eventos ni altera los ya persistidos.
+* **Integridad referencial:** la FK es física; el cargador la verifica además de forma explícita antes de la transacción (Fail-Loud si el `match_id` no existe), porque SQLite no fuerza FK por defecto.
+* **Prohibición:** esta tabla no se escribe desde el lado de comando ni desde `qbe_core`; no se toca `matches`, `sovereign_distributions` ni `match_telemetry`.
+
+#### 15.3 Contrato de Resolución de `match_id` por Join Determinista
+
+La llave del sitio (`idPartido`, p. ej. `67047`) no es la llave de la bóveda (`match_id`, p. ej. `fs_2015_2016_z85264`). La resolución es determinista y se ejecuta contra `historical_matches`:
+
+1. `temporada` se normaliza a la forma `YYYY_YYYY` (`2015-2016` → `2015_2016`).
+2. `equipo_local` y `equipo_visitante` se canonizan a slug (`América` → `america`, con plegado NFKD y ASCII).
+3. Se exige coincidencia exacta de `home_team_slug`, `away_team_slug`, `home_goals` y `away_goals` sobre la temporada normalizada.
+4. Debe existir **exactamente una** fila. Cero coincidencias o más de una abortan el partido con `MatchResolutionError`; no se elige por aproximación, no se crea la fila y no se imputa la llave.
+
+* **[SHIELD]:** `qbe_ingestion/tests/test_shield_historical_load_integrity.py` (familia existente) y `qbe_ingestion/tests/test_shield_orquestador_extraccion.py` (Resolución, Persistencia y Orquestación de §15.2 y §15.3).

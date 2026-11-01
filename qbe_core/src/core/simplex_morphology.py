@@ -9,6 +9,7 @@ from typing import Tuple, Optional
 from pydantic import BaseModel, ConfigDict
 
 
+# [LN-QBE-059] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 class MorphologyClassification(BaseModel):
     """Contrato inmutable de clasificación morfológica en Capa 0."""
     model_config = ConfigDict(frozen=True, extra="ignore")

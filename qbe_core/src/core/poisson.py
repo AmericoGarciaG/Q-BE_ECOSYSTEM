@@ -71,6 +71,7 @@ def resolver_rho_dixon_coles(lambda_h: float, lambda_a: float) -> float:
     return RHO_BASE
 
 
+# [LN-QBE-040] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def _dixon_coles_tau(x: int, y: int, lambda_h: float, lambda_a: float, rho: float) -> float:
     """[LN-QBE-040-C §P.2] Factor de corrección τ(x, y) — transcripción verbatim del plano
     canónico `[VAULT-CORE-004]` §5.3.1, con las cotas analíticas de admisibilidad §5.16.1
@@ -94,7 +95,9 @@ def _dixon_coles_tau(x: int, y: int, lambda_h: float, lambda_a: float, rho: floa
     return 1.0
 
 
+# [LN-QBE-040] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 class PoissonBivariateEngine:
+    # [LN-QBE-040] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
     @classmethod
     def compute_modulations(
         cls,

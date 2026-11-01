@@ -1,17 +1,19 @@
 # Q-BE ECOSYSTEM — BASE DE CONOCIMIENTO DEL PROYECTO (KDB)
 
 **Documento:** `KDB.md` — Single Pane of Glass  
-**Versión:** 1.1.0  
+**Versión:** 1.2.0  
 **Estado:** `[ALGO-PROTECTED]` — Conocimiento Estable Certificado  
 **Proyecto:** `Q_BE_ECOSYSTEM`  
 **Autoridad Suprema:** Américo García Guerrero (Director Humano)  
 **Marco:** Kybern Industrial Framework v13.5 (DirGen Operational Edition)  
-**Expediente:** `SPRINT-MATERIALIZACION-RT-PMPT-DOCS-40`  
+**Expediente:** `SPRINT-41-TRANSICION-Y-CONSISTENCIA-BG`  
 **Nodos:** `[LN-QBE-138]` / `[ARCH-1.4.74]`  
 **Juez:** `qbe_core/tests/test_shield_ktp_package_integrity.py`  
-**Última consolidación:** 2026-10-30  
+**Última consolidación:** 2026-10-31  
 **Actualización KTP:** 2026-10-31  
-**Fuente de la consolidación:** `docs/KTP/AKT.md` (Sprint 38)
+**Fuente de la consolidación:** `docs/KTP/history/AKT_2026-10-31_SPRINT-41-TRANSICION-Y-CONSISTENCIA-BG.md` (Sprint 41)
+
+> **Nota de consolidación (2026-10-31):** cierre del `SPRINT-41-TRANSICION-Y-CONSISTENCIA-BG`; paridad canónica certificada con `[LN-QBE-139]`/`[LN-QBE-140]`; las deudas cerradas quedan en el acta histórica.
 
 ---
 
@@ -277,6 +279,8 @@ La temporada `2026_2027` está en curso: 153 partidos cargados al corte. No se e
 | `[LN-QBE-136]` | LOGIC | Sonda de Captura CDP-MHTML y Perfil Persistente | SELLADO |
 | `[LN-QBE-137]` | LOGIC | Juez Inmutable de Integridad de Muestras MHTML | SELLADO |
 | `[LN-QBE-138]` | LOGIC | Protocolo de Memoria Institucional Modular y Transferencia de Arquitectura (KTP Package) | SELLADO |
+| `[LN-QBE-139]` | LOGIC | Auditor de Paridad Estática AST y Generador de Bandeja `GL_update.md` | SELLADO |
+| `[LN-QBE-140]` | LOGIC | Juez Inmutable de Paridad Canónica y Detección de Reglas Huérfanas | SELLADO |
 | `[ARCH-1.4.72]` | ARCH | Pipeline de Inyección Histórica Multianual y Reflection DDL | SELLADO |
 | `[ARCH-1.4.73]` | ARCH | Extractor Histórico Masivo de FotMob | SELLADO — deuda de cuerpo declarada |
 | `[ARCH-1.4.74]` | ARCH | Topología y Subsistema Documental de Transferencia KTP | SELLADO |
@@ -324,6 +328,7 @@ La temporada `2026_2027` está en curso: 153 partidos cargados al corte. No se e
 | Cuerpo de `[ARCH-1.4.73]` ausente | Deuda documental; no afecta el ID. | Reconciliar en un sprint documental posterior. | Arquitecto |
 | Línea base financiera sin acta reproducible | Riesgo de presentar una declaración como resultado. | Producir acta con comando, fecha y evidencia. | Director / Arquitecto |
 | `data/sondas_exploracion/` sin trackear | Higiene de Git. | Mantener fuera del commit del paquete KTP. | Constructor |
+| Deuda 3 — Tres scripts de laboratorio con imports legados (`sandbox_h2h_pipeline.py`, `sandbox_volumen_porteria_pipeline.py`, `manus_qbe_model.py`) | No afectan producción ni The Shield; rompen la reproducibilidad del laboratorio. | Reconectar a `qbe_core` / `qbe_storage`; smoke test de importación y `--help`. | Constructor |
 
 ---
 
@@ -339,7 +344,9 @@ La temporada `2026_2027` está en curso: 153 partidos cargados al corte. No se e
 | Prompt de consolidación | `docs/KTP/KDB_Act_Pmpt.md` |
 | Prompt de asunción | `docs/KTP/RT_Pmpt.md` |
 | Juez | `qbe_core/tests/test_shield_ktp_package_integrity.py` |
+| Juez de Paridad Canónica | `qbe_core/tests/test_shield_canonical_parity.py` |
 | Acta activa | `docs/KTP/AKT.md` |
+| Acta histórica Sprint 41 | `docs/KTP/history/AKT_2026-10-31_SPRINT-41-TRANSICION-Y-CONSISTENCIA-BG.md` |
 | Archivo histórico | `docs/KTP/history/` |
 
 > **Mantenimiento:** este documento se actualiza solo por consolidación formal. La versión, la fecha y el acta de origen se registran en cada cambio. No se edita para “hacer pasar” un test; si la ley cambia, se emite la Ficha de Varianza correspondiente.

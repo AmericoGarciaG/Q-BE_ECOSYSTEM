@@ -25,6 +25,7 @@ EPSILON_ORTOGONAL = 1e-5
 TECHO_NORMA_FACTOR = 1.0000
 
 
+# [LN-QBE-039] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 class FactoresGSL3D(BaseModel):
     """Contrato inmutable de factores latentes emitidos por GSL-3D."""
     model_config = ConfigDict(frozen=True, extra="ignore")
@@ -86,6 +87,7 @@ def sintetizar_factor_latente_acotado(
     return round(factor_acotado, 4)
 
 
+# [LN-QBE-039] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def resolver_factores_latentes_gsl3d(
     A_gen: float,
     D_gen: float,

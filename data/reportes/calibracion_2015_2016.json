@@ -1,0 +1,214 @@
+{
+  "partidos": 301,
+  "mu_liga": 1.45348837,
+  "medias": {
+    "V07": 3.87873754,
+    "V13": 3.87873754
+  },
+  "brier_base": 0.65546144,
+  "brier_optimizado": 0.59896449,
+  "delta": -0.05649695,
+  "mejora_relativa": 0.08619416,
+  "pasos_ejecutados": 15,
+  "movimientos": [
+    {
+      "paso": 1,
+      "variable": "V13",
+      "lado": "visita",
+      "factor": 0.85,
+      "brier_previo": 0.65546144,
+      "brier_nuevo": 0.64459567,
+      "delta": -0.01086577
+    },
+    {
+      "paso": 2,
+      "variable": "V13",
+      "lado": "visita",
+      "factor": 0.85,
+      "brier_previo": 0.64459567,
+      "brier_nuevo": 0.64054338,
+      "delta": -0.00405229
+    },
+    {
+      "paso": 3,
+      "variable": "V13",
+      "lado": "local",
+      "factor": 0.85,
+      "brier_previo": 0.64054338,
+      "brier_nuevo": 0.63512413,
+      "delta": -0.00541924
+    },
+    {
+      "paso": 4,
+      "variable": "V13",
+      "lado": "visita",
+      "factor": 0.85,
+      "brier_previo": 0.63512413,
+      "brier_nuevo": 0.63224289,
+      "delta": -0.00288124
+    },
+    {
+      "paso": 5,
+      "variable": "V13",
+      "lado": "local",
+      "factor": 0.85,
+      "brier_previo": 0.63224289,
+      "brier_nuevo": 0.62597,
+      "delta": -0.00627289
+    },
+    {
+      "paso": 6,
+      "variable": "V13",
+      "lado": "visita",
+      "factor": 0.85,
+      "brier_previo": 0.62597,
+      "brier_nuevo": 0.6242247,
+      "delta": -0.0017453
+    },
+    {
+      "paso": 7,
+      "variable": "V13",
+      "lado": "local",
+      "factor": 0.85,
+      "brier_previo": 0.6242247,
+      "brier_nuevo": 0.61723803,
+      "delta": -0.00698667
+    },
+    {
+      "paso": 8,
+      "variable": "V13",
+      "lado": "visita",
+      "factor": 0.85,
+      "brier_previo": 0.61723803,
+      "brier_nuevo": 0.61630823,
+      "delta": -0.00092979
+    },
+    {
+      "paso": 9,
+      "variable": "V13",
+      "lado": "local",
+      "factor": 0.85,
+      "brier_previo": 0.61630823,
+      "brier_nuevo": 0.61371408,
+      "delta": -0.00259416
+    },
+    {
+      "paso": 10,
+      "variable": "V07",
+      "lado": "local",
+      "factor": 1.15,
+      "brier_previo": 0.61371408,
+      "brier_nuevo": 0.60987181,
+      "delta": -0.00384227
+    },
+    {
+      "paso": 11,
+      "variable": "V07",
+      "lado": "visita",
+      "factor": 1.15,
+      "brier_previo": 0.60987181,
+      "brier_nuevo": 0.60782199,
+      "delta": -0.00204982
+    },
+    {
+      "paso": 12,
+      "variable": "V07",
+      "lado": "local",
+      "factor": 1.15,
+      "brier_previo": 0.60782199,
+      "brier_nuevo": 0.60543365,
+      "delta": -0.00238834
+    },
+    {
+      "paso": 13,
+      "variable": "V07",
+      "lado": "visita",
+      "factor": 1.15,
+      "brier_previo": 0.60543365,
+      "brier_nuevo": 0.60291606,
+      "delta": -0.00251759
+    },
+    {
+      "paso": 14,
+      "variable": "V07",
+      "lado": "local",
+      "factor": 1.15,
+      "brier_previo": 0.60291606,
+      "brier_nuevo": 0.60193125,
+      "delta": -0.00098481
+    },
+    {
+      "paso": 15,
+      "variable": "V07",
+      "lado": "visita",
+      "factor": 1.15,
+      "brier_previo": 0.60193125,
+      "brier_nuevo": 0.59896449,
+      "delta": -0.00296676
+    }
+  ],
+  "impacto_por_variable": [
+    {
+      "variable": "V13",
+      "lado": "local",
+      "movimientos": 4,
+      "factor_final": 0.52200625,
+      "delta_total": -0.02127296
+    },
+    {
+      "variable": "V13",
+      "lado": "visita",
+      "movimientos": 5,
+      "factor_final": 0.5,
+      "delta_total": -0.02047439
+    },
+    {
+      "variable": "V07",
+      "lado": "visita",
+      "movimientos": 3,
+      "factor_final": 1.520875,
+      "delta_total": -0.00753417
+    },
+    {
+      "variable": "V07",
+      "lado": "local",
+      "movimientos": 3,
+      "factor_final": 1.520875,
+      "delta_total": -0.00721542
+    }
+  ],
+  "top3": [
+    {
+      "variable": "V13",
+      "lado": "local",
+      "movimientos": 4,
+      "factor_final": 0.52200625,
+      "delta_total": -0.02127296
+    },
+    {
+      "variable": "V13",
+      "lado": "visita",
+      "movimientos": 5,
+      "factor_final": 0.5,
+      "delta_total": -0.02047439
+    },
+    {
+      "variable": "V07",
+      "lado": "visita",
+      "movimientos": 3,
+      "factor_final": 1.520875,
+      "delta_total": -0.00753417
+    }
+  ],
+  "factores_finales": {
+    "V07_local": 1.520875,
+    "V07_visita": 1.520875,
+    "V13_local": 0.52200625,
+    "V13_visita": 0.5
+  },
+  "nodo": "[LN-QBE-147]",
+  "temporada": "2015-2016",
+  "boveda": "D:\\00 SW Projects\\Q-BE Casino Deportes\\Q_BE_ECOSYSTEM\\qbe_observatory\\data\\qbe_historico.db",
+  "ejecutado_utc": "2026-11-01T06:54:38.792240Z",
+  "brier_mercado": 0.64031362
+}

@@ -61,6 +61,7 @@ def _reimponer_monotonia_fiduciaria(orders_raw: List[Dict[str, Any]]) -> float:
     return round(sum(item["inv_partido"] for item in orders_raw), 2)
 
 
+# [LN-QBE-070] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def _casa_de_la_pierna(m: Dict[str, Any], momio_pierna: float,
                        o_fav: float, o_emp: float, o_und: float) -> Optional[str]:
     """[DES-QBE-053 / ARCH-1.5.10] Casa patrocinadora que publica el momio de UNA pierna.
@@ -91,6 +92,7 @@ def _casa_de_la_pierna(m: Dict[str, Any], momio_pierna: float,
     return None
 
 
+# [LN-QBE-070] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def _p_c_pierna_pct(seleccion: str, fav_name: Optional[str], und_name: Optional[str],
                     p_c_fav: Optional[float], p_c_emp: Optional[float],
                     p_c_und: Optional[float]) -> Optional[float]:
@@ -189,6 +191,7 @@ def calcular_trinidad_resiliencia_3k(ordenes_data: List[Dict[str, Any]]) -> Dict
     }
 
 
+# [LN-QBE-070] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def _distribucion_factica(m: Dict[str, Any]) -> Optional[Tuple[float, float, float]]:
     """[LN-QBE-070-C · Enmienda Nudo 1] Distribución soberana FÁCTICA del candidato.
 
@@ -216,9 +219,11 @@ def _distribucion_factica(m: Dict[str, Any]) -> Optional[Tuple[float, float, flo
     return (valores[0], valores[1], valores[2])
 
 
+# [LN-QBE-070] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 class PortfolioEngine:
     DESCRIPCIONES_OFICIALES = {k: v.descripcion_ejecutiva for k, v in STRATEGY_CATALOG.items()}
 
+    # [LN-QBE-070] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
     @classmethod
     def select_best_strategy(
         cls,
@@ -232,15 +237,18 @@ class PortfolioEngine:
         U_Directo = EV_Net * P_Fav
         U_Cobertura = EV_Net * (1.0 - Psi_Ruina)
         """
+        # [LN-QBE-070] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
         def calc_utility(strat_key: str) -> float:
             ev = evals[strat_key]["ev_neto_roi"]
             downside = p_fav if strat_key in ("QBE_R1", "QBE_R2") else psi_ruina
             return float(ev * ((1.0 - downside) ** 2))
 
+        # [LN-QBE-070] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
         def calc_direct_utility(strat_key: str) -> float:
             ev = evals[strat_key]["ev_neto_roi"]
             return float(ev * p_fav)
 
+        # [LN-QBE-070] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
         def calc_coverage_utility(strat_key: str) -> float:
             ev = evals[strat_key]["ev_neto_roi"]
             return float(ev * (1.0 - psi_ruina))
