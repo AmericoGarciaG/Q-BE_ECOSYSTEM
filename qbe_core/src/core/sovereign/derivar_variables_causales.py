@@ -78,7 +78,7 @@ class DerivacionError(ValueError):
 
 # ── Aduana ──────────────────────────────────────────────────────────────────────────────────
 def _validar_evento(evento: Any, indice: int) -> Tuple[str, str, int]:
-    """Devuelve ``(lado, tipo, orden_dom)`` o aborta (Fail-Loud)."""
+    """[LN-QBE-146] Devuelve ``(lado, tipo, orden_dom)`` o aborta (Fail-Loud)."""
     if not isinstance(evento, Mapping):
         raise DerivacionError(
             f"[LN-QBE-146] Evento #{indice}: se esperaba Mapping, "
@@ -103,7 +103,7 @@ def _validar_evento(evento: Any, indice: int) -> Tuple[str, str, int]:
 
 
 def _minuto_efectivo(evento: Mapping[str, Any]) -> Optional[int]:
-    """``minuto + minuto_agregado``; ``None`` si el rótulo no declara minuto base."""
+    """[LN-QBE-146] ``minuto + minuto_agregado``; ``None`` si el rótulo no declara minuto base."""
     minuto = evento.get("minuto")
     agregado = evento.get("minuto_agregado")
     if isinstance(minuto, bool) or not isinstance(minuto, int):
@@ -113,10 +113,12 @@ def _minuto_efectivo(evento: Mapping[str, Any]) -> Optional[int]:
 
 
 def _opuesto(lado: str) -> str:
+    """[LN-QBE-146] Devuelve el lado contrario (local ↔ visita)."""
     return "visita" if lado == "local" else "local"
 
 
 def _vector_vacio() -> Dict[str, Dict[str, Optional[float]]]:
+    """[LN-QBE-146] Construye el vector de 32 variables con ambos lados en ``None``."""
     return {variable: {"local": None, "visita": None} for variable in VARIABLES}
 
 

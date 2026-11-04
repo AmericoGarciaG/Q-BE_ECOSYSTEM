@@ -1,19 +1,19 @@
 # Q-BE ECOSYSTEM — BASE DE CONOCIMIENTO DEL PROYECTO (KDB)
 
 **Documento:** `KDB.md` — Single Pane of Glass  
-**Versión:** 1.2.0  
+**Versión:** 1.3.0<br>
 **Estado:** `[ALGO-PROTECTED]` — Conocimiento Estable Certificado  
 **Proyecto:** `Q_BE_ECOSYSTEM`  
 **Autoridad Suprema:** Américo García Guerrero (Director Humano)  
 **Marco:** Kybern Industrial Framework v13.5 (DirGen Operational Edition)  
-**Expediente:** `SPRINT-41-TRANSICION-Y-CONSISTENCIA-BG`  
+**Expediente:** `SPRINT-45-EXPANSION-CAUSAL-Y-RESCATE-EN-VIVO`<br>
 **Nodos:** `[LN-QBE-138]` / `[ARCH-1.4.74]`  
 **Juez:** `qbe_core/tests/test_shield_ktp_package_integrity.py`  
-**Última consolidación:** 2026-10-31  
-**Actualización KTP:** 2026-10-31  
-**Fuente de la consolidación:** `docs/KTP/history/AKT_2026-10-31_SPRINT-41-TRANSICION-Y-CONSISTENCIA-BG.md` (Sprint 41)
+**Última consolidación:** 2026-11-01<br>
+**Actualización KTP:** 2026-11-01<br>
+**Fuente de la consolidación:** `docs/KTP/history/AKT_2026-11-01_SPRINT-45-EXPANSION-CAUSAL-Y-RESCATE-EN-VIVO.md` (Sprint 45)
 
-> **Nota de consolidación (2026-10-31):** cierre del `SPRINT-41-TRANSICION-Y-CONSISTENCIA-BG`; paridad canónica certificada con `[LN-QBE-139]`/`[LN-QBE-140]`; las deudas cerradas quedan en el acta histórica.
+> **Nota de consolidación (2026-11-01):** cierre del `SPRINT-45-EXPANSION-CAUSAL-Y-RESCATE-EN-VIVO`. Se consolida la extracción causal minuto a minuto (301 partidos, 13,443 eventos), el vector de 32 variables con 9 derivadas y 23 `SIN EVIDENCIA`, la calibración in-sample 2015-2016 y la formalización VÍA B de 8 ayudantes (Censo de Núcleo en 0). Quedan abiertos `C01-C08`, el Daemon en vivo, el split Train/Test y el Censo ampliado de `qbe_business` (72 Clase IV).
 
 ---
 
@@ -92,6 +92,7 @@ Este es el **Axioma de Dos Mundos**: el mundo del mercado —observado, imperfec
 | Base viva OLTP | `data/qbe_database.db` | Escritura gobernada por gateway. |
 | Snapshot OLAP | `data/snapshots/qbe_database_snapshot.db` | Solo lectura. |
 | Bóveda histórica | `qbe_observatory/data/qbe_historico.db` | OLAP histórico; lectura para calibración. |
+| Eventos y variables causales | `historical_match_events`, `historical_match_causal_vars` en `qbe_observatory/data/qbe_historico.db` | OLAP histórico; lectura para derivación y calibración. |
 | Gateway | `qbe_storage/src/storage/gateway.py` | Persistencia transversal. |
 | Núcleo matemático | `qbe_core/src/core/` | `[DIRGEN-STRICT]`, cero I/O. |
 
@@ -181,6 +182,24 @@ Este es el **Axioma de Dos Mundos**: el mundo del mercado —observado, imperfec
 3. **Cero rename de red:** `variables_44` y `Catalogo44Out` sobreviven como nombres de contrato; la UI lee `n/m` del DTO, no de una constante local.
 4. **Cero re-derivación en el cliente:** el frontend transcribe; no calcula λ, probabilidades, Δ logarítmicas ni récords.
 
+### 4.4 Derivación causal desde eventos
+
+El vector de 32 variables puede derivarse parcialmente de la línea de tiempo `historical_match_events` mediante `[LN-QBE-146]` (`qbe_core/src/core/sovereign/derivar_variables_causales.py`). Al corte 2026-11-01:
+
+- **9 variables derivadas:** `V05`, `V07`, `V13`, `V20`, `V21`, `V22`, `V23`, `V24`, `V25`.
+- **23 variables `SIN EVIDENCIA`:** `V01`–`V04`, `V06`, `V08`–`V12`, `V14`–`V19`, `V26`–`V32`.
+
+**Reglas de derivación:**
+
+1. `None` ≠ `0.0`: la ausencia se declara, no se imputa.
+2. `V07`/`V13` incluyen `gol_penal` como remate al arco.
+3. `V21`/`V22` exigen córner o penal previo del mismo lado dentro de 5 minutos.
+4. `V05`, `V23`, `V24` y `V25` son conteos directos de eventos.
+5. `V20` es `1` si el rival no anotó; `0` si anotó.
+6. No se imputan posesión, xG, pases, H2H, altitud, descanso ni forma.
+
+La tabla `historical_match_causal_vars` guarda una fila por partido con `derivadas = 9` y la lista de las 23 variables `SIN EVIDENCIA`.
+
 ---
 
 ## 5. BÓVEDA FÁCTICA
@@ -197,6 +216,12 @@ Este es el **Axioma de Dos Mundos**: el mundo del mercado —observado, imperfec
 | Partidos con cuotas 1X2 completas | **3,726** | `odd_home`, `odd_draw`, `odd_away` no nulos |
 | Temporadas | **12** | `2015_2016` a `2026_2027` |
 | Filas de estadísticas club-temporada | **217** | `historical_team_season_stats` |
+| Partidos con eventos minuto a minuto | **301** | `historical_match_events` |
+| Eventos persistidos | **13,443** | `historical_match_events` |
+| Filas de variables causales | **3,000** | `historical_match_causal_vars` (2,699 `FOTMOB_MATCHDETAILS` + 301 `LIGAMX_MXM`) |
+| Distribuciones P' históricas | **2,737** | `historical_sovereign_distributions` (`[LN-QBE-150]`) |
+| Temporadas con 32 variables completas | **0** | `historical_match_causal_vars.derivadas = 32` |
+| Temporadas con 9 variables | **1** (`2015_2016`, 301/334) | `historical_match_causal_vars.derivadas = 9` |
 | Cobertura xG por partido | **0 filas** | `xg_home` y `xg_away` no poblados |
 
 > **Regla de honestidad:** la bóveda tiene 12 temporadas y 3,870 partidos. No se afirmará cobertura xG por partido mientras `historical_matches` no tenga ambos xG poblados. La ausencia se declara, no se imputa.
@@ -224,6 +249,70 @@ La temporada `2026_2027` está en curso: 153 partidos cargados al corte. No se e
 ### 5.3 Integridad de carga
 
 `historical_load_log` registra 12 ejecuciones con estado `OK` y hash SHA-256 por temporada. La carga es idempotente y transaccional por temporada; un error de tipado produce `ROLLBACK` total de la temporada afectada. No se tocan `matches`, `sovereign_distributions` ni `match_telemetry`.
+
+### 5.4 Cobertura causal y calibración in-sample
+
+| Métrica | Valor | Evidencia |
+|---|---|---|
+| Partidos con vector causal | **301** | `historical_match_causal_vars` |
+| Variables derivadas por partido | **9** | `derivadas = 9` en 301/301 |
+| Variables `SIN EVIDENCIA` por partido | **23** | columna `sin_evidencia` |
+| Muestra de referencia | 49 eventos de América 3-3 Monterrey (`fs_2015_2016_z85264`) | `historical_match_events` |
+| Brier base in-sample | **0.65546144** | `data/reportes/calibracion_2015_2016.json` |
+| Brier optimizado in-sample | **0.59896449** | ídem; Δ `-0.05649695`, mejora `8.62%` |
+| Brier de mercado | **0.64031362** | ídem |
+
+> **Limitación declarada:** la calibración es **in-sample** (2015-2016); no existe split Train/Test. La mejora de 8.62% mide ajuste al puente, no capacidad predictiva fuera de muestra. El overfitting queda `SIN EVIDENCIA`.
+
+### 5.5 Corpus histórico masivo P' — cierre `SPRINT-48`
+
+Materialización completa del símplex soberano P' sobre el corpus histórico (`[LN-QBE-150]`, `[ARCH-1.5.1]` §15.5). La matemática no se reimplementó: cada fila es la salida de `generar_distribucion_soberana` sobre el registro fáctico **pre-kickoff** reconstruido desde la bóveda.
+
+| Métrica | Valor |
+|---|---:|
+| Distribuciones P' persistidas | **2,737** |
+| Cobertura sobre la bóveda | **70.7 %** (2,737 / 3,870 partidos) |
+| Procedencia `FOTMOB_MATCHDETAILS` | **2,461** |
+| Procedencia `LIGAMX_MXM` | **276** |
+| Temporadas con P' | **10 de 12** |
+| Fixtures FotMob emparejados | **3,181** (0 `UNMATCHED` de partidos jugados salvo Liguilla sin fila en bóveda) |
+| Peticiones a FotMob | 1 por partido, cadencia fija `1.0 s` |
+| Descartes `SI_insuficiente` | **263** (≈ 8 % estructural, J1–J3 de cada Apertura) |
+| Imputaciones | **0** |
+
+**Cobertura por temporada:**
+
+| Temporada | Filas P' | Fuente causal |
+|---|---:|---|
+| 2015_2016 | 276 | `LIGAMX_MXM` |
+| 2016_2017 | 0 | `SIN EVIDENCIA` |
+| 2017_2018 | 0 | `SIN EVIDENCIA` |
+| 2018_2019 | 253 | `FOTMOB_MATCHDETAILS` |
+| 2019_2020 | 243 | `FOTMOB_MATCHDETAILS` |
+| 2020_2021 | 314 | `FOTMOB_MATCHDETAILS` |
+| 2021_2022 | 315 | `FOTMOB_MATCHDETAILS` |
+| 2022_2023 | 315 | `FOTMOB_MATCHDETAILS` |
+| 2023_2024 | 304 | `FOTMOB_MATCHDETAILS` |
+| 2024_2025 | 305 | `FOTMOB_MATCHDETAILS` |
+| 2025_2026 | 305 | `FOTMOB_MATCHDETAILS` |
+| 2026_2027 | 107 | `FOTMOB_MATCHDETAILS` (temporada en curso) |
+
+> **Hueco asumido 2016-2018.** `2016_2017` y `2017_2018` quedan en **0 filas** (668 partidos): FotMob no publica `content.stats` antes de 2018/19 —verificado por sonda directa en `matchDetails` de 2015/16, 2016/17 y 2017/18— y ligamx.net fue descartado como fuente causal por dictamen. El hueco se declara, no se imputa ni se rellena con priors.
+>
+> **Cold start asumido.** Cada Apertura pierde sus jornadas 1–3 (27–30 partidos, ≈8 % de la temporada) porque `S(I_i)` exige 3 partidos previos por club dentro de la misma temporada. Aprobado por Dirección como pérdida estructural; el Clausura nunca descarta.
+
+#### 5.5.1 Alpha histórico masivo — Q-BE vs Mercado
+
+El Observatorio (`/consenso`, `[LN-QBE-148]` Φ) ya calcula el **Alpha histórico masivo** cruzando el símplex P' con los momios de FootyStats. La muestra de comparación son los partidos donde **coexisten** momios y distribución P'; un partido sin P' queda fuera del promedio de Q-BE (no se imputa como cero) y sin coexistencia el Alpha se declara `SIN EVIDENCIA`.
+
+| Ámbito | Muestra (coexistencia) | Brier FootyStats | Brier Q-BE | Alpha |
+|---|---:|---:|---:|---:|
+| Temporada `2023_2024` | 304 de 340 auditados | 0.2021 | 0.2068 | **−2.33 %** |
+| Universo histórico («Todas») | 2 690 de 3 870 auditados | 0.2040 | 0.2120 | **−3.92 %** |
+
+* **Fórmula canónica:** `Alpha = (1 − Brier_QBE / Brier_FootyStats) × 100`, con Brier normalizado 3N (`[LN-QBE-100]`).
+* **Lectura:** el mercado FootyStats sigue siendo marginalmente mejor calibrado que Q-BE en el histórico (−2.3 % a −3.9 %); el signo negativo es resultado, no defecto. Ningún porcentaje se fabrica: sin P' el Alpha es ausente.
+* **Desglose por jornada:** no se publica en el modo global porque `historical_matches` no porta número de jornada; la UI lo declara en lugar de inventarlo.
 
 ---
 
@@ -265,6 +354,9 @@ La temporada `2026_2027` está en curso: 153 partidos cargados al corte. No se e
 | Désiré André y +PA | `qbe_core/src/core/andre_early_payout.py` | `qbe_core/tests/test_shield_sovereign_pipeline.py` |
 | Persistencia y gateway | `qbe_storage/src/storage/gateway.py` | `qbe_storage/tests/test_shield_gateway_readonly_isolation.py` |
 | Ingesta histórica y parser | `qbe_ingestion/src/ingestion/` | `qbe_ingestion/tests/test_shield_historical_load_integrity.py`, `test_shield_mhtml_parser_and_season_integrity.py` |
+| Extracción de eventos minuto a minuto | `qbe_ingestion/src/ingestion/parsers/parsear_minuto_a_minuto.py`, `loaders/cargar_eventos_historicos.py`, `scripts/auditoria/` | `qbe_ingestion/tests/test_shield_minuto_a_minuto_parser.py`, `test_shield_orquestador_extraccion.py`, `test_shield_descubrimiento_ligamx.py` |
+| Variables causales y calibración | `qbe_core/src/core/sovereign/derivar_variables_causales.py`, `calibrar_perturbacion.py` | `qbe_core/tests/test_shield_derivacion_causal.py`, `test_shield_calibracion.py` |
+| Paridad canónica y Censo | `scripts/auditoria/auditar_paridad_bg.py` | `qbe_core/tests/test_shield_canonical_parity.py` |
 | Observatorio y calibración | `qbe_observatory/src/observatory/` | `qbe_observatory/tests/test_shield_obs.py`, `test_visor_auditoria_calibracion.py` |
 | Transferencia KTP | `docs/KTP/` | `qbe_core/tests/test_shield_ktp_package_integrity.py` |
 
@@ -281,9 +373,17 @@ La temporada `2026_2027` está en curso: 153 partidos cargados al corte. No se e
 | `[LN-QBE-138]` | LOGIC | Protocolo de Memoria Institucional Modular y Transferencia de Arquitectura (KTP Package) | SELLADO |
 | `[LN-QBE-139]` | LOGIC | Auditor de Paridad Estática AST y Generador de Bandeja `GL_update.md` | SELLADO |
 | `[LN-QBE-140]` | LOGIC | Juez Inmutable de Paridad Canónica y Detección de Reglas Huérfanas | SELLADO |
+| `[LN-QBE-141]` | LOGIC | Parser Offline de Eventos Minuto a Minuto (Jugada a Jugada) | SELLADO |
+| `[LN-QBE-142]` | LOGIC | Sonda de Descubrimiento de Partidos y URLs Minuto a Minuto (ligamx.net) | SELLADO |
+| `[LN-QBE-143]` | LOGIC | Orquestador de Extracción Masiva de Eventos (ligamx.net → Bóveda OLAP) | SELLADO |
+| `[LN-QBE-144]` | LOGIC | Almacén de Eventos Históricos (`historical_match_events`) | SELLADO |
+| `[LN-QBE-145]` | LOGIC | Diccionario Canónico de Alias de Liga MX (`ligamx.net` → bóveda) | SELLADO |
+| `[LN-QBE-146]` | LOGIC | Motor de Derivación de Variables Causales | SELLADO |
+| `[LN-QBE-147]` | LOGIC | Motor de Calibración y Perturbación de Variables Causales | SELLADO |
 | `[ARCH-1.4.72]` | ARCH | Pipeline de Inyección Histórica Multianual y Reflection DDL | SELLADO |
 | `[ARCH-1.4.73]` | ARCH | Extractor Histórico Masivo de FotMob | SELLADO — deuda de cuerpo declarada |
 | `[ARCH-1.4.74]` | ARCH | Topología y Subsistema Documental de Transferencia KTP | SELLADO |
+| `[ARCH-1.5.1]` | ARCH | Esquema Relacional 3NF Multi-Torneo — Especificación Canónica de Columnas | SELLADO |
 
 **Reglas:**
 
@@ -317,6 +417,10 @@ La temporada `2026_2027` está en curso: 153 partidos cargados al corte. No se e
 **Invariante de existencia:** los seis archivos rectores y el directorio `history/` deben existir siempre.  
 **Invariante de archivo:** se copia, no se mueve. `history/` es inmutable. `AKT.md` y `RT_Pmpt.md` siempre existen.
 
+### 9.2 Compuerta de Censo de Paridad Canónica
+
+La Fase B exige el Censo de Paridad Canónica de `docs/GOVERNANCE.md` §3.5. **Alcance del cierre Sprint 45:** el Censo ordenado por la VÍA B se ejecutó sobre `qbe_core/src/core` (25 archivos) y quedó en **0 hallazgos**. El barrido ampliado de §3.5 sobre `qbe_business/src` reporta **72 hallazgos Clase IV** preexistentes; se registran como deuda separada y no se declaran en 0.
+
 ---
 
 ## 10. DEUDAS ABIERTAS DECLARADAS
@@ -329,6 +433,12 @@ La temporada `2026_2027` está en curso: 153 partidos cargados al corte. No se e
 | Línea base financiera sin acta reproducible | Riesgo de presentar una declaración como resultado. | Producir acta con comando, fecha y evidencia. | Director / Arquitecto |
 | `data/sondas_exploracion/` sin trackear | Higiene de Git. | Mantener fuera del commit del paquete KTP. | Constructor |
 | Deuda 3 — Tres scripts de laboratorio con imports legados (`sandbox_h2h_pipeline.py`, `sandbox_volumen_porteria_pipeline.py`, `manus_qbe_model.py`) | No afectan producción ni The Shield; rompen la reproducibilidad del laboratorio. | Reconectar a `qbe_core` / `qbe_storage`; smoke test de importación y `--help`. | Constructor |
+| Catálogo Compuesto `C01-C08` no materializado | No hay 8 variables compuestas (ej. Reacción post-gol), ni ID sellado, ni Juez, ni columnas en la BD. | Definir especificación, asignar ID, crear Juez Inmutable, migrar columnas y poblar los 301 partidos. | Director / Arquitecto |
+| Daemon en vivo `Centinela` detenido | La ingesta en vivo no está rescatada; sin proceso, tarea programada ni log. La causa raíz no está diagnosticada. | Diagnosticar red/credenciales/entorno, arrancar el Daemon y dejar log; o emitir Ficha de Varianza. | Arquitecto / Infraestructura |
+| Sin split Train/Test | El Brier `0.65546144 → 0.59896449` es in-sample; no hay evidencia fuera de muestra ni dictamen de overfitting. | Implementar partición temporal y ejecutar calibración cruzada; si no hay Test, declarar `SIN EVIDENCIA`. | Arquitecto |
+| Cobertura causal limitada a `2015_2016` | 0 temporadas con 32 variables; solo `2015_2016` con 9 variables y 301/334 partidos. Las otras 11 temporadas no tienen eventos. | Extraer eventos de las 11 temporadas restantes o declarar el alcance de la calibración. | Ingesta / Arquitecto |
+| Sonda `auditar_boveda_historica.py` ausente | No existe el instrumento canónico de auditoría de cobertura; la cobertura se midió con consulta SQL de solo lectura. | Materializar la sonda y su Juez; ejecutarla contra `qbe_historico.db`. | Constructor |
+| Censo ampliado de `qbe_business`: 72 hallazgos Clase IV | El Censo de Núcleo (`qbe_core`) está en 0; el barrido de §3.5 sobre `qbe_business/src` reporta 72 nodos sin etiqueta, fuera de la VÍA B del Sprint 45. | Abrir VÍA B específica para `qbe_business` o excepción formal del Director. | Arquitecto |
 
 ---
 
@@ -345,8 +455,11 @@ La temporada `2026_2027` está en curso: 153 partidos cargados al corte. No se e
 | Prompt de asunción | `docs/KTP/RT_Pmpt.md` |
 | Juez | `qbe_core/tests/test_shield_ktp_package_integrity.py` |
 | Juez de Paridad Canónica | `qbe_core/tests/test_shield_canonical_parity.py` |
+| Censo de Paridad Canónica | `docs/GOVERNANCE.md` §3.5; `[LN-QBE-139]`/`[LN-QBE-140]` |
+| Bandeja de paridad | `docs/KTP/GL_update.md` |
 | Acta activa | `docs/KTP/AKT.md` |
 | Acta histórica Sprint 41 | `docs/KTP/history/AKT_2026-10-31_SPRINT-41-TRANSICION-Y-CONSISTENCIA-BG.md` |
+| Acta histórica Sprint 45 | `docs/KTP/history/AKT_2026-11-01_SPRINT-45-EXPANSION-CAUSAL-Y-RESCATE-EN-VIVO.md` |
 | Archivo histórico | `docs/KTP/history/` |
 
 > **Mantenimiento:** este documento se actualiza solo por consolidación formal. La versión, la fecha y el acta de origen se registran en cada cambio. No se edita para “hacer pasar” un test; si la ley cambia, se emite la Ficha de Varianza correspondiente.

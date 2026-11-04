@@ -265,6 +265,20 @@ def _convertir_match_fotmob(match_obj: Dict[str, Any], idx: int, jornada_num: in
     }
 
 
+def _goles_desde_marcador(marcador: Any) -> Optional[Tuple[int, int]]:
+    """Parsea un marcador oficial ``"L - V"``; ``None`` si no es concluyente."""
+    if marcador is None:
+        return None
+    texto = str(marcador).strip()
+    if not texto or texto.upper() == "MARCADOR_PENDIENTE":
+        return None
+    texto = texto.replace("–", "-").replace("—", "-")
+    partes = [parte.strip() for parte in texto.split("-")]
+    if len(partes) != 2 or not all(parte.isdigit() for parte in partes):
+        return None
+    return int(partes[0]), int(partes[1])
+
+
 # ===========================================================================
 # [ARCH-1.6.13-C] EXTRACCIÓN DE TABLAS DESAGREGADAS POR SEDE (SPLITS FOTMOB)
 # ===========================================================================
@@ -732,7 +746,7 @@ def persistir_en_sqlite(datos: Dict[str, Any], league_fotmob_id: int = LIGAMX_FO
             snap_fix = tx.query(FixtureSnapshot).filter(
                 FixtureSnapshot.league_id == league.id,
                 FixtureSnapshot.matchday == r
-            ).first()
+            ).order_by(FixtureSnapshot.updated_at.desc()).first()
 
             if not snap_fix:
                 snap_fix = FixtureSnapshot(
@@ -757,6 +771,17 @@ def persistir_en_sqlite(datos: Dict[str, Any], league_fotmob_id: int = LIGAMX_FO
                         for clave in CLAVES_CONTRATO_CAPTURA:
                             if f.get(clave) is None and previos.get(k, {}).get(clave) is not None:
                                 f[clave] = previos[k][clave]
+                        # [ARCH-1.5.14] Preservación de la capa de mercado: si el paso de
+                        # mercado falló, el refresh de deportivo no debe borrar el último
+                        # estado válido de momios_operadores/consenso_mercado.
+                        for clave in (
+                            "momios_operadores",
+                            "probabilidades_sin_comision",
+                            "consenso_mercado",
+                            "arbitraje",
+                        ):
+                            if not f.get(clave) and previos.get(k, {}).get(clave):
+                                f[clave] = previos[k][clave]
 
                 snap_fix.matches_json = fixtures_r
                 snap_fix.updated_at = ahora
@@ -775,14 +800,28 @@ def persistir_en_sqlite(datos: Dict[str, Any], league_fotmob_id: int = LIGAMX_FO
             for f in partidos:
                 m_id = f["id_partido"]
                 m_rec = tx.query(Match).filter(Match.id == m_id).first()
+                goles = (
+                    _goles_desde_marcador(f.get("marcador_actual"))
+                    if f.get("estado") == "FINALIZADO"
+                    else None
+                )
                 if not m_rec:
                     m_rec = Match(
                         id=m_id, competition_id="MEX_LIGAMX", matchday_num=int(jornada),
                         home_team_slug=obtener_slug_club(f["local"]),
                         away_team_slug=obtener_slug_club(f["visitante"]),
-                        status=f["estado"]
+                        status=f["estado"],
+                        score_home=goles[0] if goles else None,
+                        score_away=goles[1] if goles else None,
                     )
                     tx.add(m_rec)
+                else:
+                    # [ARCH-1.6.12] El parte oficial FINISHED de FotMob debe
+                    # sincronizar también la fila Match, no sólo el snapshot JSON.
+                    m_rec.status = f["estado"]
+                    if goles is not None:
+                        m_rec.score_home = goles[0]
+                        m_rec.score_away = goles[1]
 
     logger.info("✅ [PERSISTENCIA OK] Temporada Liga MX inyectada y distribuida al 100%.")
 
@@ -824,6 +863,41 @@ def imprimir_resumen_telemetria(datos: Dict[str, Any], t_total: float) -> None:
     print("=" * ancho)
 
 
+def detectar_y_cerrar_jornada() -> List[Dict[str, Any]]:
+    """`[SPRINT-47]` Detector de fin de jornada + cierre contra la Bóveda Histórica.
+
+    Se ejecuta al final de cada ciclo de ingesta: cuando el ÚLTIMO partido de una
+    jornada pasa a `FINALIZADO`, la secuencia completa de `odds_ticks` de esa
+    jornada se transfiere a `historical_odds_qbe_live` con origen
+    `Q_BE_CAPTURA_PROPIA` (ver `src.storage.jornada_closure`). Una jornada sin
+    ticks se sella como `SIN EVIDENCIA_PROPIA`.
+
+    Un fallo del cierre JAMÁS tumba el ciclo de ingesta: se registra en ERROR y
+    la jornada queda pendiente para el siguiente ciclo (reintento idempotente).
+    """
+    from src.storage.jornada_closure import cerrar_jornadas_pendientes
+
+    try:
+        resultados = cerrar_jornadas_pendientes()
+    except Exception as error:  # noqa: BLE001 — la ingesta no depende del cierre
+        logger.error("⛔ [JORNADA CLOSURE] No se pudo cerrar la jornada: %s", error)
+        return []
+
+    for resumen in resultados:
+        logger.info(
+            "🔒 [JORNADA CLOSURE] %s J%02d → %s · ticks=%d · partidos=%d · brier_propio=%s",
+            resumen.get("temporada"),
+            int(resumen.get("jornada") or 0),
+            resumen.get("estado"),
+            int(resumen.get("ticks") or 0),
+            int(resumen.get("partidos") or 0),
+            resumen.get("brier_propio"),
+        )
+    if not resultados:
+        logger.info("🔓 [JORNADA CLOSURE] Sin jornadas pendientes de cierre.")
+    return resultados
+
+
 def ejecutar_ingesta_soberana_ligamx():
     """Ejecuta el ciclo completo unificado: Bóveda -> Catálogo 3NF -> Temporada -> Soberano."""
     t0 = time.perf_counter()
@@ -838,6 +912,9 @@ def ejecutar_ingesta_soberana_ligamx():
 
     # 3. Persistir y Distribuir
     persistir_en_sqlite(datos, league_fotmob_id=LIGAMX_FOTMOB_ID)
+
+    # 4. [SPRINT-47] Cierre de jornada: odds_ticks → Bóveda Histórica.
+    detectar_y_cerrar_jornada()
 
     t_total = time.perf_counter() - t0
     logger.info("🏁 Ingesta Soberana de Liga MX concluida con éxito en %.2fs.", t_total)

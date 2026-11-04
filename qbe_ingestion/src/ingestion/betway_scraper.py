@@ -136,6 +136,11 @@ class BetwayMarketScraper:
                     page.wait_for_timeout(1000)
 
                     body_text = page.inner_text("body")
+                    if "no hay eventos disponibles" in body_text.lower():
+                        logger.info(
+                            "[BETWAY] Cartelera sin eventos disponibles; se retorna lista vacía."
+                        )
+                        return resultados
                     lines = [line.strip() for line in body_text.splitlines() if line.strip()]
                     print(f"📄 [BETWAY] DOM cargado tras expandir acordeones: {len(lines)} líneas de texto.")
 

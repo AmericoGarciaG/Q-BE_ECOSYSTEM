@@ -377,8 +377,11 @@ es el umbral de indiferencia de cobertura. No es una constante universal: depend
 | `[LN-QBE-145]` | Diccionario Canónico de Alias de Liga MX (`ligamx.net` → bóveda) | `ingesta` | SELLADO |
 | `[LN-QBE-146]` | Motor de Derivación de Variables Causales | `motor` | SELLADO |
 | `[LN-QBE-147]` | Motor de Calibración y Perturbación de Variables Causales | `motor` | SELLADO |
+| `[LN-QBE-148]` | Motor de Consenso Ponderado (Wisdom of the Crowds) | `motor` | SELLADO |
+| `[LN-QBE-149]` | Motor de Detección de Rupturas de Consenso (Radar de Sindicatos) | `motor` | SELLADO |
+| `[LN-QBE-150]` | Motor de Cálculo de Distribuciones Históricas (P') | `motor` | SELLADO |
 
-_Total: 135 identificadores._
+_Total: 138 identificadores._
 
 ---
 
@@ -642,6 +645,7 @@ Consecuencia de la Ficha de Varianza del 2026-11-01 (cuelgue aparente del lote p
 ### ID: `[LN-QBE-146]` Motor de Derivación de Variables Causales
 
 * **Ω (Resumen):** Función pura que convierte la línea de tiempo factual de un partido (`historical_match_events`) en el vector canónico de **32 variables** del catálogo `[LN-QBE-120]`. Deriva por conteo directo o por proximidad temporal lo que la narrativa «Jugada a Jugada» prueba, y **declara `SIN EVIDENCIA`** lo que no es inferible de eventos (posesión, xG, pases): no imputa, no modela y no interpola. Es el puente entre la evidencia causal y el script de calibración (Brier Score).
+* **Delimitación de proveedores:** FootyStats es el Proveedor Primario Histórico de *momios* y *resultados*; FotMob es el Proveedor Primario de *evidencia fáctica* (32 variables). La derivación causal consume FotMob; no usa FootyStats para las 32 variables ni FotMob para momios de mercado.
 * **I (Input):** `match_id: str` (llave de la bóveda) y `eventos: Sequence[Mapping]` con el contrato de `[LN-QBE-141]` (`evento_id`, `lado` ∈ {`local`,`visita`}, `tipo`, `minuto`, `minuto_agregado`, `periodo`, `orden_dom`).
 * **P (Process) [ALGO-PROTECTED] [DIRGEN-STRICT]:**
   1. **Aduana:** `match_id` textual no vacío y lista no vacía; cada evento debe declarar `lado`, `tipo` y `orden_dom`. Un faltante aborta con `DerivacionError` (nunca se devuelve un vector vacío).
@@ -688,11 +692,68 @@ Consecuencia de la Ficha de Varianza del 2026-11-01 (cuelgue aparente del lote p
 | `V32` Varianza ΔxPTS | requiere modelo | `SIN EVIDENCIA` |
 
 * **O (Output):** `dict[str, dict[str, float | None]]` con las 32 claves. **9 derivadas** (`V05`, `V07`, `V13`, `V20`, `V21`, `V22`, `V23`, `V24`, `V25`), **23 `SIN EVIDENCIA`**. Persistencia: una fila por partido en `historical_match_causal_vars` (columnas `vNN_local` / `vNN_visita`, más `sin_evidencia`, `derivadas`, `fuente_datos`, `cargado_utc`).
+
 * **Φ (Transición):** Hacia el script de calibración (Brier Score) y la ingeniería de variables del observatorio.
 * **Invariantes:** función pura (sin I/O, sin red, sin BD, sin reloj); `qbe_core` no importa `sqlalchemy`, `requests`, `playwright`, `src.storage` ni `src.ingestion`; las 32 claves siempre están presentes; `None` ≠ `0.0` (ausencia declarada vs. cero factual); el conteo es del **lado**, nunca del partido agregado.
 * **Fail-Loud:** lista vacía, `match_id` inválido, evento sin `lado`/`tipo`/`orden_dom`, o `lado` fuera del dominio ⇒ `DerivacionError`.
 * **Limitación declarada:** superada por enmienda del Director (Sprint 44): `V07`/`V13` **incluyen `gol_penal`** como remate al arco. En la muestra, América 3-3 Monterrey pasa de 17 a **18 remates** (10 local / 8 visita).
 * **[SHIELD]:** `qbe_core/tests/test_shield_derivacion_causal.py`
+
+### 19.1 Fuente alterna declarada: `matchDetails` de FotMob (extracción histórica masiva)
+
+Enmienda del Director (Sprint 48). El motor anterior deriva lo que la narrativa «Jugada a Jugada» prueba; esta fuente paralela toma el bloque estadístico oficial del partido publicado por FotMob (`content.stats.Periods.All.stats`) y reconstruye el mismo vector de 32 claves. **Misma tabla, mismos slots, misma regla de `NULL` honesto**; cambia la procedencia (`fuente_datos = 'FOTMOB_MATCHDETAILS'`).
+
+**Reparto canónico de las 32 variables:**
+
+| Bloque | Variables | N |
+|---|---|---:|
+| FotMob directas (tablero publicado) | `V01`–`V15`, `V17`–`V25` | 24 |
+| FotMob contexto (historia de la bóveda) | `V26`, `V27`, `V28`, `V31` | 4 |
+| Fixture / estáticas | `V29`, `V30` | 2 |
+| Derivada | `V32` | 1 |
+| Fuera de fuente | `V16` | 1 |
+
+**Mapeo exacto por variable:**
+
+| Variable | Fuente | Clave / regla determinista |
+|---|---|---|
+| `V01` | FotMob | `BallPossesion` (%). |
+| `V02` | FotMob | `touches_in_opp_box` (sólo si el partido lo publica; si no, `NULL`). |
+| `V03` | FotMob | `accurate_passes`, entero inicial de `"N (P%)"`. |
+| `V04` | FotMob | `long_balls_accurate`, entero inicial de `"N (P%)"`. |
+| `V05` | FotMob | `fouls`. |
+| `V06` | FotMob | `expected_goals` (ausente antes de la era xG ⇒ `NULL`). |
+| `V07` | FotMob | `ShotsOnTarget`. |
+| `V08` | FotMob | `big_chance`. |
+| `V09` | FotMob | `big_chance_missed_title`. |
+| `V10` | FotMob | `expected_goals_on_target` (ausente ⇒ `NULL`). |
+| `V11` | FotMob | `expected_assists` (ausente ⇒ `NULL`). |
+| `V12` | FotMob | `expected_goals_conceded`; si no se publica, dual de `V06` (`xGA_local ≡ xG_visita`). Sin xG ⇒ `NULL`. |
+| `V13` | Identidad | Dual exacto de `V07`: `SoTA_local ≡ SoT_visita`. |
+| `V14` | Identidad | `tackles + clearances + interceptions` (suma declarada de la misma familia). |
+| `V15` | FotMob | `interceptions`. |
+| `V16` | — | `FUERA DE FUENTE` permanente (`[LN-QBE-120]` §2.2 regla 2). |
+| `V17` | FotMob | `goals_prevented` (ausente ⇒ `NULL`). |
+| `V18` | Identidad | `keeper_saves / SoTA × 100`; denominador `0` ⇒ `NULL` (nunca `0 %` fabricado). |
+| `V19` | FotMob | `total_keeper_sweeper` (ausente ⇒ `NULL`). |
+| `V20` | Identidad | `1` si el rival no anotó, `0` si anotó; sin marcador ⇒ `NULL`. |
+| `V21` | FotMob | `_set_piece_goals_team` (ausente ⇒ `NULL`). |
+| `V22` | FotMob | `_set_piece_goals_conceded_team` (ausente ⇒ `NULL`). |
+| `V23` | FotMob | `corners`. |
+| `V24` | FotMob | `penalty_won` (ausente ⇒ `NULL`). |
+| `V25` | Identidad | `yellow_cards + red_cards` (convención sellada del catálogo). |
+| `V26` | Bóveda | Tasa de victorias del club en la serie H2H **anterior al kickoff**. |
+| `V27` | Bóveda | Diferencial medio de goles en la serie H2H **anterior al kickoff**. |
+| `V28` | Bóveda | Tasa de victorias del club en la sede del anfitrión (serie previa). |
+| `V29` | Catálogo | `ΔAlt⁺ = max(0, altitud_anfitrión − altitud_visita)` desde `CATALOGO_ALTITUDES_LIGAMX` (misma magnitud en ambos lados con signo opuesto). |
+| `V30` | Bóveda | `ΔDías = descanso_local − descanso_visita`, medido contra el último partido previo de cada club. |
+| `V31` | Bóveda | Puntos obtenidos en los 5 partidos previos del club. |
+| `V32` | Derivada | Varianza poblacional de los puntos de esos mismos 5 partidos; `NULL` con menos de 2 observaciones. |
+
+* **Cero fuga temporal [INVARIANTE]:** `V26`–`V32` se calculan exclusivamente con partidos estrictamente anteriores al kickoff. El partido evaluado jamás participa de su propio contexto, aunque el proveedor publique la serie completa.
+* **Fail-Loud:** un `matchDetails` sin `content.stats.Periods.All` no produce fila parcial: el partido se declara fallido y se reporta.
+* **Φ (Transición):** hacia `[LN-QBE-150]` (cálculo de P') y hacia el Alpha masivo del Observatorio.
+* **[SHIELD]:** `tests/shield/test_shield_fotmob_32_vars.py` (cobertura del catálogo) y `tests/shield/test_shield_extraccion_historica_fotmob.py`.
 
 ---
 
@@ -716,3 +777,72 @@ Consecuencia de la Ficha de Varianza del 2026-11-01 (cuelgue aparente del lote p
 * **Fail-Loud:** lote vacío, marcador no entero o negativo, vector sin `V07`/`V13`, `MU_LIGA ≤ 0`, medias negativas o factores no positivos ⇒ `CalibracionError`.
 * **Limitación declarada:** la calibración es **in-sample** (misma temporada 2015-2016); la mejora del Brier mide ajuste al puente, no capacidad predictiva fuera de muestra. El puente sólo canaliza `V07`/`V13`; las demás variables perturbables se exploran y, si no tienen canal, su delta es `0.0` y así se declaran.
 * **[SHIELD]:** `qbe_core/tests/test_shield_calibracion.py`
+
+---
+
+## 21. CONSENSO PONDERADO Y RADAR DE SINDICATOS
+
+### ID: `[LN-QBE-148]` Motor de Consenso Ponderado (Wisdom of the Crowds)
+*   **Ω (Resumen):** Calcular el Símplex consensuado del mercado aplicando de-vig y pesos dinámicos basados en la precisión histórica.
+*   **Delimitación de proveedores:** El Brier Score y el Alpha históricos se calculan sobre FootyStats (momios + resultados de partidos). La distribución Q-BE se calibra con FotMob (32 variables). Los dominios no se mezclan: FootyStats no alimenta las 32 variables y FotMob no alimenta momios de mercado.
+*   **I (Input):** Momios de los casinos desde `odds_ticks`.
+*   **P (Process):**
+    1. Aplicar `[LN-QBE-007-C]` (Vig-Free De-biasing) a cada casino.
+    2. Asignar pesos ($W_i$) basados en el Brier Score histórico (Opción B).
+    3. Calcular $\Delta^2 = \sum (P_{casino\_i} \cdot W_i)$.
+*   **Challenger aislado (Sprint 47) [INVARIANTE]:** Q-BE opera como Challenger independiente y queda estrictamente prohibida su participación en el cálculo del Consenso de Mercado. El Consenso agrupa únicamente a los casinos. La distribución Q-BE se publica como fila de solo lectura (peso `—`) y se mide contra el Consenso vía Alpha; jamás entra en $\Delta^2$, ni siquiera cuando comparte el mismo set de datos, la misma jornada o el mismo payload de cuotas.
+*   **O (Output):** Distribución de probabilidad consensuada en el Símplex $\Delta^2$.
+*   **Agregación Brier:** La agregación de Brier por jornada se realizará mediante el promedio aritmético de los Brier individuales de los partidos. Los partidos sin evidencia para una fuente seleccionada son excluidos del promedio, no imputados como cero.
+*   **Agregación global (Sprint 47) [INVARIANTE]:** El Brier Score Global se calcula sobre la totalidad de los partidos válidos, no mediante el promedio aritmético de los Brier de cada jornada. Los KPIs superiores transcriben el agregado del universo completo de partidos finalizados (normalizado 3N); el promedio por jornada describe exclusivamente el bloque de esa jornada y nunca se re-promedia para fabricar el global.
+*   **Fuente de verdad histórica:** El Brier Score histórico del mercado se calculará exclusivamente sobre el universo de partidos finalizados (histórico masivo). Queda prohibido utilizar muestras parciales de ticks en vivo para calcular métricas de rendimiento histórico (Brier/Alpha).
+*   **Brier histórico Q-BE (Sprint 48):** El Brier Score histórico de Q-BE se calcula consumiendo `historical_sovereign_distributions`. La muestra de comparación son los partidos donde coexisten momios de FootyStats y distribución P'. Un partido sin distribución P' queda fuera del promedio de Q-BE —no se imputa como cero ni se extrapola— y sin coexistencia el Alpha se declara `SIN EVIDENCIA`. El filtro «Todas» agrega el universo histórico completo; el desglose por jornada no se publica en ese modo porque el histórico masivo no porta número de jornada.
+*   **Deuda técnica (FootyStats):** Las cuotas históricas actuales (FootyStats) demuestran un Brier Score ineficiente (Alpha Q-BE +66%). Queda prohibido usar estas cuotas para simular ROI histórico. Se requiere la integración de un nuevo proveedor de cuotas históricas de calidad o la acumulación de ticks propios vía Daemon.
+*   **Φ (Transición):** Consumidor activo: `qbe_core` / `qbe_observatory`.
+
+### ID: `[LN-QBE-149]` Motor de Detección de Rupturas de Consenso (Radar de Sindicatos)
+*   **Ω (Resumen):** Detectar movimientos anómalos en los momios que sugieran intervención de capital informado.
+*   **I (Input):** Serie histórica de `odds_ticks` y la distribución de consenso.
+*   **P (Process):** Si la tasa de cambio (velocidad/magnitud) de un casino excede `CONST_DELTA_SINDICATO_PCT` y rompe la tendencia del Consenso Ponderado, emite alerta.
+*   **O (Output):** Flag de alerta en el DTO de la Mesa de Apuestas.
+
+---
+
+## 22. VISOR DE CONSENSO — MOMIO JUSTO
+
+**Nodos:** `[LN-QBE-011]` / `[DES-QBE-076]`
+
+> El Visor de Consenso de Mercado debe mostrar el Momio Justo calculado como el inverso de la probabilidad (1/P) para la distribución Q-BE y el Consenso Ponderado, manteniendo los momios brutos para los casinos.
+
+*   **Fail-Loud:** si `P` es `None`, `0.0` o no representable, el Momio Justo es `None` y la UI muestra `—`; nunca `Infinity` ni un valor inventado.
+
+---
+
+## 23. ESTÁNDAR DE BRIER MULTICLASE 3N
+
+### ID: `[LN-QBE-100]` Motor de Calibración Factual de Temporada y Evaluación Multicategórica de Brier
+
+> **Estándar de Brier Multiclase:** El Brier Score reportado en todas las vistas del ecosistema DEBE ser normalizado por el número de clases (fórmula `3N`: dividir entre 3). Queda prohibido reportar el Brier crudo o suma de cuadrados sin normalizar.
+
+*   **Fuente única:** `/visor` y `/consenso` consumen el mismo reporte de Auditoría para el Brier de mercado.
+*   **Histórico FootyStats:** el Brier de `historical_matches` se normaliza igualmente por 3 antes de mostrarse; el crudo solo se conserva en las sondas forenses de `scripts/auditoria/historico/`.
+
+---
+
+## 24. DISTRIBUCIONES HISTÓRICAS Y ALPHA MASIVO
+
+### ID: `[LN-QBE-150]` Motor de Cálculo de Distribuciones Históricas (P')
+
+* **Ω (Resumen):** Materializar el símplex soberano P' de todo el corpus histórico, partido por partido, leyendo el vector causal de 32 variables (`historical_match_causal_vars`, `[LN-QBE-146]` §19.1), reconstruyendo el registro fáctico **pre-kickoff** de cada encuentro y delegando la matemática en la función sellada `generar_distribucion_soberana` de `qbe_core` (Dixon-Coles 2D → colapso al Símplex Δ² → Cláusula de André). Sin P' histórica no existe Alpha masivo: el Observatorio sólo podía comparar Q-BE contra mercado en la muestra de control viva.
+* **Delimitación de proveedores (`[ARCH-1.4.77]`):** los momios y resultados provienen de FootyStats (`historical_matches`); la evidencia fáctica proviene de FotMob (`historical_match_causal_vars`). Este nodo **no mezcla dominios**: sólo cruza ambos linajes por `match_id` al publicar el Alpha.
+* **I (Input):** `qbe_observatorio/data/qbe_historico.db` — `historical_match_causal_vars` (vector de 32 variables) y `historical_matches` (marcadores y calendario). No consume red.
+* **P (Process) [DIRGEN-STRICT]:**
+  1. **Reconstrucción pre-kickoff:** para cada club se agregan `pj`, `gf` y `gc` con **exclusivamente** los partidos de la misma temporada anteriores al kickoff; `xg`/`xga` se suman de `V06`/`V12` de esos mismos partidos cuando el proveedor los publica, y `0.0` en caso contrario (el motor sellado cae a la ancla de goles, nunca a un valor fabricado).
+  2. **Contexto:** `V29` (ΔAlt⁺) y `V30` (ΔDías) viajan al motor como `delta_alt_metros` y `delta_descanso_dias`; la serie H2H previa viaja como `h2h_matches` con `dias_antiguedad`, `goles_local` y `goles_visita` en la perspectiva del fixture.
+  3. **Aduana de suficiencia `S(I_i)`:** con menos de 3 partidos previos legibles por club, el partido **se salta** y se declara en el reporte. No se persiste una distribución uniforme disfrazada de cálculo.
+  4. **Delegación:** `generar_distribucion_soberana(match_id, raw_match_data, delta_alt_metros, delta_descanso_dias)`. Ninguna fórmula se reimplementa fuera de `qbe_core`.
+  5. **Persistencia:** `INSERT OR REPLACE` idempotente en `historical_sovereign_distributions` (`[ARCH-1.5.1]` §15.5) dentro de `BEGIN IMMEDIATE`, con respaldo WORM previo y `PRAGMA quick_check` al cierre.
+* **O (Output):** una fila por partido operable en `historical_sovereign_distributions` con `p_local`/`p_empate`/`p_visitante`, `lambda_home`/`lambda_away`, `phi_lead2_*`, `epistemic_delta`, `delta_epist`, `origen_factores`, `pj_home`/`pj_away` y `audit_trace_json` completo. Reporte de consola con generadas, saltadas y motivo de cada descarte.
+* **Φ (Transición):** hacia el **Alpha masivo** del Observatorio (`[LN-QBE-148]`): el símplex P' histórico se cruza con los momios de FootyStats (o con la captura Q-BE Live) para calcular el Alpha por partido y su Brier 3N (`[LN-QBE-100]`) sobre el universo completo, no sobre una muestra de control.
+* **Invariantes:** cero fuga temporal (el resultado del partido evaluado jamás entra en su propio registro de entrada); cero imputaciones; `qbe_core` se importa y no se modifica; `sovereign_distributions` (tabla viva) no se lee ni se escribe; el símplex persistido suma 1 con tolerancia 1e-9.
+* **Fail-Loud:** bóveda inexistente, tabla de destino sin DDL aplicable, o `PRAGMA quick_check` distinto de `ok` ⇒ código de salida 1 y traza. Un partido sin `S(I_i)` no es un fallo del motor: es un descarte declarado.
+* **[SHIELD]:** `tests/shield/test_shield_distribuciones_historicas.py`.

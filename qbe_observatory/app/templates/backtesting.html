@@ -12,6 +12,7 @@
     <nav class="header-nav">
       <a class="tab-btn" href="/">Inicio</a>
       <a class="tab-btn" href="/visor">Auditoría de Calibración</a>
+      <a class="tab-btn" href="/consenso">Consenso de Mercado</a>
       <a class="tab-btn active" href="/backtesting">Backtesting</a>
     </nav>
   </header>
@@ -24,7 +25,7 @@
       {% if snapshot_edad_min is none %}
         <span style="color: var(--danger, #f87171);">Snapshot no disponible. Ejecute <code>python -m scripts.refresh_snapshot</code>.</span>
       {% elif snapshot_fresco %}
-        <span style="color: var(--success, #4ade80);">Fresco</span> · edad {{ snapshot_edad_min }} min (límite 60 min).
+        <span style="color: var(--success, #4ade80);">Fresco</span> · edad {{ snapshot_edad_min }} min (límite 30 min).
       {% else %}
         <span style="color: var(--warning, #fbbf24);">Obsoleto</span> · edad {{ snapshot_edad_min }} min. Refrescar con <code>python -m scripts.refresh_snapshot</code>.
       {% endif %}

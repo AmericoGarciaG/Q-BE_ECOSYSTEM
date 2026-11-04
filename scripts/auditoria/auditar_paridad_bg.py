@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import os
 import re
 from collections import Counter
 from dataclasses import dataclass
@@ -25,6 +26,45 @@ PATRON_ETIQUETA = re.compile(r"\[LN-QBE-\d{3}(?:-[A-Z0-9]+)*\]")
 ESTADOS_VIGENTES = frozenset({"SELLADO"})
 ESTADOS_NO_VIGENTES = frozenset({"EN FORJA", "LIBRE"})
 BASE_ASUMIDA_SPRINT = 138
+
+
+def _resolver_sprint_activo(raiz: Path | None = None) -> str:
+    """Resuelve el sprint vigente sin hardcodearlo.
+
+    Orden de precedencia:
+    1. La cabecera ``**Sprint:**`` de ``docs/KTP/AKT.md``.
+    2. El acta más reciente de ``docs/KTP/history/`` (fecha en el nombre).
+    3. ``RuntimeError`` (Fail-Loud).
+    """
+    base = Path(raiz) if raiz is not None else Path(__file__).resolve().parents[2]
+
+    akt = base / "docs" / "KTP" / "AKT.md"
+    if akt.is_file():
+        texto = akt.read_text(encoding="utf-8")
+        coincidencia = re.search(r"\*\*Sprint:\*\*\s*(.+)", texto, flags=re.MULTILINE)
+        if coincidencia:
+            valor = coincidencia.group(1).replace("<br>", "").strip().strip("`").strip()
+            if re.search(r"SPRINT-\d+", valor, flags=re.IGNORECASE):
+                return valor
+
+    history = base / "docs" / "KTP" / "history"
+    if history.is_dir():
+        candidatos: list[tuple[str, str]] = []
+        for nombre in os.listdir(history):
+            if not nombre.startswith("AKT_") or not nombre.endswith(".md"):
+                continue
+            fecha = re.match(r"AKT_(\d{4}-\d{2}-\d{2})_", nombre)
+            if fecha:
+                candidatos.append((fecha.group(1), nombre))
+        for _, nombre in sorted(candidatos, reverse=True):
+            sprint = re.search(r"(SPRINT-\d+)", nombre, flags=re.IGNORECASE)
+            if sprint:
+                return sprint.group(1).upper()
+
+    raise RuntimeError(
+        "No se pudo resolver el sprint activo: docs/KTP/AKT.md no declara "
+        "SPRINT-NN y docs/KTP/history/ no contiene actas con SPRINT-NN."
+    )
 
 
 @dataclass(frozen=True)
@@ -290,7 +330,7 @@ class AuditarParidadBG:
             "",
             "- **Nodo auditor:** `[LN-QBE-139]`",
             "- **Juez:** `[LN-QBE-140]`",
-            "- **Sprint:** `SPRINT-41-TRANSICION-Y-CONSISTENCIA-BG`",
+            "- **Sprint:** `" + _resolver_sprint_activo(self.raiz) + "`",
             "- **Fuente de vigencia:** `docs/ID_REGISTRY.md` (estado `SELLADO`; regla de sprint 001–138).",
             "- **Estado:** `PENDIENTE DEL DIRECTOR`",
             "",

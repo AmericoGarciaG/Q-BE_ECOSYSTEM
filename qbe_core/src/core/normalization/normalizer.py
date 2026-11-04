@@ -65,6 +65,7 @@ _CANONICAL_ALIASES: Dict[str, str] = {
     "santos": "Santos Laguna",
     "cruz azul": "Cruz Azul",
     "necaxa": "Necaxa",
+    "club necaxa": "Necaxa",
     "toluca": "Deportivo Toluca",
     "deportivo toluca": "Deportivo Toluca",
     "mazatlan": "Mazatlán FC",
@@ -81,11 +82,13 @@ _CANONICAL_ALIASES: Dict[str, str] = {
     "club universidad nacional": "Pumas UNAM",
     "u.n.a.m.": "Pumas UNAM",
 
-    "san luis": "Atlético San Luis",
-    "atletico san luis": "Atlético San Luis",
-    "atlético san luis": "Atlético San Luis",
-    "atletico de san luis": "Atlético San Luis",
-    "atleti san luis": "Atlético San Luis",
+    "san luis": "Atletico San Luis",
+    "atletico san luis": "Atletico San Luis",
+    "atlético san luis": "Atletico San Luis",
+    "atletico de san luis": "Atletico San Luis",
+    "atleti san luis": "Atletico San Luis",
+    "club atletico san luis": "Atletico San Luis",
+    "club atlético san luis": "Atletico San Luis",
     "atlante": "Atlante",
 }
 

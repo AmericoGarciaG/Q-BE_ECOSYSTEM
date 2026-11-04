@@ -36,6 +36,14 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger("CentinelaMercado")
 
 
+class OperadorExtraccionError(RuntimeError):
+    """Un operador de mercado falló durante la extracción (Fail-Loud)."""
+
+    def __init__(self, operador: str, detalle: str) -> None:
+        self.operador = operador
+        super().__init__(f"[{operador}] Fallo de extracción: {detalle}")
+
+
 def calcular_probabilidades_sin_comision(L: float, E: float, V: float) -> Tuple[float, float, float]:
     """
     [LN-QBE-007-C] Descuento de Margen Comercial (Vig-Free De-biasing al Símplex Δ²)
@@ -143,7 +151,7 @@ def extraer_mercado_viva(partidos_slate: List[Dict[str, Any]], operador: str = "
             resultados["caliente"] = CalienteMarketScraper.extraer_cuotas_focalizadas(partidos_slate)
         except Exception as e:
             logger.error(f"Error escaneando Caliente.mx: {e}")
-            resultados["caliente"] = []
+            raise OperadorExtraccionError("caliente", str(e)) from e
 
     if operador in ("betway", "todos"):
         logger.info(f"Escaneando Betway.mx para {len(partidos_slate)} partidos del slate...")
@@ -151,7 +159,7 @@ def extraer_mercado_viva(partidos_slate: List[Dict[str, Any]], operador: str = "
             resultados["betway"] = BetwayMarketScraper.extraer_cuotas_focalizadas(partidos_slate)
         except Exception as e:
             logger.error(f"Error escaneando Betway.mx: {e}")
-            resultados["betway"] = []
+            raise OperadorExtraccionError("betway", str(e)) from e
 
     # [ARCH-1.4.6-F] Frente Novibet.mx: sensor Feed-First (intercepción de /spt/feed/). Es el
     # tercer operador del terceto Caliente–Betway–Novibet; su captura entra al mismo mapa
@@ -162,7 +170,7 @@ def extraer_mercado_viva(partidos_slate: List[Dict[str, Any]], operador: str = "
             resultados["novibet"] = NovibetMarketScraper.extraer_cuotas_focalizadas(partidos_slate)
         except Exception as e:
             logger.error(f"Error escaneando Novibet.mx: {e}")
-            resultados["novibet"] = []
+            raise OperadorExtraccionError("novibet", str(e)) from e
 
     return resultados
 

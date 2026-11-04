@@ -16,6 +16,6 @@ def estado_snapshot() -> dict:
     return {
         "snapshot": str(config.BACKTESTING_SNAPSHOT),
         "edad_segundos": edad,
-        "fresco": snapshot_fresco(config.BACKTESTING_SNAPSHOT, 60),
-        "max_age_minutos": 60,
+        "fresco": snapshot_fresco(config.BACKTESTING_SNAPSHOT, 30),
+        "max_age_minutos": 30,
     }

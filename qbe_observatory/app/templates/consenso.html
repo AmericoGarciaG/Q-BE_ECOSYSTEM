@@ -1,0 +1,1079 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ titulo }}</title>
+  <link rel="stylesheet" href="/static/css/theme.css">
+  <style>
+    :root {
+      --consenso-bg: #070d18;
+      --consenso-panel: #0e1a2b;
+      --consenso-panel-2: #0b1626;
+      --consenso-line: rgba(148, 163, 184, 0.16);
+      --consenso-line-soft: rgba(148, 163, 184, 0.08);
+      --consenso-text: #e2e8f0;
+      --consenso-muted: #94a3b8;
+      --consenso-accent: #38bdf8;
+      --consenso-green: #34d399;
+      --consenso-red: #f87171;
+      --consenso-gold: #fbbf24;
+      --consenso-violet: #a78bfa;
+      --consenso-orange: #fb923c;
+      --consenso-font: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    body.consenso-page {
+      margin: 0;
+      background:
+        radial-gradient(1100px 520px at 8% -8%, rgba(56, 189, 248, 0.13), transparent 58%),
+        radial-gradient(900px 520px at 96% 2%, rgba(167, 139, 250, 0.10), transparent 55%),
+        var(--consenso-bg);
+      color: var(--consenso-text);
+      font-family: var(--consenso-font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .consenso-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      padding: 0.95rem 1.75rem;
+      border-bottom: 1px solid var(--consenso-line);
+      background: rgba(7, 13, 24, 0.88);
+      backdrop-filter: blur(14px);
+    }
+
+    .consenso-brand {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #f8fafc;
+      white-space: nowrap;
+    }
+
+    .consenso-brand span {
+      color: var(--consenso-accent);
+      font-weight: 500;
+    }
+
+    .consenso-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .consenso-nav a {
+      color: var(--consenso-muted);
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.015em;
+      padding: 0.5rem 0.72rem;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+    }
+
+    .consenso-nav a:hover {
+      color: #f1f5f9;
+      background: rgba(148, 163, 184, 0.08);
+    }
+
+    .consenso-nav a.active {
+      color: #e0f2fe;
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.28);
+      box-shadow: 0 0 24px -12px rgba(56, 189, 248, 0.65);
+    }
+
+    .consenso-main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    .consenso-hero {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-bottom: 1.35rem;
+    }
+
+    .consenso-kicker {
+      margin: 0 0 0.5rem;
+      color: var(--consenso-accent);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .consenso-hero h1 {
+      margin: 0;
+      font-size: clamp(1.9rem, 4vw, 3rem);
+      line-height: 1;
+      letter-spacing: -0.045em;
+      font-weight: 800;
+      color: #f8fafc;
+    }
+
+    .consenso-sub {
+      max-width: 720px;
+      margin: 0.75rem 0 0;
+      color: var(--consenso-muted);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .consenso-chip {
+      flex: 0 0 auto;
+      margin-top: 0.35rem;
+      color: #bae6fd;
+      background: rgba(56, 189, 248, 0.10);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 999px;
+      padding: 0.4rem 0.7rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .consenso-chips {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.45rem;
+    }
+
+    .consenso-chip-fuente {
+      color: #fde68a;
+      background: rgba(251, 191, 36, 0.10);
+      border-color: rgba(251, 191, 36, 0.32);
+    }
+
+    .consenso-aviso {
+      margin: 0.75rem 1.25rem 1rem;
+      padding: 0.7rem 0.85rem;
+      border: 1px solid rgba(251, 191, 36, 0.28);
+      border-radius: 10px;
+      background: rgba(251, 191, 36, 0.07);
+      color: #fde68a;
+      font-size: 0.76rem;
+      line-height: 1.45;
+    }
+
+    .consenso-aviso strong {
+      color: #fef3c7;
+    }
+
+    .consenso-filters {
+      display: grid;
+      gap: 0.9rem;
+      margin: 1.1rem 0 1.35rem;
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--consenso-line);
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(17, 31, 51, 0.92), rgba(11, 22, 38, 0.92));
+      box-shadow: 0 24px 48px -38px #000;
+    }
+
+    .consenso-filter-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .consenso-select {
+      display: grid;
+      gap: 0.32rem;
+      color: var(--consenso-muted);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .consenso-select select {
+      min-width: 11rem;
+      padding: 0.58rem 0.7rem;
+      color: var(--consenso-text);
+      background: #091322;
+      border: 1px solid var(--consenso-line);
+      border-radius: 9px;
+      font-family: var(--consenso-font);
+      font-size: 0.82rem;
+      outline: none;
+    }
+
+    .consenso-select select:focus {
+      border-color: rgba(56, 189, 248, 0.55);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+    }
+
+    .consenso-sin-jornada {
+      display: inline-flex;
+      align-items: center;
+      min-width: 11rem;
+      padding: 0.58rem 0.7rem;
+      color: var(--consenso-muted);
+      background: rgba(148, 163, 184, 0.06);
+      border: 1px dashed var(--consenso-line);
+      border-radius: 9px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .consenso-pills {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .consenso-pill {
+      position: relative;
+      display: inline-flex;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .consenso-pill input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .consenso-pill span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.52rem 0.82rem;
+      color: var(--consenso-muted);
+      background: #091322;
+      border: 1px solid var(--consenso-line);
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      transition: color 150ms ease, background 150ms ease, border-color 150ms ease, transform 150ms ease;
+    }
+
+    .consenso-pill:hover span {
+      color: #f1f5f9;
+      border-color: rgba(148, 163, 184, 0.36);
+      transform: translateY(-1px);
+    }
+
+    .consenso-pill input:focus-visible + span {
+      outline: 2px solid var(--consenso-accent);
+      outline-offset: 2px;
+    }
+
+    .consenso-pill input:checked + span {
+      color: #04121f;
+      border-color: transparent;
+      background: linear-gradient(135deg, #38bdf8, #22d3ee);
+      box-shadow: 0 10px 24px -14px rgba(56, 189, 248, 0.9);
+    }
+
+    .consenso-pill-todos input:checked + span {
+      color: #211302;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      box-shadow: 0 10px 24px -14px rgba(251, 191, 36, 0.9);
+    }
+
+    .consenso-pill-caliente input:checked + span {
+      color: #1b0b02;
+      background: linear-gradient(135deg, #fb923c, #f97316);
+      box-shadow: 0 10px 24px -14px rgba(251, 146, 60, 0.9);
+    }
+
+    .consenso-pill-novibet input:checked + span {
+      color: #031420;
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+    }
+
+    .consenso-pill-betway input:checked + span {
+      color: #03170d;
+      background: linear-gradient(135deg, #34d399, #10b981);
+    }
+
+    .consenso-pill-qbe input:checked + span {
+      color: #f5f3ff;
+      background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+      box-shadow: 0 10px 24px -14px rgba(167, 139, 250, 0.9);
+    }
+
+    .consenso-pill-todos span::before {
+      content: "◉";
+      font-size: 0.8em;
+    }
+
+    .consenso-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .consenso-kpi {
+      position: relative;
+      overflow: hidden;
+      padding: 1.2rem 1.25rem 1.05rem;
+      border: 1px solid var(--consenso-line);
+      border-radius: 16px;
+      background: linear-gradient(165deg, #111f33 0%, #0b1626 68%);
+      box-shadow: 0 22px 42px -34px #000;
+    }
+
+    .consenso-kpi::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 2px;
+      background: linear-gradient(90deg, var(--consenso-accent), transparent 72%);
+      opacity: 0.8;
+    }
+
+    .consenso-kpi.kpi-positivo::before { background: linear-gradient(90deg, var(--consenso-green), transparent 72%); }
+    .consenso-kpi.kpi-negativo::before { background: linear-gradient(90deg, var(--consenso-red), transparent 72%); }
+    .consenso-kpi.kpi-neutro::before { background: linear-gradient(90deg, var(--consenso-muted), transparent 72%); }
+
+    .consenso-kpi-label {
+      display: block;
+      color: var(--consenso-muted);
+      font-size: 0.67rem;
+      font-weight: 800;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .consenso-kpi-value {
+      display: block;
+      margin: 0.35rem 0 0.2rem;
+      color: #f8fafc;
+      font-size: clamp(1.8rem, 3.6vw, 2.55rem);
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+    }
+
+    .consenso-kpi.kpi-positivo .consenso-kpi-value {
+      color: var(--consenso-green);
+      text-shadow: 0 0 28px rgba(52, 211, 153, 0.22);
+    }
+
+    .consenso-kpi.kpi-negativo .consenso-kpi-value {
+      color: var(--consenso-red);
+      text-shadow: 0 0 28px rgba(248, 113, 113, 0.18);
+    }
+
+    .consenso-kpi.kpi-neutro .consenso-kpi-value { color: var(--consenso-text); }
+
+    .consenso-kpi-value.kpi-sin {
+      color: var(--consenso-red);
+      font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      line-height: 1.35;
+    }
+
+    .consenso-kpi-foot {
+      display: block;
+      color: var(--consenso-muted);
+      font-size: 0.69rem;
+      line-height: 1.4;
+    }
+
+    .consenso-panel {
+      margin: 1.2rem 0;
+      overflow: hidden;
+      border: 1px solid var(--consenso-line);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(14, 26, 43, 0.96), rgba(9, 19, 34, 0.96));
+      box-shadow: 0 28px 60px -46px #000;
+    }
+
+    .consenso-panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.1rem 1.25rem;
+      border-bottom: 1px solid var(--consenso-line);
+      background: linear-gradient(180deg, rgba(17, 31, 51, 0.68), rgba(9, 19, 34, 0.15));
+    }
+
+    .consenso-panel-title {
+      margin: 0;
+      color: #f1f5f9;
+      font-size: 1.02rem;
+      font-weight: 800;
+      letter-spacing: -0.012em;
+    }
+
+    .consenso-panel-sub {
+      margin: 0.3rem 0 0;
+      color: var(--consenso-muted);
+      font-size: 0.76rem;
+      line-height: 1.45;
+    }
+
+    .consenso-live-badge {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #86efac;
+      background: rgba(34, 197, 94, 0.10);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+      border-radius: 999px;
+      padding: 0.32rem 0.6rem;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .consenso-live-badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--consenso-green);
+      box-shadow: 0 0 10px var(--consenso-green);
+    }
+
+    .consenso-match-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .consenso-match {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--consenso-line);
+      border-radius: 14px;
+      background: var(--consenso-panel-2);
+      box-shadow: 0 18px 36px -30px #000;
+    }
+
+    .consenso-match-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.8rem 0.9rem;
+      border-bottom: 1px solid var(--consenso-line-soft);
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.07), transparent);
+    }
+
+    .consenso-match-teams {
+      color: #f1f5f9;
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .consenso-match-teams span {
+      color: var(--consenso-muted);
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0 0.2rem;
+    }
+
+    .consenso-match-meta {
+      flex: 0 0 auto;
+      color: var(--consenso-muted);
+      font-size: 0.68rem;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .consenso-table-scroll {
+      min-width: 0;
+      overflow-x: auto;
+      scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+    }
+
+    .consenso-table {
+      width: 100%;
+      border-collapse: collapse;
+      color: var(--consenso-text);
+      font-size: 0.78rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .consenso-table th {
+      padding: 0.62rem 0.65rem;
+      color: var(--consenso-muted);
+      background: rgba(2, 8, 18, 0.45);
+      font-size: 0.61rem;
+      font-weight: 800;
+      letter-spacing: 0.09em;
+      text-align: right;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .consenso-table th:first-child {
+      text-align: left;
+    }
+
+    .consenso-table td {
+      padding: 0.58rem 0.65rem;
+      border-top: 1px solid var(--consenso-line-soft);
+      vertical-align: middle;
+    }
+
+    .consenso-table tbody tr:nth-child(even) {
+      background: rgba(148, 163, 184, 0.035);
+    }
+
+    .consenso-table tbody tr:hover {
+      background: rgba(56, 189, 248, 0.055);
+    }
+
+    .consenso-table tbody tr.is-consenso {
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.14), rgba(56, 189, 248, 0.015));
+      box-shadow: inset 3px 0 0 var(--consenso-accent);
+    }
+
+    .consenso-table tbody tr.is-consenso td {
+      border-top-color: rgba(56, 189, 248, 0.22);
+    }
+
+    .consenso-table .num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .consenso-table-live {
+      table-layout: fixed;
+    }
+
+    .consenso-table-live th,
+    .consenso-table-live td {
+      padding-left: 0.38rem;
+      padding-right: 0.38rem;
+    }
+
+    .consenso-table-live th:first-child,
+    .consenso-table-live td:first-child {
+      width: 26%;
+    }
+
+    .consenso-table-live th {
+      font-size: 0.56rem;
+      letter-spacing: 0.06em;
+    }
+
+    .consenso-table-live td {
+      font-size: 0.72rem;
+    }
+
+    .consenso-table .jornada-cell {
+      color: var(--consenso-accent);
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .consenso-table .fuente-cell {
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .source-badge,
+    .sin-evidencia {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      font-weight: 800;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .source-badge {
+      padding: 0.24rem 0.5rem;
+      font-size: 0.64rem;
+      letter-spacing: 0.02em;
+      border: 1px solid transparent;
+    }
+
+    .source-consenso {
+      color: #bae6fd;
+      background: rgba(56, 189, 248, 0.13);
+      border-color: rgba(56, 189, 248, 0.30);
+    }
+
+    .source-caliente {
+      color: #fdba74;
+      background: rgba(251, 146, 60, 0.12);
+      border-color: rgba(251, 146, 60, 0.30);
+    }
+
+    .source-novibet {
+      color: #7dd3fc;
+      background: rgba(14, 165, 233, 0.12);
+      border-color: rgba(14, 165, 233, 0.30);
+    }
+
+    .source-betway {
+      color: #86efac;
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.30);
+    }
+
+    .source-q-be {
+      color: #c4b5fd;
+      background: rgba(139, 92, 246, 0.12);
+      border-color: rgba(139, 92, 246, 0.30);
+    }
+
+    .source-footystats {
+      color: #fcd34d;
+      background: rgba(251, 191, 36, 0.10);
+      border-color: rgba(251, 191, 36, 0.30);
+    }
+
+    .source-q-be-live-capture {
+      color: #a7f3d0;
+      background: rgba(16, 185, 129, 0.14);
+      border-color: rgba(52, 211, 153, 0.42);
+      box-shadow: 0 0 18px -10px rgba(52, 211, 153, 0.9);
+    }
+
+    .sin-evidencia {
+      padding: 0.24rem 0.45rem;
+      color: #fca5a5;
+      background: rgba(248, 113, 113, 0.08);
+      border: 1px solid rgba(248, 113, 113, 0.22);
+      font-size: 0.59rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .muted-dash {
+      color: rgba(148, 163, 184, 0.55);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .consenso-empty {
+      padding: 3rem 1.5rem;
+      text-align: center;
+    }
+
+    .consenso-empty h2 {
+      margin: 0.85rem 0 0.35rem;
+      color: #f1f5f9;
+      font-size: 1.1rem;
+    }
+
+    .consenso-empty p {
+      margin: 0;
+      color: var(--consenso-muted);
+      font-size: 0.82rem;
+    }
+
+    .consenso-empty-inline {
+      padding: 1.5rem 1.25rem;
+      text-align: center;
+    }
+
+    .consenso-empty-inline p {
+      margin: 0.55rem 0 0;
+      color: var(--consenso-muted);
+      font-size: 0.78rem;
+    }
+
+    .consenso-footnote {
+      margin: 1.5rem 0 0;
+      color: var(--consenso-muted);
+      font-size: 0.7rem;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .consenso-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.6rem;
+        padding: 0.8rem 1rem;
+      }
+
+      .consenso-main { padding: 1.35rem 1rem 3rem; }
+
+      .consenso-hero { flex-direction: column; gap: 0.6rem; }
+
+      .consenso-kpis { grid-template-columns: 1fr; }
+
+      .consenso-match-grid { grid-template-columns: 1fr; padding: 0.7rem; }
+
+      .consenso-filter-row { align-items: stretch; flex-direction: column; }
+
+      .consenso-select select { width: 100%; }
+    }
+  </style>
+</head>
+<body class="consenso-page">
+  {% set resumen = sabiduria.resumen if sabiduria and sabiduria.resumen is defined else none %}
+  {% set seleccion = seleccion or [] %}
+  {% set todos_marcado = ('caliente' in seleccion and 'novibet' in seleccion and 'betway' in seleccion) %}
+  {% set temporadas = sabiduria.temporadas if sabiduria and sabiduria.temporadas is defined and sabiduria.temporadas else ['Actual'] %}
+  {% set temporada_actual = sabiduria.temporada_actual if sabiduria and sabiduria.temporada_actual is defined and sabiduria.temporada_actual else temporadas[-1] %}
+  {% set temporada_seleccionada = temporada_filtro or temporada_actual %}
+
+  <header class="consenso-header">
+    <div class="consenso-brand">Q-BE <span>Observatory</span></div>
+    <nav class="consenso-nav" aria-label="Navegación principal">
+      <a href="/">Inicio</a>
+      <a href="/visor">Auditoría de Calibración y Atribución</a>
+      <a class="active" href="/consenso">Consenso de Mercado</a>
+      <a href="/backtesting">Backtesting</a>
+    </nav>
+  </header>
+
+  <main class="consenso-main">
+    <section class="consenso-hero">
+      <div>
+        <p class="consenso-kicker">Mercado · Bóveda 3NF</p>
+        <h1>Consenso de Mercado</h1>
+        <p class="consenso-sub">
+          Cuotas reales de la próxima jornada, Consenso Ponderado y Brier histórico.
+          Filtra por temporada, jornada y fuentes; cada partido se agrega solo con
+          evidencia válida.
+        </p>
+      </div>
+      <div class="consenso-chips">
+        <span class="consenso-chip consenso-chip-fuente">{{ procedencia }}</span>
+        <span class="consenso-chip">[DES-QBE-076]</span>
+      </div>
+    </section>
+
+    {% if error %}
+      <section class="consenso-panel consenso-empty" role="alert">
+        <span class="sin-evidencia">SIN EVIDENCIA</span>
+        <h2>Consenso no disponible</h2>
+        <p>{{ error }}</p>
+      </section>
+    {% endif %}
+
+    <form id="filtros-consenso" method="get" action="/consenso" class="consenso-filters">
+      <input type="hidden" name="filtros" value="1">
+      <div class="consenso-filter-row">
+        <div class="consenso-filter-row" style="align-items:flex-end;">
+          <label class="consenso-select" for="filtro-temporada">Temporada
+            <select id="filtro-temporada" name="temporada" onchange="this.form.submit()">
+              <option value="Todas" {% if temporada_seleccionada == 'Todas' %}selected{% endif %}>Todas</option>
+              {% for temporada_item in temporadas %}
+                <option value="{{ temporada_item }}" {% if temporada_item == temporada_seleccionada %}selected{% endif %}>{{ temporada_item }}{% if loop.last %} · Actual{% endif %}</option>
+              {% endfor %}
+            </select>
+          </label>
+          {% if jornadas_disponibles %}
+            <label class="consenso-select" for="filtro-jornada">Jornada
+              <select id="filtro-jornada" name="jornada" onchange="this.form.submit()">
+                <option value="">Todas</option>
+                {% for jornada_item in jornadas_disponibles %}
+                  <option value="{{ jornada_item }}" {% if jornada_item|string == jornada_filtro %}selected{% endif %}>J{{ jornada_item }}</option>
+                {% endfor %}
+              </select>
+            </label>
+          {% else %}
+            <span class="consenso-select">Jornada
+              <span class="consenso-sin-jornada">Sin desglose por jornada en la fuente</span>
+            </span>
+          {% endif %}
+        </div>
+        <div class="consenso-pills" aria-label="Selección de fuentes">
+          <label class="consenso-pill consenso-pill-todos">
+            <input type="checkbox" id="todos" {% if todos_marcado %}checked{% endif %}>
+            <span>Todos</span>
+          </label>
+          <label class="consenso-pill consenso-pill-caliente">
+            <input type="checkbox" name="fuente" value="caliente" data-casino="1" {% if 'caliente' in seleccion %}checked{% endif %}>
+            <span>Caliente</span>
+          </label>
+          <label class="consenso-pill consenso-pill-novibet">
+            <input type="checkbox" name="fuente" value="novibet" data-casino="1" {% if 'novibet' in seleccion %}checked{% endif %}>
+            <span>Novibet</span>
+          </label>
+          <label class="consenso-pill consenso-pill-betway">
+            <input type="checkbox" name="fuente" value="betway" data-casino="1" {% if 'betway' in seleccion %}checked{% endif %}>
+            <span>Betway</span>
+          </label>
+          <label class="consenso-pill consenso-pill-qbe">
+            <input type="checkbox" name="fuente" value="qbe" {% if 'qbe' in seleccion %}checked{% endif %}>
+            <span>Q-BE</span>
+          </label>
+        </div>
+        <noscript><button type="submit">Aplicar filtros</button></noscript>
+      </div>
+    </form>
+
+    {% if seleccion_vacia %}
+      <section class="consenso-panel consenso-empty">
+        <span class="sin-evidencia">SIN EVIDENCIA</span>
+        <h2>Sin fuentes seleccionadas</h2>
+        <p>Marca al menos un casino o Q-BE para desplegar KPIs y tabla.</p>
+      </section>
+    {% else %}
+      <section class="consenso-kpis" aria-label="KPIs de Consenso de Mercado">
+        <article class="consenso-kpi">
+          <span class="consenso-kpi-label">Brier {{ resumen.etiqueta_mercado if resumen and resumen.etiqueta_mercado else 'Consenso' }}</span>
+          {% if resumen and resumen.brier_consenso is defined and resumen.brier_consenso is not none %}
+            <span class="consenso-kpi-value">{{ "%.4f"|format(resumen.brier_consenso) }}</span>
+          {% else %}
+            <span class="consenso-kpi-value kpi-sin">SIN EVIDENCIA</span>
+          {% endif %}
+          <span class="consenso-kpi-foot">
+            {{ resumen.etiqueta_mercado if resumen and resumen.etiqueta_mercado else 'Consenso Ponderado' }}
+            · media ponderada de {{ resumen.n_partidos if resumen and resumen.n_partidos is defined else 0 }} partidos · [LN-QBE-148]
+            {% if resumen and resumen.composicion_mercado %}<br>{{ resumen.composicion_mercado }}{% endif %}
+          </span>
+        </article>
+        <article class="consenso-kpi">
+          <span class="consenso-kpi-label">Brier Q-BE</span>
+          {% if resumen and resumen.brier_qbe is defined and resumen.brier_qbe is not none %}
+            <span class="consenso-kpi-value">{{ "%.4f"|format(resumen.brier_qbe) }}</span>
+          {% else %}
+            <span class="consenso-kpi-value kpi-sin">SIN EVIDENCIA</span>
+          {% endif %}
+          <span class="consenso-kpi-foot">Motor soberano</span>
+        </article>
+        {% if resumen and resumen.alpha_pct is defined and resumen.alpha_pct is not none %}
+          {% set signo_alpha = 'positivo' if resumen.alpha_pct > 0 else ('negativo' if resumen.alpha_pct < 0 else 'neutro') %}
+          <article class="consenso-kpi kpi-{{ signo_alpha }}">
+            <span class="consenso-kpi-label">Alpha</span>
+            <span class="consenso-kpi-value">{% if resumen.alpha_pct > 0 %}+{% endif %}{{ "%.2f"|format(resumen.alpha_pct) }}%</span>
+            <span class="consenso-kpi-foot">(1 − Brier Q-BE / Brier {{ resumen.etiqueta_mercado if resumen and resumen.etiqueta_mercado else 'Consenso' }}) × 100</span>
+          </article>
+        {% else %}
+          <article class="consenso-kpi kpi-neutro">
+            <span class="consenso-kpi-label">Alpha</span>
+            <span class="consenso-kpi-value kpi-sin">SIN EVIDENCIA</span>
+            <span class="consenso-kpi-foot">(1 − Brier Q-BE / Brier {{ resumen.etiqueta_mercado if resumen and resumen.etiqueta_mercado else 'Consenso' }}) × 100</span>
+          </article>
+        {% endif %}
+      </section>
+
+      <section class="consenso-panel" aria-labelledby="titulo-mercado-vivo">
+        <header class="consenso-panel-header">
+          <div>
+            <h2 class="consenso-panel-title" id="titulo-mercado-vivo">
+              Mercado en vivo{% if mercado and mercado.jornada_viva %} · J{{ mercado.jornada_viva }}{% endif %}
+            </h2>
+            <p class="consenso-panel-sub">
+              <strong>Fuente: {{ mercado.fuente_etiqueta if mercado and mercado.fuente_etiqueta else 'Sin datos de mercado' }}</strong>.
+              Cuotas reales de los operadores seleccionados y Consenso Ponderado.
+              Actualizado: {{ mercado.actualizado if mercado and mercado.actualizado else '—' }}.
+            </p>
+          </div>
+          {% if mercado and mercado.partidos %}
+            <span class="consenso-live-badge">Live</span>
+          {% endif %}
+        </header>
+        {% if mercado and mercado.partidos %}
+          <div id="tabla-mercado-vivo" class="consenso-match-grid">
+            {% for partido in mercado.partidos %}
+              <article class="consenso-match">
+                <header class="consenso-match-header">
+                  <div class="consenso-match-teams">
+                    {{ partido.local }} <span>vs</span> {{ partido.visitante }}
+                  </div>
+                  <div class="consenso-match-meta">{{ partido.fecha_dt or '—' }}</div>
+                </header>
+                <div class="consenso-table-scroll">
+                  <table class="consenso-table consenso-table-live">
+                    <caption class="visor-sr-only">Cuotas en vivo de {{ partido.local }} vs {{ partido.visitante }}</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Fuente</th>
+                        <th scope="col">1</th>
+                        <th scope="col">X</th>
+                        <th scope="col">2</th>
+                        <th scope="col">P(1)</th>
+                        <th scope="col">P(X)</th>
+                        <th scope="col">P(2)</th>
+                        <th scope="col">Peso</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for fila in partido.fuentes %}
+                        <tr class="{% if fila.es_consenso %}is-consenso{% endif %}">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-{{ fila.fuente|lower|replace(' ', '-') }}">{{ fila.fuente }}</span>
+                          </td>
+                          <td class="num">{% if fila.cuota and fila.cuota.L is not none %}{{ "%.2f"|format(fila.cuota.L) }}{% else %}<span class="muted-dash">—</span>{% endif %}</td>
+                          <td class="num">{% if fila.cuota and fila.cuota.E is not none %}{{ "%.2f"|format(fila.cuota.E) }}{% else %}<span class="muted-dash">—</span>{% endif %}</td>
+                          <td class="num">{% if fila.cuota and fila.cuota.V is not none %}{{ "%.2f"|format(fila.cuota.V) }}{% else %}<span class="muted-dash">—</span>{% endif %}</td>
+                          <td class="num">{{ "%.3f"|format(fila.p[0]) }}</td>
+                          <td class="num">{{ "%.3f"|format(fila.p[1]) }}</td>
+                          <td class="num">{{ "%.3f"|format(fila.p[2]) }}</td>
+                          <td class="num">{% if fila.peso is not none %}{{ "%.3f"|format(fila.peso) }}{% else %}<span class="muted-dash">—</span>{% endif %}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="consenso-empty-inline">
+            <span class="sin-evidencia">SIN EVIDENCIA</span>
+            {% if mercado and mercado.motivo_historico %}
+              <p><strong>No hay mercado en vivo para históricos.</strong></p>
+            {% endif %}
+            <p>{{ mercado.motivo if mercado and mercado.motivo else 'Sin cuotas en vivo para la selección actual.' }}</p>
+          </div>
+        {% endif %}
+      </section>
+
+      <section class="consenso-panel" aria-labelledby="titulo-historico-consenso">
+        <header class="consenso-panel-header">
+          <div>
+            <h2 class="consenso-panel-title" id="titulo-historico-consenso">Desglose histórico por jornada</h2>
+            <p class="consenso-panel-sub">
+              <strong>Fuente: {{ sabiduria.fuente_etiqueta if sabiduria and sabiduria.fuente_etiqueta else 'Sin datos' }}</strong>.
+              Brier de bloque = media de los partidos con evidencia, normalizado 3N.
+              Los partidos sin datos se excluyen; no se imputan como cero.
+            </p>
+          </div>
+        </header>
+        {% if sabiduria and sabiduria.motivo_filtro %}
+          <p class="consenso-aviso"><strong>Filtro no aplicable:</strong> {{ sabiduria.motivo_filtro }}</p>
+        {% endif %}
+        {% if sabiduria and sabiduria.desglose_no_disponible %}
+          <div class="consenso-empty-inline" id="aviso-desglose-global">
+            <p class="consenso-aviso"><strong>Desglose no disponible:</strong> {{ sabiduria.aviso_desglose }}</p>
+          </div>
+        {% elif sabiduria and sabiduria.jornadas %}
+          <div class="consenso-table-scroll">
+            <table id="tabla-consenso-historico" class="consenso-table consenso-table-history">
+              <caption class="visor-sr-only">Consenso histórico por jornada y fuente</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Jornada</th>
+                  <th scope="col">Fuente</th>
+                  <th scope="col">Brier Score</th>
+                  <th scope="col">Alpha (%)</th>
+                  <th scope="col">Peso en Consenso</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for bloque in sabiduria.jornadas %}
+                  {% set etiqueta_bloque = bloque.etiqueta if bloque.etiqueta is defined and bloque.etiqueta else ('J' ~ bloque.jornada if bloque.jornada is not none else 'Jornada no declarada') %}
+                  {% for fila in bloque.fuentes %}
+                    {% set es_fila_mercado = fila.es_consenso or (bloque.fuente_mercado is defined and bloque.fuente_mercado and fila.fuente == bloque.fuente_mercado) %}
+                    <tr class="{% if es_fila_mercado %}is-consenso{% endif %}" data-jornada="{{ bloque.jornada if bloque.jornada is not none else '' }}">
+                      <td class="jornada-cell">
+                        {% if loop.first %}{{ etiqueta_bloque }}{% else %}<span class="visor-sr-only">{{ etiqueta_bloque }}</span>{% endif %}
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-{{ fila.fuente|lower|replace(' ', '-') }}"{% if fila.motivo is defined and fila.motivo %} title="{{ fila.motivo }}"{% endif %}>{{ fila.fuente }}{% if fila.n_partidos is defined and fila.n_partidos %} ({{ fila.n_partidos }}){% endif %}</span>
+                      </td>
+                      <td class="num">
+                        {% if fila.brier is not none %}{{ "%.4f"|format(fila.brier) }}{% else %}<span class="sin-evidencia">SIN EVIDENCIA</span>{% endif %}
+                      </td>
+                      <td class="num">
+                        {% if fila.alpha_pct is not none %}
+                          {% set signo = 'positivo' if fila.alpha_pct > 0 else ('negativo' if fila.alpha_pct < 0 else 'neutro') %}
+                          <span class="visor-alpha visor-alpha-{{ signo }}" data-signo="{{ signo }}">
+                            {% if fila.alpha_pct > 0 %}+{% endif %}{{ "%.2f"|format(fila.alpha_pct) }}%
+                          </span>
+                        {% else %}
+                          <span class="sin-evidencia">SIN EVIDENCIA</span>
+                        {% endif %}
+                      </td>
+                      <td class="num">
+                        {% if fila.peso is not none %}{{ "%.3f"|format(fila.peso) }}{% else %}<span class="muted-dash">—</span>{% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="consenso-empty-inline">
+            <span class="sin-evidencia">SIN EVIDENCIA</span>
+            <p>Sin jornadas históricas para la selección actual.</p>
+          </div>
+        {% endif %}
+      </section>
+
+      <p class="consenso-footnote">
+        <strong>El Brier Score mostrado está normalizado (3N) para comparabilidad
+        directa. El KPI superior es la media ponderada por partidos de los bloques
+        que muestra la tabla: si un solo bloque tiene evidencia, ambos coinciden al
+        decimal. El Brier Q-BE histórico consume `historical_sovereign_distributions`
+        ([LN-QBE-150]) y su muestra de comparación son los partidos donde coexisten
+        momios de FootyStats y distribución P'; sin coexistencia el Alpha se declara
+        SIN EVIDENCIA en lugar de fabricarse.</strong>
+      </p>
+      <p class="consenso-footnote">
+        Fuente: {{ sabiduria.fuente_etiqueta if sabiduria and sabiduria.fuente_etiqueta else 'Sin datos' }}.
+        Brier calculado sobre <strong>{{ "{:,}".format(sabiduria.total_partidos) }} partidos usados</strong>{% if sabiduria.total_universo and sabiduria.total_universo != sabiduria.total_partidos %} (de {{ "{:,}".format(sabiduria.total_universo) }} auditados){% endif %}.
+        Alpha canónico: (1 − Brier Q-BE / Brier {{ resumen.etiqueta_mercado if resumen and resumen.etiqueta_mercado else 'Fuente' }}) × 100.
+        Un Brier ausente produce Alpha ausente; la UI nunca muestra un porcentaje fabricado.
+      </p>
+      <p class="consenso-footnote">
+        Mercado en vivo: el Peso de cada operador es 1 / casinos seleccionados con
+        cuota en el partido (normalizado entre los presentes). Ningún peso proviene
+        del Brier histórico: no existe ponderación Brier-inversa en esta vista.
+      </p>
+    {% endif %}
+  </main>
+
+  <script>
+    (function () {
+      const formulario = document.getElementById('filtros-consenso');
+      if (!formulario) return;
+      const todos = document.getElementById('todos');
+      const casinos = Array.from(document.querySelectorAll('input[name="fuente"][data-casino="1"]'));
+      const qbe = document.querySelector('input[name="fuente"][value="qbe"]');
+      const sincronizarTodos = () => {
+        if (todos) todos.checked = casinos.every((casino) => casino.checked);
+      };
+      if (todos) {
+        todos.addEventListener('change', () => {
+          casinos.forEach((casino) => { casino.checked = todos.checked; });
+          formulario.submit();
+        });
+      }
+      casinos.forEach((casino) => {
+        casino.addEventListener('change', () => {
+          sincronizarTodos();
+          formulario.submit();
+        });
+      });
+      if (qbe) qbe.addEventListener('change', () => formulario.submit());
+      sincronizarTodos();
+    })();
+  </script>
+</body>
+</html>

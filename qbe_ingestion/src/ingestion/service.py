@@ -72,6 +72,7 @@ DIMENSION_A_TAREA: Dict[str, str] = {
 # Cada entrada es una secuencia de comandos `python -m modulo [args]`; el despachador nunca usa
 # `shell=True` ni interpola el payload del cliente.
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+RAIZ_ECOSISTEMA = PROJECT_ROOT.parent
 TAREAS_EJECUTABLES: Dict[str, Tuple[Tuple[str, Tuple[str, ...]], ...]] = {
     "centinela_deportivo": (("src.ingestion.daemons.centinela_deportivo", ()),),
     "centinela_mercado": (("src.ingestion.daemons.centinela_mercado", ()),),
@@ -81,6 +82,7 @@ TAREAS_EJECUTABLES: Dict[str, Tuple[Tuple[str, Tuple[str, ...]], ...]] = {
     "cadena_pre_jornada": (
         ("src.ingestion.daemons.centinela_deportivo", ()),
         ("src.ingestion.daemons.centinela_mercado", ()),
+        ("src.ingestion.daemons.centinela_macro", ("--liga-id", "230")),
         ("src.ingestion.coherence_auditor", ("--check",)),
     ),
     "cadena_progol": (("src.ingestion.daemons.centinela_progol", ()),),
@@ -153,16 +155,12 @@ def _ruta_fisica_sqlite() -> Optional[Path]:
     return ruta
 
 
-def _boveda_legada() -> Path:
-    """Bóveda viva del monorepo legado, usada sólo como fallback de lectura/operación."""
-    return Path(__file__).resolve().parents[3].parent / "Q_BE_CD_WEB" / "data" / "qbe_database.db"
-
-
 def _configurar_boveda() -> None:
-    """Si no hay URL explícita y la SQLite local está ausente/vacía, apunta a la bóveda viva.
+    """Fija la bóveda canónica del ecosistema; sin fallback legacy ([ARCH-1.5.14]).
 
-    El fallback evita que el servicio arranque contra un archivo vacío recién creado por una
-    prueba y devuelva un veredicto falso. `DATABASE_URL` explícita siempre tiene precedencia.
+    La ruta canónica es absoluta (`<raíz>/data/qbe_database.db`) para que el
+    servicio y los daemons resuelvan la MISMA SQLite con independencia del cwd.
+    `DATABASE_URL` explícita conserva precedencia para pruebas aisladas.
     """
     global _BOVEDA_RESUELTA
     if _BOVEDA_RESUELTA:
@@ -171,21 +169,15 @@ def _configurar_boveda() -> None:
     if os.environ.get("DATABASE_URL", "").strip():
         return
 
-    ruta = _ruta_fisica_sqlite()
-    if ruta is not None and ruta.is_file() and ruta.stat().st_size > 0:
-        return
-    legada = _boveda_legada()
-    if not (legada.is_file() and legada.stat().st_size > 0):
-        return
-
-    settings.DATABASE_URL = f"sqlite:///{legada.as_posix()}"
+    canonica = RAIZ_ECOSISTEMA / "data" / "qbe_database.db"
+    settings.DATABASE_URL = f"sqlite:///{canonica.as_posix()}"
     if PersistenceGateway._instance is not None:
         try:
             PersistenceGateway._instance.engine.dispose()
         except Exception:
             pass
         PersistenceGateway._instance = None
-    logger.info("Bóveda resuelta al fallback legado: %s", legada)
+    logger.info("Bóveda canónica resuelta: %s", canonica)
 
 
 def _boveda_disponible() -> bool:

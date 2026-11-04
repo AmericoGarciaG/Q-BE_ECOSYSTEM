@@ -208,6 +208,16 @@
 
 ---
 
+## 10. DOMINIO DE CONSENSO DE MERCADO Y RADAR DE SINDICATOS
+
+| Símbolo | Nombre Canónico | Valor Exacto | Unidad | Nodo Dueño | Dominio de Validez |
+|:---:|---|---|:---:|:---:|---|
+| $\text{Timeout}_{\text{daemon live}}$ | `CONST_TIMEOUT_DAEMON_LIVE` | `30000` | ms | `[ARCH-1.4.75]` | Techo de espera por extracción en el Daemon Multicasa; al vencer dispara `TimeoutError` sin colgar el hilo. |
+| $W_{\min}$ | `CONST_PESO_CONSENSO_MIN` | `0.05` | Fracción | `[LN-QBE-148]` | Piso de peso por casino en el Consenso Ponderado; por debajo, la fuente no contribuye al Símplex consensuado. |
+| $\Delta_{\text{sindicato}}$ | `CONST_DELTA_SINDICATO_PCT` | `0.10` | Fracción | `[LN-QBE-149]` | Umbral de tasa de cambio de momios que dispara la alerta del Radar de Sindicatos. |
+
+---
+
 ## 📎 NOTA DE TRANSCRIPCIÓN (Provenance)
 
 Transcrito **verbatim** desde el Decreto de Consolidación (Sprint 3 — Capa 4), según la Directiva

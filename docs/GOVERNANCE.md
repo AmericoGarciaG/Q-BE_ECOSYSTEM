@@ -154,6 +154,14 @@ El **Censo de Paridad Canónica** es la ejecución determinista del Auditor sobr
 2. **Alto al Fuego.** Un hallazgo de **Clase I (Fabricación Sintética)** o **Clase II (Contradicción Numérica)** detiene el sprint automáticamente. No se emite `AKT.md` de cierre, no se hace commit y se emite `DIRGEN_VARIANCE_REQUEST.md` si la resolución exige cambiar la ley o el código protegido. Los hallazgos de Clase III o IV impiden el cierre hasta su resolución por VÍA A o VÍA B.
 3. **Trazabilidad.** El cierre registra comando, fecha, salida y hash de `GL_update.md`. El Censo no corrige, no interpreta y no decide: detecta, clasifica y propone.
 
+#### 3.5.1. Registro y Nomenclatura de Sprints
+
+1. **Fuente única.** El nombre del sprint vigente reside exclusivamente en la cabecera de `docs/KTP/AKT.md`.
+2. **Prohibición de hardcode.** Ningún componente del sistema —Auditor, scripts, Jueces, UI, daemons o reportes— puede hardcodear `SPRINT-41`, `SPRINT-NN` ni el nombre de un sprint. El sprint se resuelve en tiempo de ejecución.
+3. **Resolución del Auditor.** `[LN-QBE-139]` lee el sprint de `AKT.md`; si el AKT está vacío, reiniciado o sin `SPRINT-NN`, usa el acta más reciente de `docs/KTP/history/` por fecha en el nombre. Si no encuentra ninguna fuente, falla con `RuntimeError` (Fail-Loud).
+4. **Cambio de sprint.** El incremento del número y el nombre del sprint es potestad del Director Humano o del Arquitecto al inicio de un ciclo, y se refleja primero en `AKT.md`. Ningún componente lo inventa.
+5. **Salidas derivadas.** `GL_update.md` es una salida derivada: su cabecera debe mostrar el sprint resuelto, nunca un literal fijo.
+
 ---
 
 ## 4. ESTRUCTURA DE AUTORIDAD

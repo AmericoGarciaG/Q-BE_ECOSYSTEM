@@ -678,6 +678,7 @@ class _Orquestador:
         self.args = args
         self.job = _JobObject()
         self.hijos: list[Hijo] = []
+        self.fondo: Optional[Hijo] = None
         self.dir_logs: Optional[Path] = None
 
     # -- ciclo de vida ---------------------------------------------------------------------
@@ -732,6 +733,59 @@ class _Orquestador:
         # asignan también sus descendientes reales.
         for hijo in self.hijos:
             self.job.asignar_arbol(hijo.proceso.pid, espera=0.6)
+
+        # [SPRINT-47] Orquestador live en segundo plano: un ciclo inmediato de
+        # extracción + refresco de `observatory_snapshot.db`, sin bloquear READY.
+        self._arrancar_fondo()
+
+    def _arrancar_fondo(self) -> None:
+        """Lanza `scripts/daemons/orquestador_live.py` como proceso de fondo."""
+        pilar = Pilar(
+            nombre="orquestador",
+            etiqueta="Orquestador live",
+            puerto=0,
+            argv=(
+                str(PYTHON),
+                str(RAIZ / "scripts" / "daemons" / "orquestador_live.py"),
+            ),
+            env={},
+        )
+        entorno = os.environ.copy()
+        entorno.update(pilar.env)
+        entorno["PYTHONUNBUFFERED"] = "1"
+        entorno["PYTHONUTF8"] = "1"
+        entorno["PYTHONIOENCODING"] = "utf-8"
+        banderas = subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0
+        try:
+            proceso = subprocess.Popen(
+                list(pilar.argv),
+                cwd=str(RAIZ),
+                env=entorno,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                bufsize=1,
+                creationflags=banderas,
+            )
+        except OSError as exc:
+            _avisar(f"[LANZADOR] Orquestador live no pudo arrancar: {exc}")
+            return
+
+        log = (self.dir_logs / "orquestador.log") if self.dir_logs else None
+        hijo = Hijo(pilar=pilar, proceso=proceso, log=log)
+        hilo = threading.Thread(
+            target=self._bombear,
+            args=(hijo,),
+            name="log-orquestador",
+            daemon=True,
+        )
+        hijo.hilo = hilo
+        hilo.start()
+        self.fondo = hijo
+        self.job.asignar_arbol(proceso.pid, espera=0.6)
+        _emitir(f"[LANZADOR] ARRANCANDO Orquestador live (pid {proceso.pid})")
 
     def _bombear(self, hijo: Hijo) -> None:
         archivo = None
@@ -791,7 +845,7 @@ class _Orquestador:
     def resumen(self) -> None:
         _emitir("")
         _emitir("=" * 78)
-        _emitir("  Q-BE ECOSYSTEM — TRES PILARES EN LÍNEA")
+        _emitir("  Q-BE ECOSYSTEM — PILARES EN LÍNEA")
         for hijo in self.hijos:
             _emitir(
                 f"  · {hijo.pilar.etiqueta:<20} http://{HOST}:{hijo.pilar.puerto:<5} "
@@ -800,12 +854,23 @@ class _Orquestador:
         _emitir(
             r"  Verificación E2E: .\.venv\Scripts\python.exe scripts\verificar_ecosistema_e2e.py"
         )
+        if self.fondo is not None:
+            _emitir(
+                f"  · {'Orquestador live':<20} ciclo inmediato "
+                f"pid={self.fondo.proceso.pid}"
+            )
         _emitir("  Ctrl+C para apagar de forma ordenada.")
         _emitir("=" * 78)
 
     def vigilar(self) -> None:
         limite = (time.monotonic() + self.args.duracion) if self.args.duracion > 0 else None
         while True:
+            if self.fondo is not None and self.fondo.proceso.poll() is not None:
+                _emitir(
+                    "[LANZADOR] Orquestador live finalizó "
+                    f"(código {self.fondo.proceso.returncode})."
+                )
+                self.fondo = None
             for hijo in self.hijos:
                 codigo = hijo.proceso.poll()
                 if codigo is not None:
@@ -823,6 +888,28 @@ class _Orquestador:
     def apagar(self) -> list[str]:
         forzados: list[str] = []
         try:
+            if self.fondo is not None and self.fondo.proceso.poll() is None:
+                proceso_fondo = self.fondo.proceso
+                _emitir(
+                    f"[LANZADOR] Cerrando Orquestador live (pid {proceso_fondo.pid})..."
+                )
+                if _enviar_ctrl_break(proceso_fondo.pid):
+                    try:
+                        proceso_fondo.wait(timeout=self.args.timeout_apagado)
+                    except subprocess.TimeoutExpired:
+                        pass
+                if proceso_fondo.poll() is None:
+                    _emitir("[LANZADOR] Forzando Orquestador live con taskkill /T...")
+                    _matar_arbol(proceso_fondo)
+                    try:
+                        proceso_fondo.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        try:
+                            proceso_fondo.kill()
+                        except OSError:
+                            pass
+                    forzados.append("orquestador")
+                self.fondo = None
             for hijo in reversed(self.hijos):
                 proceso = hijo.proceso
                 if proceso.poll() is not None:
@@ -918,6 +1005,14 @@ def _parsear(argv: Optional[Sequence[str]]) -> argparse.Namespace:
         action="store_true",
         help="No escribe archivos de log; solo consola.",
     )
+    analizador.add_argument(
+        "--sin-mesa",
+        action="store_true",
+        help=(
+            "No arranca la Mesa de Apuestas (:8000); útil cuando el Director "
+            "ya tiene la UI en ese puerto. Conserva Observatorio, Ingesta y orquestador."
+        ),
+    )
     args = analizador.parse_args(argv)
     if args.json and not (args.plan or args.preflight):
         analizador.error("--json solo es válido junto a --plan o --preflight")
@@ -955,6 +1050,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     except ErrorLanzador as exc:
         _error(exc.mensaje)
         return exc.codigo
+
+    if args.sin_mesa:
+        pilares = [pilar for pilar in pilares if pilar.nombre != "business"]
+        _emitir("[LANZADOR] --sin-mesa: la Mesa de Apuestas no se arranca.")
 
     for aviso in avisos:
         _avisar(aviso)

@@ -83,6 +83,7 @@ class CalibracionError(ValueError):
 
 # ── Distribución ───────────────────────────────────────────────────────────────────────────
 def _acotar(valor: float, minimo: float, maximo: float) -> float:
+    """[LN-QBE-147] Acota un valor al intervalo físico ``[minimo, maximo]``."""
     return max(minimo, min(maximo, valor))
 
 
@@ -141,6 +142,7 @@ def brier_multiclase(
 
 # ── Perturbación ───────────────────────────────────────────────────────────────────────────
 def _validar_lote(partidos: Sequence[Mapping[str, Any]]) -> None:
+    """[LN-QBE-147] Valida el contrato del lote antes de calibrar."""
     if not partidos:
         raise CalibracionError("[LN-QBE-147] Lote vacío: no hay partidos que calibrar")
     for indice, partido in enumerate(partidos):
@@ -161,7 +163,7 @@ def aplicar_factores(
     vector: Mapping[str, Mapping[str, Optional[float]]],
     factores: Mapping[Tuple[str, str], float],
 ) -> Dict[str, Dict[str, Optional[float]]]:
-    """Aplica los factores y acota cada variable a sus límites físicos."""
+    """[LN-QBE-147] Aplica los factores y acota cada variable a sus límites físicos."""
     nuevo = {variable: dict(valor) for variable, valor in vector.items()}
     for (variable, lado), factor in factores.items():
         if variable not in LIMITES or lado not in LADOS:
@@ -180,6 +182,7 @@ def _brier_lote(
     medias: Mapping[str, float],
     mu_liga: float,
 ) -> float:
+    """[LN-QBE-147] Calcula el Brier medio del lote bajo los factores dados."""
     total = 0.0
     for partido in partidos:
         vector = aplicar_factores(partido["vector"], factores)

@@ -287,15 +287,19 @@ class CalienteMarketScraper:
 
         partidos_a_buscar = {(p["local"], p["visitante"]): p for p in partidos_slate}
         mercado_encontrado = []
-        url_caliente = "https://sports.caliente.mx/es_MX/F%C3%BAtbol-Mexicano"
+        url_caliente = "https://sports.caliente.mx/es_MX/Futbol"
 
         try:
             from playwright.sync_api import sync_playwright
             with sync_playwright() as pw:
                 browser, context, page = cls.iniciar_navegador_stealth(pw, headed=False)
                 try:
-                    page.goto(url_caliente, timeout=25000, wait_until="domcontentloaded")
+                    respuesta = page.goto(url_caliente, timeout=25000, wait_until="domcontentloaded")
                     page.wait_for_timeout(4000)
+                    if respuesta is not None and respuesta.status >= 400:
+                        raise RuntimeError(
+                            f"Caliente respondió HTTP {respuesta.status} en {url_caliente}"
+                        )
 
                     if "attention" in page.title().lower() or "cloudflare" in page.title().lower():
                         print("[CALIENTE] ⚠️ Bloqueo perimetral detectado.")
@@ -360,17 +364,12 @@ class CalienteMarketScraper:
                 finally:
                     browser.close()
         except Exception as e:
-            logger.warning(f"[CALIENTE] Error en extraccion focalizada: {e}")
+            logger.error(f"[CALIENTE] Error en extraccion focalizada: {e}")
+            raise
 
-        # Rellenar con None los partidos no cotizados [GOVERNANCE-01: sin datos sintéticos]
-        for (l_target, v_target) in partidos_a_buscar.keys():
-            if not any(m["local"] == l_target and m["visitante"] == v_target for m in mercado_encontrado):
-                mercado_encontrado.append({
-                    "local": l_target,
-                    "visitante": v_target,
-                    "L": None, "E": None, "V": None,
-                    "pago_anticipado": False,
-                    "encontrado_en_caliente": False
-                })
+        if not mercado_encontrado:
+            raise RuntimeError(
+                f"Caliente no publicó cuotas 1X2 para el slate en {url_caliente}."
+            )
 
         return mercado_encontrado

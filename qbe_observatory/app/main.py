@@ -14,6 +14,7 @@ from app import config
 from app.routes.calibration import router as calibration_router
 from app.routes.backtesting import router as backtesting_router
 from app.routes.backtesting_ui import router as backtesting_ui_router
+from app.routes.consenso_ui import router as consenso_ui_router
 from app.routes.manus import router as manus_router
 from app.routes.snapshot import router as snapshot_router
 from app.services.calibration_view import cargar_panel_vars44, cargar_vista_calibracion
@@ -27,6 +28,7 @@ templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app.include_router(calibration_router)
 app.include_router(backtesting_router)
 app.include_router(backtesting_ui_router)
+app.include_router(consenso_ui_router)
 app.include_router(manus_router)
 app.include_router(snapshot_router)
 

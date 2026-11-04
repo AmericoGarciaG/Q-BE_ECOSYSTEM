@@ -38,7 +38,7 @@ def _contexto(request: Request) -> Dict[str, Any]:
         "titulo": "Backtesting — Q-BE Observatory",
         "snapshot": config.BACKTESTING_SNAPSHOT,
         "snapshot_edad_min": round(edad / 60, 1) if edad is not None else None,
-        "snapshot_fresco": snapshot_fresco(config.BACKTESTING_SNAPSHOT, 60),
+        "snapshot_fresco": snapshot_fresco(config.BACKTESTING_SNAPSHOT, 30),
         "modelos_manus": modelos_disponibles(),
     }
 

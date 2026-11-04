@@ -534,3 +534,98 @@ La llave del sitio (`idPartido`, p. ej. `67047`) no es la llave de la bóveda (`
 4. Debe existir **exactamente una** fila. Cero coincidencias o más de una abortan el partido con `MatchResolutionError`; no se elige por aproximación, no se crea la fila y no se imputa la llave.
 
 * **[SHIELD]:** `qbe_ingestion/tests/test_shield_historical_load_integrity.py` (familia existente) y `qbe_ingestion/tests/test_shield_orquestador_extraccion.py` (Resolución, Persistencia y Orquestación de §15.2 y §15.3).
+
+#### 15.4 `odds_ticks` — Serie Histórica de Momios en Vivo y Tracking de Movimientos
+
+### [ARCH-1.5.13] Esquema 3NF de Odds Históricos y Tracking de Movimientos (`odds_ticks`)
+*   **Ω (Resumen):** Fuente única de verdad para los momios en vivo. Almacena la serie histórica de ticks para análisis de mercado.
+*   **I (Input):** Ingesta desde el Daemon Multicasa.
+*   **Deuda técnica (FootyStats):** Las cuotas históricas actuales (FootyStats) demuestran un Brier Score ineficiente (Alpha Q-BE +66%). Queda prohibido usar estas cuotas para simular ROI histórico. Se requiere la integración de un nuevo proveedor de cuotas históricas de calidad o la acumulación de ticks propios vía Daemon.
+*   **P (Process):** Inserción Append-Only. Columnas: `tick_id` (PK), `match_id` (FK), `casino_id` (FK), `timestamp`, `odd_home`, `odd_draw`, `odd_away`, `vig`, `delta_odd`.
+*   **O (Output):** `qbe_business` lee el último tick (`ORDER BY timestamp DESC LIMIT 1`). `qbe_observatory` lee la serie histórica.
+*   **Φ (Transición):** Consumidor activo: `qbe_storage` / `qbe_business`.
+
+#### 15.5 `historical_sovereign_distributions` — Símplex Soberano P' del Corpus Histórico
+
+* **Origen fáctico:** motor sellado `generar_distribucion_soberana` de `qbe_core` (Dixon-Coles 2D + colapso al Símplex Δ² + Cláusula de André), alimentado por el vector causal de `[LN-QBE-146]` y transportado por `[LN-QBE-150]`.
+* **Separación CQRS:** es una tabla **histórica** (`historical_*`). No es, ni sustituye a, `sovereign_distributions` (tabla del lado vivo, 4 329 filas, `match_id` `FOTMOB-*`). Ambas coexisten y jamás se escriben entre sí.
+* **DDL canónico:**
+
+```sql
+CREATE TABLE IF NOT EXISTS historical_sovereign_distributions (
+    match_id                  TEXT    PRIMARY KEY,
+    temporada                 TEXT    NOT NULL,
+    model_version             TEXT    NOT NULL,
+    p_local                   REAL    NOT NULL,
+    p_empate                  REAL    NOT NULL,
+    p_visitante               REAL    NOT NULL,
+    lambda_home               REAL    NOT NULL,
+    lambda_away               REAL    NOT NULL,
+    phi_lead2_home            REAL    NOT NULL,
+    phi_lead2_away            REAL    NOT NULL,
+    epistemic_delta           REAL    NOT NULL DEFAULT 0.0,
+    delta_epist               REAL    NOT NULL DEFAULT 0.0,
+    origen_factores           TEXT    NOT NULL DEFAULT 'analitico_base',
+    es_operable               INTEGER NOT NULL DEFAULT 1,
+    pj_home                   INTEGER NOT NULL DEFAULT 0,
+    pj_away                   INTEGER NOT NULL DEFAULT 0,
+    duelos_h2h                INTEGER NOT NULL DEFAULT 0,
+    variables_con_evidencia   INTEGER NOT NULL DEFAULT 0,
+    origen                    TEXT    NOT NULL DEFAULT 'HISTORICO_SPRINT48',
+    fuente_causal             TEXT    NOT NULL DEFAULT 'FOTMOB_MATCHDETAILS',
+    audit_trace_json          TEXT    NOT NULL DEFAULT '{}',
+    created_at                TEXT    NOT NULL DEFAULT '',
+    FOREIGN KEY (match_id) REFERENCES historical_matches (match_id)
+);
+```
+
+* **Columnas (especificación canónica):**
+
+| Columna | Tipo | Nulo | Semántica |
+|---|---|---|---|
+| `match_id` | TEXT | NO | PK y FK → `historical_matches.match_id`. Una fila por partido; el `INSERT OR REPLACE` es idempotente. |
+| `temporada` | TEXT | NO | Temporada canónica (`YYYY_YYYY`) desnormalizada para consulta directa del lado Q. |
+| `model_version` | TEXT | NO | Versión del motor que produjo el símplex (`v13.0-DIRGEN`). |
+| `p_local` / `p_empate` / `p_visitante` | REAL | NO | Símplex Δ² publicado por el motor (suma = 1 ± 1e-9). |
+| `lambda_home` / `lambda_away` | REAL | NO | Intensidades Poisson acotadas que sostienen la matriz Dixon-Coles. |
+| `phi_lead2_home` / `phi_lead2_away` | REAL | NO | Operador de André: probabilidad de pago anticipado por lado. |
+| `epistemic_delta` | REAL | NO | Δ_epist(∞) de la fusión convexa `[LN-QBE-104]`. |
+| `delta_epist` | REAL | NO | Δ_epist de variación total contra el kernel H2H `[LN-QBE-020-C]`. |
+| `origen_factores` | TEXT | NO | Procedencia legislada: `analitico_base` `[LN-QBE-035-B]` o `bayesiano_10p` `[LN-QBE-036]`. |
+| `es_operable` | INTEGER | NO | `1` siempre: el motor sólo persiste distribuciones con `S(I_i) = 1`. |
+| `pj_home` / `pj_away` | INTEGER | NO | Partidos previos del club en la temporada que sostienen el agregado de entrada. |
+| `duelos_h2h` | INTEGER | NO | Enfrentamientos directos previos dentro de la ventana de memoria. |
+| `variables_con_evidencia` | INTEGER | NO | Variables del catálogo `[LN-QBE-120]` con dato factual en el vector causal de origen. |
+| `origen` / `fuente_causal` | TEXT | NO | Trazabilidad del productor (`HISTORICO_SPRINT48`) y del vector (`FOTMOB_MATCHDETAILS`). |
+| `audit_trace_json` | TEXT | NO | `StochasticAuditTrace` completo serializado (factores, intensidades, símplex, insumos). |
+| `created_at` | TEXT | NO | Marca ISO-8601 Z de la transacción que insertó la fila. |
+
+* **Regla de suficiencia:** un partido sin `S(I_i) = 1` (menos de 3 partidos previos por club con marcador legible) **no genera fila**: se salta y se declara en el reporte. Cero imputaciones, cero distribuciones uniformes almacenadas como si fueran cálculo.
+* **Justificación 3NF:** `match_id` determina todas las columnas; `temporada` es la única dependencia funcional parcial y se conserva desnormalizada por costo de consulta del lado Q (declarado, no implícito). El detalle forense vive en `audit_trace_json` y no participa de los predicados analíticos.
+* **Prohibición:** esta tabla no se escribe desde el lado de comando ni desde `qbe_core`; no se toca `matches`, `sovereign_distributions` ni `match_telemetry`.
+
+---
+
+## 16. DAEMON CENTINELA MULTICASA Y ORQUESTADOR DE TEMPORIZADORES
+
+### [ARCH-1.4.75] Rescate del Daemon Centinela Multicasa y Orquestador de Temporizadores
+*   **Ω (Resumen):** Rescatar y refactorizar el Centinela de Momios (`[ARCH-1.4.12]`) para extraer momios de múltiples casinos.
+*   **I (Input):** Catálogo de scrapers (Caliente, Novibet, Betway, etc.) y temporizadores.
+*   **P (Process):** Muestreo dinámico: 4h de lunes a jueves, 1h viernes/sábado, 10min en las 3 horas previas al kickoff. Límite de timeout de 30000 ms.
+*   **O (Output):** Inserción de ticks en `odds_ticks`.
+
+### [ARCH-1.4.77] Delimitación de Proveedores Primarios
+*   **FootyStats:** Proveedor Primario Histórico para *momios* y *resultados de partidos*. Es la fuente para calcular Brier Score y Alpha históricos. **Limitación:** No cuenta con la información suficiente para obtener las 32 variables de la distribución.
+*   **FotMob:** Proveedor Primario para la *evidencia fáctica* (32 variables). Es la fuente para calibrar el modelo Q-BE. **Limitación:** No maneja momios de mercado.
+*   **Flujo de convergencia:** FootyStats provee los momios y resultados históricos. Q-BE provee la distribución. La comparación Alpha (Q-BE vs Mercado) solo es posible en los partidos donde ambas fuentes convergen (muestra de control).
+
+---
+
+## 17. CONSOLIDADOR DE BÓVEDAS HISTÓRICAS
+
+### [ARCH-1.5.14] Consolidador de Bóvedas Históricas y UPSERT Canónico
+*   **Ω (Resumen):** Rescatar la evidencia de las SQLite legacy y consolidarla en la bóveda canónica `data/qbe_database.db` sin duplicar ni imputar ceros.
+*   **I (Input):** `Q_BE_CD_WEB/data/qbe_database.db`, `data/qbe_database.db` y `qbe_observatory/data/qbe_historico.db` (solo lectura).
+*   **P (Process):** Backup previo, DDL idempotente de `odds_ticks` y `match_causal_vars`, UPSERT de snapshots, ticks, distribuciones y las 32 dimensiones causales. `[GOVERNANCE-01]`: `None` se omite.
+*   **O (Output):** Reporte de consola con ticks de momios rescatados y variables de 32 dimensiones rescatadas.
+*   **Φ (Transición):** Consumidor activo: `orquestador_live.py` y el Juez de Paridad `[LN-QBE-140]`.

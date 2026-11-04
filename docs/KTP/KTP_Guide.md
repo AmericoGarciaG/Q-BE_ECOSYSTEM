@@ -194,6 +194,13 @@ Si el Juez de gobernanza falla, **Alto al Fuego**. Si el Juez KTP falla por ause
 - No se incluyen bases de datos, snapshots, `.pytest_cache`, `data/sondas_exploracion/` ni artefactos temporales.
 - El manifiesto `git status --short` se adjunta al cierre.
 
+### 7.5 Sprint
+
+- El número y el nombre del sprint se incrementan solo por el Director Humano o el Arquitecto al inicio de un nuevo ciclo.
+- El cambio se refleja primero en la cabecera de `docs/KTP/AKT.md`; después en los derivados.
+- Ningún componente hardcodea el sprint. El Auditor resuelve `SPRINT-NN` del AKT o, si está reiniciado, del acta más reciente de `history/`.
+- `GL_update.md` es derivado y no es fuente de verdad del sprint.
+
 ---
 
 ## 8. CRITERIOS DE ACEPTACIÓN FIDUCIARIA

@@ -23,8 +23,54 @@ from app.services.snapshot_refresh import edad_snapshot, snapshot_fresco
 
 logger = logging.getLogger(__name__)
 
+RUTA_HISTORICO = Path(__file__).resolve().parents[2] / "data" / "qbe_historico.db"
 ESTADO_PENDIENTE_MOTOR = "PENDIENTE MOTOR"
 ESTADO_SIN_EVIDENCIA = "SIN EVIDENCIA"
+
+
+class HistoricoDBError(RuntimeError):
+    """`[SPRINT-47]` La bóveda histórica no responde: la vista debe DETENERSE.
+
+    Sustituye al histórico `except: return []`, que degradaba la vista hacia otra
+    base de datos (el snapshot vivo) sin declararlo. Un fallo de la bóveda es un
+    estado de servicio explícito, nunca una lista vacía silenciosa.
+    """
+
+
+def temporadas_historicas() -> List[str]:
+    """Temporadas FootyStats disponibles en la bóveda histórica (solo lectura).
+
+    Raises:
+        HistoricoDBError: si la bóveda no existe o no puede leerse. La vista
+            debe detenerse y declarar el fallo (HTTP 500 o mensaje en la UI).
+    """
+    try:
+        base = BaseDatosSoloLectura(RUTA_HISTORICO)
+        filas = base.ejecutar_select(
+            "SELECT DISTINCT temporada FROM historical_matches "
+            "WHERE temporada IS NOT NULL ORDER BY temporada ASC"
+        )
+    except (FileNotFoundError, sqlite3.Error) as exc:
+        raise HistoricoDBError(
+            f"No se pudieron leer las temporadas históricas de {RUTA_HISTORICO}: {exc}"
+        ) from exc
+    return [str(fila["temporada"]) for fila in filas]
+
+
+def total_partidos_historicos() -> int:
+    """Universo FootyStats declarado por la bóveda histórica.
+
+    Raises:
+        HistoricoDBError: si la bóveda no existe o no puede leerse.
+    """
+    try:
+        base = BaseDatosSoloLectura(RUTA_HISTORICO)
+        fila = base.ejecutar_select("SELECT COUNT(*) AS total FROM historical_matches")
+    except (FileNotFoundError, sqlite3.Error) as exc:
+        raise HistoricoDBError(
+            f"No se pudo contar el histórico FootyStats de {RUTA_HISTORICO}: {exc}"
+        ) from exc
+    return int(fila[0]["total"]) if fila else 0
 
 
 def _signo_alpha(valor: Optional[float]) -> str:
@@ -73,7 +119,7 @@ def _fuente_base(ruta: Path) -> Dict[str, Any]:
         "ruta": str(ruta),
         "nombre": ruta.name,
         "edad_min": round(edad / 60.0, 1) if edad is not None else None,
-        "fresco": snapshot_fresco(ruta, 60),
+        "fresco": snapshot_fresco(ruta, 30),
         "liga": ESTADO_SIN_EVIDENCIA,
         "temporada": "No declarada",
         "solo_lectura": True,
@@ -281,7 +327,9 @@ def _resumen_vista(
 
 
 def construir_vista_desde_reporte(
-    reporte: Dict[str, Any], *, fuente: Optional[Dict[str, Any]] = None
+    reporte: Dict[str, Any],
+    *,
+    fuente: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Transcribe el DTO canónico al modelo de vista. Función pura, sin I/O."""
     jornadas_canonicas = reporte.get("jornadas") or []
@@ -300,6 +348,7 @@ def construir_vista_desde_reporte(
         "jornadas": jornadas,
         "brier_vars": _brier_vars(),
         "componentes_futuros": _componentes_futuros(),
+        "reporte": reporte,
         "error": None,
     }
 
@@ -311,6 +360,7 @@ def _vista_error(fuente: Dict[str, Any], mensaje: str) -> Dict[str, Any]:
         "jornadas": [],
         "brier_vars": _brier_vars(),
         "componentes_futuros": _componentes_futuros(),
+        "reporte": None,
         "error": mensaje,
     }
 

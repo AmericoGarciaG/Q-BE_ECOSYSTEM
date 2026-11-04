@@ -60,10 +60,10 @@ LIGA_FOTMOB_ID_DEFAULT = DEFAULT_FOTMOB_LIGA_MX_ID
 LIGA_NOMBRE_ESPERADO = "Liga MX"
 URL_LIGA = "https://www.fotmob.com/api/data/leagues?id={liga_id}&tab=stats"
 NOMBRE_CACHE_MACRO = "cache_macro_stats_liga_mx_2026.json"
-RUTA_CACHE_PROPIA = os.path.join(PROJECT_ROOT, "data", NOMBRE_CACHE_MACRO)
-# [Migración Fase 4] Puente de lectura/escritura mientras el homologador legado sigue leyendo
-# `Q_BE_CD_WEB/data`. El dueño natural es `qbe_ingestion/data`; el fallback legado evita romper
-# el consumidor de las 32 variables sin duplicar el artefacto.
+RAIZ_ECOSISTEMA = os.path.abspath(os.path.join(PROJECT_ROOT, ".."))
+# [ARCH-1.5.14] Ruta canónica única: el artefacto vive en `data/` de la raíz del
+# ecosistema, que es la ruta que consumen Observatorio y el homologador legado.
+RUTA_CACHE_PROPIA = os.path.join(RAIZ_ECOSISTEMA, "data", NOMBRE_CACHE_MACRO)
 RUTA_CACHE_LEGADO = os.path.abspath(
     os.path.join(PROJECT_ROOT, "..", "..", "Q_BE_CD_WEB", "data", NOMBRE_CACHE_MACRO)
 )

@@ -190,6 +190,16 @@ Reglas de composición:
 7. **Densidad.** `--bg-surface` para la tarjeta, `--bg-base` para las tres celdas, `--border` para hairlines, tres niveles tipográficos y `tabular-nums` en toda cifra. Sin sombras externas ni degradados; las barras son sombras internas de 3 px.
 8. **Modal 32V bajo demanda.** El cascarón único `#modal-44-variables` hospeda el fragmento de `/visor/partido/<id_partido>/variables`, que transcribe `atribucion_factorial` con las clases `vars44-*`. Abrir y cerrar conserva su contrato.
 
+### 7.2 `[DES-QBE-076]` Tabla Comparativa de Sabiduría de las Masas (Observatorio)
+*   **UI:** Tabla dinámica (ordenable) con columnas: `Fuente` (Q-BE, Consenso, Casino A...), `Brier Score`, `Alpha (%)`, `Peso en Consenso`.
+*   **Jerarquía:** Fila maestra superior para el Consenso Ponderado.
+*   **Filtros globales (Sprint 47):** Los filtros de Temporada y Jornada son globales y afectan a los KPIs, Mercado en vivo e Histórico. Un cambio de filtro recompone las tres superficies sobre el mismo universo declarado: no se admite una superficie filtrada conviviendo con otra sin filtrar. Si el universo filtrado no tiene evidencia (jornada sin cartelera viva o temporada histórica respecto del snapshot), la superficie se declara `SIN EVIDENCIA`; nunca se rellena con datos de otro universo.
+*   **Columna "Peso" (Sprint 47):** Peso igualitario (1.000) para fuentes históricas sin Brier calculable. Reservado para pesos dinámicos futuros. La fila Q-BE es de solo lectura: muestra `—`, no reparte peso y no altera el Consenso Ponderado.
+*   **Implementación (Sprint 47):** pestaña **Consenso de Mercado** (`/consenso`); `/visor` conserva únicamente la Auditoría de Calibración pre-sprint. La vista tiene filtros de Temporada/Jornada, checkboxes `Todos`/Caliente/Novibet/Betway/Q-BE, KPIs globales (Brier Consenso, Brier Q-BE, Alpha) y dos tablas: **Mercado en vivo** (cuotas reales de la próxima jornada desde `fixtures_snapshots.matches_json`) y **Desglose histórico por jornada** (reporte de Auditoría + `[LN-QBE-148]`; fuente FootyStats por jornada). En cada bloque, el Consenso Ponderado es la fila maestra (`data-consenso="1"`). Alpha canónico: `(1 - Brier_QBE / Brier_fuente) × 100` (positivo ⇒ Q-BE mejor). El Brier de jornada es la media aritmética de los Brier individuales de los partidos con evidencia para la fuente; los partidos sin datos se excluyen y una muestra vacía produce `SIN EVIDENCIA` (nunca cero). Sin fuentes seleccionadas no se despliega tabla. Jueces: `tests/shield/test_shield_sabiduria_masas.py`, `tests/shield/test_shield_brier_agregacion.py`, `tests/shield/test_shield_consenso_seleccion.py` y `tests/shield/test_shield_consenso_mercado.py`. Ambas vistas (`/visor` y `/consenso`) comparten el mismo reporte de Auditoría para el Brier de mercado; `/consenso` no recalcula el histórico con ticks.
+
+### 7.3 `[DES-QBE-077]` Selector de Distribución en Visor de Backtesting
+*   **UI:** Controles (checkboxes/radios) para seleccionar la fuente de simulación: Q-BE, Consenso o Casino Individual.
+
 ---
 
 ## 8. ÍNDICE DE NODOS DE DISEÑO
