@@ -29,7 +29,7 @@
 ---
 
 ## ÍNDICE DE COMPONENTES CANÓNICOS
-1. `[VAULT-CORE-001]` Ecuación Log-Lineal Canónica y Ligadura Estructural de α (`qbe_core/src/core/intensity_canonical_loglink.py`)
+1. `[VAULT-CORE-001]` Ecuación Log-Lineal Canónica y Ligadura Estructural de α (`qbe_core/src/core/intensity_canonical_loglink.py`) — **v2 · `E-50.1`** (clausura de masa + prohibición de defaults)
 2. `[VAULT-CORE-002]` Compresión Hiperbólica Simétrica tanh y Damping (`qbe_core/src/core/intensity_canonical_loglink.py`)
 3. `[VAULT-CORE-003]` Fórmula Cerrada de André para Pago Anticipado Π_Lead2 (`qbe_core/src/core/andre_early_payout.py`)
 4. `[VAULT-CORE-004]` Concurso Pseudo-BMA con Máscara Booleana (`qbe_core/src/core/generators_ensemble_bma.py`)
@@ -179,25 +179,68 @@ class PersistenceGateway:
 ---
 
 ## [VAULT-CORE-001] Ecuación Log-Lineal Canónica y Ligadura Estructural de α (`qbe_core/src/core/intensity_canonical_loglink.py`)
-**Estado:** `[ESTADO: CANON EN FORJA]`  
+**Estado:** `[ENMIENDA E-50.1 SANCIONADA — MATERIALIZACIÓN PENDIENTE]`  
 **Régimen:** `[DIRGEN-STRICT]`  
+**Enmienda:** `E-50.1` (2026-11-04, `SPRINT-50-REINGENIERIA-INDUSTRIAL-QBE-CORE`) — clausura estricta de masa
+(`γ_efectivo`), prohibición de defaults literales y contrato de excepción `InsufficientDataException`.
+**Autorización del cambio:** `DIRGEN_VARIANCE_REQUEST.md` (`VAR-2026-SPRINT50-CORE`). Sin esa ficha, la
+materialización está **prohibida** (Protocolo Anti-Bandazos).
+**Deroga:** el bloque `[CANON EN FORJA]` anterior, cuyo `alpha` se calculaba sobre `gamma_home_base`
+exclusivamente y por tanto no cerraba la masa ante `Δalt`/`Δrest` (ver §E-50.1.3).
+
+> ⚠️ **Divergencia transitoria declarada.** Entre esta enmienda y la Fase 2 el código de
+> `intensity_canonical_loglink.py` **no coincide** con este plano. La divergencia está autorizada por la
+> Ficha de Varianza y es el objeto mismo de la Fase 2; hasta su materialización rige
+> `[GOVERNANCE.md §6.1]` (la ley precede al código).
 
 ```python
-# [VAULT-CORE-001] Ecuación Log-Lineal Canónica, Ligadura de α y Damping tanh
+# [VAULT-CORE-001] Ecuación Log-Lineal Canónica, Ligadura de α y Damping tanh — v2 (E-50.1)
 # qbe_core/src/core/intensity_canonical_loglink.py
-# Estado: [CANON EN FORJA] | Régimen: [DIRGEN-STRICT]
+# Estado: ENMIENDA E-50.1 SANCIONADA | Régimen: [DIRGEN-STRICT]
 
 import math
 from typing import Tuple, Optional
 
-def calcular_alpha_ligadura(mu_liga: float = 2.65, gamma_home: float = 0.15) -> float:
+class InsufficientDataException(Exception):
+    """[E-50.1 §P-01] Dato estructuralmente obligatorio ausente en la ruta de cálculo.
+
+    Contrato: la levanta la aduana de entrada del núcleo, NUNCA la aritmética; porta
+    `match_id`, `clave` y `lado`. PROHIBIDO capturarla para devolver un valor: el llamador
+    la traduce a `S(I)=0` con su motivo y la declara en la traza forense.
     """
-    [Sección 4.9.1] Ecuación de Ligadura Estructural de Q-BE:
-    alpha = ln(mu_liga) - ln(1.0 + exp(gamma_home))
-    Garantiza analíticamente la conservación de masa de goles de la competición.
+
+
+# [E-50.1] Coeficientes del operador de localía (docs/CONSTANTS.md §2).
+BONO_ALTITUD_POR_KM = 0.0300    # log-ratio por 1000 m de Δaltitud (sólo Δalt > 0)
+BONO_DESCANSO_POR_DIA = 0.0200  # log-ratio por día de Δdescanso, recortado a [-3, +3] días
+
+
+def calcular_alpha_ligadura(mu_liga: float, gamma_efectivo: float) -> float:
     """
-    gamma_val = float(gamma_home) if gamma_home is not None else 0.15
-    mu_val = float(mu_liga) if mu_liga is not None else 2.65
+    [Sección 4.9.1 · E-50.1] Ecuación de Ligadura Estructural de Q-BE — CLAUSURA DE MASA:
+
+        alpha = ln(mu_liga) - ln(1.0 + exp(gamma_efectivo))
+
+    `gamma_efectivo` es el INTERCEPTO COMPLETO de localía, no la base:
+
+        gamma_efectivo = gamma_base + delta_gamma_plaza + bono_altitud + efecto_descanso
+
+    Invariante L-1 (conservación estricta): con A = D = 0 y q_mod = 1.0,
+
+        lambda_H + lambda_A == mu_liga   (tolerancia 1e-12)
+
+    PROHIBIDO invocar esta función con un subconjunto del intercepto: cualquier término que se
+    sume a `gamma` en `eta_h` DEBE entrar aquí; de lo contrario la masa de goles se fuga
+    (defecto medido del canon anterior: 2.6500 -> 2.6934 con Δalt = +1000 m).
+    """
+    mu_val = float(mu_liga)
+    if not math.isfinite(mu_val) or mu_val <= 0.0:
+        raise ValueError(f"[VAULT-CORE-001] mu_liga inválido: {mu_liga!r}. Debe ser finito y > 0.")
+    gamma_val = float(gamma_efectivo)
+    if not math.isfinite(gamma_val):
+        raise InsufficientDataException(
+            "[VAULT-CORE-001] gamma_efectivo no finito: la ligadura no admite un intercepto nulo."
+        )
     return math.log(mu_val) - math.log(1.0 + math.exp(gamma_val))
 
 
@@ -227,42 +270,54 @@ def estimar_intensidades_loglineal(
     D_away: float,
     A_away: float,
     D_home: float,
-    mu_liga: float = 2.65,
-    gamma_home_base: float = 0.15,
-    delta_alt_metros: float = 0.0,
-    delta_descanso_dias: float = 0.0,
-    q_mod_h: float = 1.0,
-    q_mod_a: float = 1.0,
+    mu_liga: float,
+    gamma_home_base: float,
+    delta_gamma_plaza: float = 0.0,
+    delta_alt_metros: Optional[float] = None,
+    delta_descanso_dias: Optional[float] = None,
+    q_mod_h: Optional[float] = None,
+    q_mod_a: Optional[float] = None,
     sigma_A: float = 0.25,
     sigma_D: float = 0.25
 ) -> Tuple[float, float]:
     """
-    [Sección 4.9] Arquitectura Canónica Log-Lineal:
-    ln(lambda_H) = alpha + gamma_home + A_H - D_A + C_H
+    [Sección 4.9 · E-50.1] Arquitectura Canónica Log-Lineal con CLAUSURA DE MASA:
+    ln(lambda_H) = alpha + gamma_efectivo + A_H - D_A + C_H
     ln(lambda_A) = alpha + A_A - D_H + C_A
-    """
-    # 1. Ligadura estructural
-    alpha = calcular_alpha_ligadura(mu_liga, gamma_home_base)
 
-    # 2. Damping hiperbólico aguas arriba en factores
+    Regla de oro E-50.1 §P-02: `gamma_efectivo` es el ÚNICO intercepto de localía y se
+    construye ANTES de alpha. Prohibido añadir un término a `eta_h` sin añadirlo a la ligadura.
+    """
+    # 1. Operador de localía (Sección 4.7) — se calcula ANTES de la ligadura
+    delta_alt_term = (
+        BONO_ALTITUD_POR_KM * max(0.0, float(delta_alt_metros) / 1000.0)
+        if delta_alt_metros is not None else 0.0
+    )
+    delta_rest_term = (
+        BONO_DESCANSO_POR_DIA * max(-3.0, min(3.0, float(delta_descanso_dias)))
+        if delta_descanso_dias is not None else 0.0
+    )
+    gamma_efectivo = (
+        float(gamma_home_base) + float(delta_gamma_plaza) + delta_alt_term + delta_rest_term
+    )
+
+    # 2. Ligadura estructural sobre el intercepto COMPLETO (clausura de masa, Invariante L-1)
+    alpha = calcular_alpha_ligadura(mu_liga, gamma_efectivo)
+
+    # 3. Damping hiperbólico aguas arriba en factores
     A_h_damped = aplicar_damping_hiperbolico(A_home, sigma_A)
     D_a_damped = aplicar_damping_hiperbolico(D_away, sigma_D)
     A_a_damped = aplicar_damping_hiperbolico(A_away, sigma_A)
     D_h_damped = aplicar_damping_hiperbolico(D_home, sigma_D)
 
-    # 3. Operador vectorial de localía (Sección 4.7)
-    delta_alt_term = 0.03 * max(0.0, delta_alt_metros / 1000.0)
-    delta_rest_term = 0.02 * max(-3.0, min(3.0, delta_descanso_dias))
-    gamma_contextual = gamma_home_base + delta_alt_term + delta_rest_term
-
-    # 4. Factores contextuales en espacio logarítmico
-    q_h_clamped = max(0.90, min(1.05, float(q_mod_h)))
-    q_a_clamped = max(0.90, min(1.05, float(q_mod_a)))
+    # 4. Factores contextuales en espacio logarítmico (None = modificador no publicado)
+    q_h_clamped = 1.0 if q_mod_h is None else max(0.90, min(1.05, float(q_mod_h)))
+    q_a_clamped = 1.0 if q_mod_a is None else max(0.90, min(1.05, float(q_mod_a)))
     C_h = math.log(q_h_clamped)
     C_a = math.log(q_a_clamped)
 
     # 5. Formulación log-lineal canónica
-    eta_h = alpha + gamma_contextual + A_h_damped - D_a_damped + C_h
+    eta_h = alpha + gamma_efectivo + A_h_damped - D_a_damped + C_h
     eta_a = alpha + A_a_damped - D_h_damped + C_a
 
     # 6. Transformación exponencial e Invariante I6 (Positividad estricta acotada)
@@ -274,6 +329,55 @@ def estimar_intensidades_loglineal(
 
 
 ---
+
+### §E-50.1 — CLÁUSULA NORMATIVA VINCULANTE (deroga el bloque anterior en lo que le sea contrario)
+
+**E-50.1.1 · Taxonomía de insumos.** La ruta de cálculo distingue dos clases y **no las mezcla**:
+
+| Clase | Insumos | Régimen de ausencia |
+|:---:|---|---|
+| **C-1 · Evidencia estadística** | `gf`, `gc`, `xg`, `xga` y las 32 celdas `V01…V32` | **Bloqueante.** Ausencia ⇒ `S(I)=0` (ruta fiduciaria) o `InsufficientDataException`. |
+| **C-2 · Operador contextual** | `Δalt`, `Δrest`, `q_mod`, `Δγ_plaza` | **No bloqueante, no fabricable.** Ausencia ⇒ operador **no aplicado** (`aplicado=False` en la traza). Prohibido sustituirla por `0.0`. |
+
+La diferencia es epistémica, no aritmética: `Δalt = 0.0` significa *“se publicó que la altitud no difiere”*; `Δalt` ausente significa *“no se publicó”* y así debe viajar en la traza. Confundirlos es fabricación de Clase I.
+
+**E-50.1.2 · Invariante L-1 — Clausura estricta de masa.**
+$$ \gamma_{\text{efectivo}} = \bar\gamma_{\text{base}} + \Delta\gamma_{\text{plaza}} + \beta_{\text{alt}}\cdot\frac{\Delta\text{alt}}{1000} + \beta_{\text{rest}}\cdot\text{clip}(\Delta\text{días},-3,3) $$
+$$ \alpha = \ln(\mu_{\text{liga}}) - \ln\!\left(1 + e^{\gamma_{\text{efectivo}}}\right) \;\Longrightarrow\; \lambda_H + \lambda_A = \mu_{\text{liga}} \quad (A=D=0,\; q=1) $$
+
+con $\beta_{\text{alt}} = 0.0300$ y $\beta_{\text{rest}} = 0.0200$ (`CONSTANTS.md` §2). **Prohibido** añadir cualquier término a `eta_h` que no esté incluido en `γ_efectivo`; si un término es asimétrico por naturaleza y no debe renormalizar la liga, **se resta en el lado visitante** y se declara. La masa no se “aproxima”: se cierra o se declara rota.
+
+**E-50.1.3 · Defecto derogado (evidencia).** El canon anterior calculaba `α` con `γ_base` únicamente, dejando fuera `Δalt` y `Δrest`:
+
+| Δalt | `E[goles]` canon anterior | `E[goles]` E-50.1 |
+|---:|---:|---:|
+| 0 m | 2.6500 | 2.6500 |
+| +1000 m | **2.6934** (+1.64 %) | **2.6500** |
+| +2500 m | **2.7609** (+4.18 %) | **2.6500** |
+
+**E-50.1.4 · Prohibiciones P-01/P-02 (Cero Mocks).**
+
+* **P-01.** Prohibido `dict.get(clave, <literal>)`, `clave or <literal>`, `float(x or 0.0)` y cualquier construcción que convierta **ausencia** en **número** en la ruta de λ. Caso tipificado: `h.get("gf", 10)`, `a.get("gc", 12)`, `a.get("gf", 7)`, `h.get("gc", 10)`, `h.get("pj", 8)`.
+* **P-02.** Prohibido `except` que devuelva `0.0`, la media de liga o cualquier constante. Toda captura de `InsufficientDataException` **debe** propagar `S(I)=0` con motivo, o relanzar.
+* **Sanción:** Clase I (Fabricación Sintética) conforme a `GOVERNANCE.md §1.1.3`; el Censo de Paridad bloquea el cierre.
+
+**E-50.1.5 · Contrato de error.** `InsufficientDataException(match_id, clave, lado)` se levanta en la **aduana de entrada**, nunca dentro de la aritmética. El motor publica `S(I)=0` con `motivo = "INSUFFICIENT_DATA:<clave>"`, `factores_entrada = {}` y `distribucion_simplex` de ignorancia declarada; jamás un λ calculado con un sustituto.
+
+**E-50.1.6 · Trazabilidad obligatoria.** La traza forense publica, como mínimo: `gamma_base`, `delta_gamma_plaza`, `delta_alt_term`, `delta_rest_term`, `gamma_efectivo`, `alpha`, los sellos `contexto_aplicado.{altitud,descanso,q_mod}` y `masa_esperada = λ_H + λ_A` con `desviacion_masa = |masa_esperada − μ_liga|` (≤ `1e-12` en el punto neutro).
+
+**E-50.1.7 · Vectores de prueba (DoD de Fase 2).** Con `A=D=0`, `q=1`:
+
+| μ_liga | γ_efectivo | α | λ_H | λ_A | Σ |
+|---:|---:|---:|---:|---:|---:|
+| 2.65 | 0.150 | 0.203603 | 1.424189 | 1.225811 | 2.650000 |
+| 2.65 | 0.180 (+1000 m) | 0.187368 | 1.443929 | 1.206071 | 2.650000 |
+| 2.65 | 0.225 (+2500 m) | 0.162598 | 1.473437 | 1.176563 | 2.650000 |
+| 2.65 | 0.090 (Δrest −3 d) | 0.235400 | 1.384585 | 1.265415 | 2.650000 |
+
+**E-50.1.8 · Ámbito.** `calcular_alpha_ligadura`, `estimar_intensidades_loglineal` y `derivar_factores_estructurales` en `qbe_core/src/core/`. La materialización exige Ficha de Varianza aprobada (`VAR-2026-SPRINT50-CORE`).
+
+---
+
 
 ## [VAULT-CORE-003] Fórmula Cerrada de André para Pago Anticipado Π_Lead2 (`qbe_core/src/core/andre_early_payout.py`)
 **Estado:** `[ESTADO: CANON EN FORJA]`  

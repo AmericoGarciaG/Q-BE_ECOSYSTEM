@@ -6,7 +6,8 @@ Filtro previo que evalúa las 6 vías de viabilidad económica sobre momios deci
 antes de invocar la extracción fáctica o el análisis estocástico profundo.
 """
 
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
+import math
 
 
 # [LN-QBE-060-B] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
@@ -117,3 +118,56 @@ def procesar_triaje_partidos(partidos_raw: List[Dict[str, Any]]) -> Dict[str, An
             })
 
     return {"aprobados": aprobados, "descartados": descartados}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════════════
+# [E-50.10][FASE 6] CAPA 4 — SISTEMA INMUNE FIDUCIARIO (reglas sobre variables residuales)
+#
+# Consume las variables que la súper-señal NO usa (V01-V05, V08-V11, V13-V28, V31-V32) y emite
+# un veto QBE-00 cuando el diagnóstico de la Capa 1 es fiduciariamente frágil. Los percentiles
+# (p25/p75/p90) los calcula el laboratorio sobre la muestra histórica; aquí NO hay números
+# mágicos locales: el umbral viaja como parámetro.
+# ═══════════════════════════════════════════════════════════════════════════════════════
+def veto_inmunidad_fiduciaria(
+    vector: Dict[str, Any],
+    p25: Dict[str, float],
+    p75: Dict[str, float],
+    p90: Dict[str, float],
+) -> Optional[Dict[str, Any]]:
+    """[E-50.10] Veto QBE-00 por ineficiencia o sobreasedio, o `None` si el club está sano.
+
+    * R1 · INEFICACIA_OFENSIVA: xG alto (V06) pero big chances falladas (V09) e indisciplina
+      (V25) elevadas ⇒ favorito inflado por volumen sin conversión.
+    * R2 · SOBREASEDIO_DEFENSIVO: SoTA muy alto (V13) con forma 5P en caída (V31) ⇒ defensa
+      estructuralmente frágil.
+    """
+    def _alto(var: str) -> bool:
+        return float(vector.get(var, 0.0)) >= float(p75.get(var, math.inf))
+
+    def _muy_alto(var: str) -> bool:
+        return float(vector.get(var, 0.0)) >= float(p90.get(var, math.inf))
+
+    def _bajo(var: str) -> bool:
+        return float(vector.get(var, 0.0)) <= float(p25.get(var, -math.inf))
+
+    if _alto("V06") and _muy_alto("V09") and _alto("V25"):
+        return {
+            "codigo": "QBE-00",
+            "nombre": "Veto Inmune: Ineficiencia Ofensiva",
+            "arquetipo_veto": "INEFICACIA_OFENSIVA",
+            "alpha": 0.0,
+            "pa": False,
+            "motivo": (
+                "Favorito por xG (V06) con ineficiencia (V09 ≥ p90) e indisciplina (V25 ≥ p75) elevadas."
+            ),
+        }
+    if _muy_alto("V13") and _bajo("V31"):
+        return {
+            "codigo": "QBE-00",
+            "nombre": "Veto Inmune: Sobreasedio Defensivo",
+            "arquetipo_veto": "SOBREASEDIO_DEFENSIVO",
+            "alpha": 0.0,
+            "pa": False,
+            "motivo": "Defensa bajo asedio (SoTA ≥ p90) con forma 5P en caída (V31 ≤ p25).",
+        }
+    return None

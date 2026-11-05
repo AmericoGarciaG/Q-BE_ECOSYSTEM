@@ -197,9 +197,36 @@ Verificadas las tres, `LOCAL` asciende a `P_mid` y `EMPATE` desciende a `P_low`.
 
 `[VAULT-CORE-001]` estima intensidades con ligadura estructural de α. La ventaja territorial se descompone en:
 
-$$ \gamma_{\text{home}} = \bar{\gamma}_{\text{base}} + \Delta\gamma_{\text{plaza}} + \text{bono}_{\text{alt}} + \text{efecto}_{\text{descanso}} $$
+$$ \gamma_{\text{efectivo}} = \bar{\gamma}_{\text{base}} + \Delta\gamma_{\text{plaza}} + \beta_{\text{alt}}\cdot\frac{\Delta\text{alt}}{1000} + \beta_{\text{rest}}\cdot\text{clip}(\Delta\text{días},-3,3) $$
 
-con $\bar{\gamma}_{\text{base}} = 0.15$ y $\kappa_{\text{net}} = 0.25$ como techo de compresión $\tanh$.
+con $\bar{\gamma}_{\text{base}} = 0.15$, $\kappa_{\text{net}} = 0.25$ como techo de compresión $\tanh$, $\beta_{\text{alt}} = 0.0300$ y $\beta_{\text{rest}} = 0.0200$ (`CONSTANTS.md` §2).
+
+### 7.2-bis Súper-Señal V6 y Sistema Inmune Fiduciario (`E-50.9` / `E-50.10`, Fase 6)
+
+**Capa 1 · Súper-Señal.** `derivar_factores_super_senal` (`qbe_core/src/core/sovereign_pipeline.py`) deriva los factores exclusivamente de `V06` (xG), `V07` (SoT) y `V12` (xGA), **sin GSL-3D** y con la ligadura α **fija** en el punto canónico $\alpha = \ln(2.65) - \ln(1+e^{0.15}) = 0.203603$ (prohibido inyectar plaza/altitud/descanso en α):
+
+$$ xg_n = \frac{V06+1}{\mu_{xG}+1},\quad sot_n = \frac{V07+1}{\mu_{SoT}+1},\quad xga_n = \frac{V12+1}{\mu_{xGA}+1} $$
+$$ A = \ln(0.65\,xg_n + 0.35\,sot_n),\qquad D = -\ln(xga_n) $$
+
+**Capa 2 · Barrido de κ.** `estimar_intensidades_loglineal` acepta `kappa_net` variable; el laboratorio busca $\kappa^* \in [0.35, 0.55]$.
+
+**Capa 4 · Sistema Inmune Fiduciario.** `veto_inmunidad_fiduciaria` (`qbe_core/src/core/triage.py`) emite `QBE-00` sobre las variables residuales:
+
+| Regla | Condición | Arquetipo |
+|---|---|---|
+| R1 · Ineficiencia Ofensiva | `V06 ≥ p75` ∧ `V09 ≥ p90` ∧ `V25 ≥ p75` | `INEFICACIA_OFENSIVA` |
+| R2 · Sobreasedio Defensivo | `V13 ≥ p90` ∧ `V31 ≤ p25` | `SOBREASEDIO_DEFENSIVO` |
+
+Los percentiles (p25/p75/p90) los calcula el laboratorio sobre la muestra histórica; `triage.py` no aloja números mágicos locales.
+
+
+**Clausura de masa (Invariante L-1, enmienda `E-50.1`).** α se calcula sobre $\gamma_{\text{efectivo}}$ **completo**, no sobre la base:
+
+$$ \alpha = \ln(\mu_{\text{liga}}) - \ln\!\left(1 + e^{\gamma_{\text{efectivo}}}\right) \;\Longrightarrow\; \lambda_H + \lambda_A = \mu_{\text{liga}} \text{ con } A=D=0,\ q=1 $$
+
+Prohibido añadir un término a `eta_h` sin incorporarlo a la ligadura. El canon anterior dejaba fuera `Δalt` y `Δrest` y fugaba masa (2.6500 → 2.6934 con +1000 m; 2.7609 con +2500 m).
+
+**Cero mocks (P-01/P-02).** Prohibido `dict.get(clave, <literal>)`, `clave or <literal>` y todo `except` que devuelva un número. La ausencia de evidencia estadística (`gf`, `gc`, `xg`, `xga`, `V01…V32`) se resuelve con `InsufficientDataException` o `S(I)=0`, nunca con `10`, `12`, `7` u `8`. Los operadores contextuales (`Δalt`, `Δrest`, `q_mod`) no se sustituyen por `0.0`: se declaran **no aplicados**.
 
 ### 7.3 Breakeven dinámico
 
@@ -215,6 +242,53 @@ es el umbral de indiferencia de cobertura. No es una constante universal: depend
 
 `[LN-QBE-070]` aplica Kelly fraccional atenuado (`0.25`), hard-cap individual (`0.08`), cap de cartera (`0.25`) y piso de ventanilla (`$2.00`). La cota underdog del 1.5% es un techo adicional de la Familia R.
 
+### 7.6 GSL-3D v2 — Proyección ortogonal real sobre las 32 variables (`[LN-QBE-039]`)
+
+**Déficit derogado.** El motor v13.0 consume 4 celdas del catálogo (V06, V12, V29, V30) más `gf`/`gc`, suma el resto de forma plana en `eta` y denomina «ortogonalización» a un residuo escalar de sede aplicado únicamente al club local. Consecuencia: `xG` (V06), `SoT` (V07) y grandes ocasiones (V08) nunca coinciden en la ecuación, de modo que su colinealidad no se purga porque no llega a existir.
+
+**7.6.1 · Contrato de entrada (IPO v2).** La ortogonalización es un operador sobre **variables**, no sobre escalares: exige la matriz causal del club $M \in \mathbb{R}^{n\times 32}$ ($n \ge 10$ partidos pre-kickoff, sin fuga temporal) más el vector del fixture $z \in \mathbb{R}^{32}$. Un agregado escalar por lado **no admite** proyección ortogonal; presentarlo como tal es simulación de ortogonalidad. Sin $M$ ⇒ `S(I)=0` con motivo `MATRIZ_CAUSAL_AUSENTE`.
+
+**7.6.2 · Partición en los tres espacios de Hilbert.** Cada celda porta espacio y signo $\sigma_i \in \{+1,-1\}$ (más = mejor en su eje):
+
+| Espacio | Variables ($\sigma$) | $n$ |
+|---|---|:---:|
+| $\mathbb{H}_{\text{att}}$ | V01(+), V02(+), V03(+), V04(+), V05(−), V06(+), V07(+), V08(+), V09(−), V10(+), V11(+), V21(+), V23(+), V24(+) | 14 |
+| $\mathbb{H}_{\text{def}}$ | V12(−), V13(−), V14(+), V15(+), V16(−), V17(+), V18(+), V19(+), V20(+), V22(−) | 10 |
+| $\mathbb{H}_{\text{ctx}}$ | V25(−), V26(+), V27(+), V28(+), V31(+), V32(−) | 6 |
+| Clausura $\gamma$ | V29, V30 — **excluidas de $C^*$**: ya viven en $\gamma_{\text{efectivo}}$ | 2 |
+
+Cobertura 32/32: 30 variables entran a la proyección y 2 a la ligadura. **Prohibido el doble conteo** de V29/V30.
+
+**7.6.3 · Normalización obligatoria.** Sumar porcentajes con conteos y con xG produce una base arbitraria: sin normalizar no hay ortogonalización válida. Regla única, log-diferencial contra la referencia de liga por temporada $(\mu_i)$ sellada en el libro de medias:
+
+$$ z_i = \ln\!\left(\frac{v_i + \varepsilon}{\mu_i + \varepsilon}\right),\qquad \varepsilon = 0.5 $$
+
+Si $\mu_i$ no está sellada para la temporada, la variable se declara `SIN_EVIDENCIA`. **Prohibido** normalizar contra la media de la propia muestra (fuga de información).
+
+**7.6.4 · Orquestación (Gram-Schmidt modificado).** Orden determinista `V##` ascendente sobre el subconjunto evidenciado; $q_1 = z_1/\lVert z_1\rVert$; residuo $r_i = z_i - \sum_{j<i}(z_i^{\top}q_j)\,q_j$. Si $\lVert r_i\rVert_2 < \varepsilon_{\text{ort}} = 10^{-5}$, la variable es **colineal**: aporta exactamente $0$, se declara junto a su pivote y no se descarta en silencio. La colinealidad deja de inflar $\lambda$ porque una dirección duplicada no aporta dirección nueva.
+
+**7.6.5 · Síntesis acotada.** Con $Q$ la base ortonormal y $\beta = Q^{\top}z$:
+
+$$ A^* = \tanh\!\left(\frac{1}{\sqrt{n_A}}\sum_j \sigma_j\beta_j\right),\ \lvert A^*\rvert \le 1.0;\quad D^* = \tanh\!\left(\frac{1}{\sqrt{n_D}}\sum_j \sigma_j\beta_j\right),\ \lvert D^*\rvert \le 1.0;\quad C^* = \tanh\!\left(\frac{1}{\sqrt{n_C}}\sum_j \sigma_j\beta_j\right),\ \lvert C^*\rvert \le 0.25 $$
+
+El promedio por $\sqrt{n}$ (RMS) impide que añadir variables infle el factor: dos variables colineales producen el mismo $A^*$ que una sola.
+
+**7.6.6 · Cobertura, suficiencia y declaración.** Toda variable publica estado ∈ {`CONSUMIDA`, `COLINEAL`, `SIN_EVIDENCIA`} y el motor publica `cobertura_variables = k/32`. Suficiencia: $n_A \ge 2 \wedge n_D \ge 2$ evidenciadas no colineales; en caso contrario `S(I)=0`. **La ley no autoriza a ignorar una variable: autoriza a declararla ausente.** Las 23 celdas `SIN EVIDENCIA` del corpus vigente quedan cableadas al contrato y excluidas del álgebra con declaración; su poblamiento es deuda de ingesta, no del motor.
+
+### 7.7 Ley única del peso H2H (`[LN-QBE-020-B]`)
+
+**Duplicidad derogada.** Coexistían $w=\max(0.15,\ 0.50\,e^{-\kappa_{180}\Delta t})$ (`CONSTANTS.md` §1, `[LN-QBE-040]`) y $w=\min(0.25,\ 0.05N)$ (`[LN-QBE-104]`). No son intercambiables porque **el decaimiento ya se aplica dentro del kernel, enfrentamiento por enfrentamiento** (`[LN-QBE-020-C]`, $\tau_{\text{deep}} = 540$ d): aplicarlo otra vez al peso descuenta dos veces la misma antigüedad.
+
+**Regla de propiedad única:**
+
+| Objeto | Ley | Dueño |
+|---|---|---|
+| Peso de la fusión convexa del símplex soberano | $w_{H2H}=0$ si $N=0$; $\min(0.25,\ 0.05N)$ si $N\ge 1$ — **sin decaimiento** | `[LN-QBE-104]` bajo `[LN-QBE-020-B]` |
+| Modulación H2H de $\lambda$ en el motor legado (sin kernel) | $\max(0.15,\ 0.50\,e^{-\kappa_{180}\Delta t})$ | `[LN-QBE-040]` |
+| Ponderación por enfrentamiento dentro del kernel | $e^{-\kappa_{540}\Delta t_k}$ | `[LN-QBE-020-C]` |
+
+**Prohibiciones:** (i) aplicar decaimiento al peso de fusión; (ii) usar la amplitud `0.50` como techo de la fusión (su techo es `0.25`); (iii) invocar el kernel con $N=0$ (Ley Zero-H2H `[LN-QBE-020-B]`). $N$ cuenta sólo duelos verificables dentro de $\tau_{\text{deep}}$.
+
 ---
 
 ## 8. DEROGACIONES Y TOMBSTONES
@@ -226,6 +300,11 @@ es el umbral de indiferencia de cobertura. No es una constante universal: depend
 | `𝒯_Shk`, `𝒯_H2H`, `𝒯_Tra` como familias separadas | `[DEROGADO]` | Consolidadas en `𝒯_Ctx`. |
 | Semáforo `EPIST` en el micro-HUD | `[DEROGADO]` visualmente | Backend lo conserva; UI muestra tetralogía fáctica. |
 | Lectura del visor sobre la base viva | `[DEROGADO]` | Snapshot atómico de solo lectura. |
+| Ligadura α calculada sobre $\bar\gamma_{\text{base}}$ (sin `Δalt`/`Δrest`) | `[DEROGADO]` — `E-50.1` | Clausura sobre $\gamma_{\text{efectivo}}$ (§7.2, Invariante L-1). |
+| `dict.get("gf", 10)` y todo default literal de evidencia | `[DEROGADO]` — `P-01` | `InsufficientDataException` o `S(I)=0` (§7.2). |
+| Residuo escalar de sede presentado como «GSL-3D» | `[DEROGADO]` | Proyección ortogonal real sobre 32 variables (§7.6). |
+| Peso H2H con decaimiento aplicado a la fusión del símplex | `[DEROGADO]` | Decaimiento sólo dentro del kernel; fusión por $N$ (§7.7). |
+| Amplitud `0.50` como techo de la fusión soberana | `[DEROGADO]` | Techo fiduciario `0.25` (`[LN-QBE-104]`, §7.7). |
 
 ---
 

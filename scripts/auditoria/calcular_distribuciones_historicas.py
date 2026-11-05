@@ -48,11 +48,28 @@ if hasattr(sys.stdout, "reconfigure"):
         pass
 
 from src.core.sovereign_pipeline import generar_distribucion_soberana  # noqa: E402
+from src.core.sovereign.calibrar_perturbacion import brier_multiclase  # noqa: E402
+from src.core.sovereign.orthogonal_factor_engine import EPSILON_LOG_NORMALIZACION  # noqa: E402
 
 DB_DEFECTO = RAIZ_PROYECTO / "qbe_observatory" / "data" / "qbe_historico.db"
 TABLA_VECTOR = "historical_match_causal_vars"
 TABLA_BOVEDA = "historical_matches"
 TABLA_DESTINO = "historical_sovereign_distributions"
+
+# ── [SPRINT-50][LN-QBE-039 §7.6] Ruta V2 (GSL-3D v2) ────────────────────────────────────────
+MOTOR_V1 = "v1"
+MOTOR_V2 = "v2"
+MOTOR_V3 = "v3"
+MOTORES = (MOTOR_V1, MOTOR_V2, MOTOR_V3)
+#: La P' V2 se persiste en su propia tabla: la V1 queda como baseline histórico comparable.
+TABLA_DESTINO_V2 = "historical_sovereign_distributions_v2"
+MODEL_VERSION_V2 = "v14.0-GSL3D-V2"
+#: [E-50.6] V3 = V2 + ρ continuo + pesos β (Lasso) aplicados PRE-Gram-Schmidt.
+TABLA_DESTINO_V3 = "historical_sovereign_distributions_v3"
+MODEL_VERSION_V3 = "v15.0-GSL3D-V3-BETA"
+#: Ventana del vector causal por club (partidos previos, misma temporada) que alimenta la matriz.
+MAX_FILAS_MATRIZ = 20
+VARIABLES_CATALOGO: Tuple[str, ...] = tuple(f"V{indice:02d}" for indice in range(1, 33))
 
 MODEL_VERSION = "v13.0-DIRGEN"
 ORIGEN = "HISTORICO_SPRINT48"
@@ -60,11 +77,25 @@ ORIGEN = "HISTORICO_SPRINT48"
 FUENTE_SIN_PROCEDENCIA = "SIN_PROCEDENCIA"
 PARTIDOS_MINIMOS_SI = 3  # [LN-QBE-035-B] S(I_i): suficiencia informativa
 
+#: Selección de tabla y versión por motor (V1 baseline · V2 GSL-3D · V3 + β Lasso).
+TABLAS_POR_MOTOR = {
+    MOTOR_V1: TABLA_DESTINO,
+    MOTOR_V2: TABLA_DESTINO_V2,
+    MOTOR_V3: TABLA_DESTINO_V3,
+}
+VERSIONES_POR_MOTOR = {
+    MOTOR_V1: MODEL_VERSION,
+    MOTOR_V2: MODEL_VERSION_V2,
+    MOTOR_V3: MODEL_VERSION_V3,
+}
+
 #: Ganancia de contexto declarada al motor sellado (`[ARCH-1.5.1]` §CQRS — sólo transporte).
 VARIABLES_CONTEXTO = ("V29", "V30")
 
-DDL = f"""
-CREATE TABLE IF NOT EXISTS {TABLA_DESTINO} (
+def _ddl(tabla: str = TABLA_DESTINO) -> str:
+    """[LN-QBE-150] DDL idempotente de la tabla destino (V1 o V2, mismo contrato de columnas)."""
+    return f"""
+CREATE TABLE IF NOT EXISTS {tabla} (
     match_id TEXT PRIMARY KEY,
     temporada TEXT NOT NULL,
     model_version TEXT NOT NULL,
@@ -90,6 +121,9 @@ CREATE TABLE IF NOT EXISTS {TABLA_DESTINO} (
     FOREIGN KEY (match_id) REFERENCES {TABLA_BOVEDA} (match_id)
 )
 """
+
+
+DDL = _ddl()
 
 
 class CalculoError(RuntimeError):
@@ -238,6 +272,103 @@ def _duelos_h2h(corpus: Corpus, local: str, visita: str, momento: datetime) -> L
     return duelos
 
 
+# ═════════════════════════════════════════════════════════════════════════════════════════════
+# [SPRINT-50][LN-QBE-039 §7.6] PUENTE DE DATOS — MATRIZ CAUSAL HISTÓRICA
+# ═════════════════════════════════════════════════════════════════════════════════════════════
+class AcumuladorCausal:
+    """Estado pre-kickoff por club y referencia de liga por temporada (cero fuga temporal).
+
+    Para cada partido objetivo entrega:
+
+    * ``local`` / ``visita``: las últimas ``max_filas`` filas del club (una por partido previo),
+      que son las COLUMNAS de la matriz causal $M \\in \\mathbb{R}^{n\\times 32}$;
+    * ``vector_local`` / ``vector_visita``: media expansiva de esas filas (estado del club);
+    * ``medias_liga``: media expansiva de la temporada (referencia de normalización §7.6.3).
+
+    El acumulador se actualiza DESPUÉS de calcular el partido: el encuentro evaluado jamás
+    alimenta su propia matriz (cero fuga temporal).
+    """
+
+    def __init__(self, max_filas: int = MAX_FILAS_MATRIZ) -> None:
+        self.max_filas = int(max_filas)
+        self._clubes: Dict[Tuple[str, str], List[Dict[str, float]]] = {}
+        self._liga: Dict[str, Dict[str, List[float]]] = {}
+
+    @staticmethod
+    def _plano(fila_vector: Optional[Dict[str, Any]], lado: str) -> Dict[str, float]:
+        plano: Dict[str, float] = {}
+        if not isinstance(fila_vector, dict):
+            return plano
+        for variable in VARIABLES_CATALOGO:
+            valor = fila_vector.get(f"{variable.lower()}_{lado}")
+            if not isinstance(valor, (int, float)) or isinstance(valor, bool):
+                continue
+            # [§7.6.3] El log-diferencial exige dominio positivo: z = ln((v+ε)/(μ+ε)) con ε=0.5.
+            # Una celda ≤ −ε no admite normalización ⇒ la variable sale de la matriz y el motor la
+            # declara SIN_EVIDENCIA. Prohibido imputar, recortar o inventar un desplazamiento.
+            if float(valor) + EPSILON_LOG_NORMALIZACION <= 0.0:
+                continue
+            plano[variable] = float(valor)
+        return plano
+
+    def registrar(
+        self,
+        temporada: str,
+        local: str,
+        visita: str,
+        vector_local_fila: Optional[Dict[str, Any]],
+        vector_visita_fila: Optional[Dict[str, Any]],
+    ) -> None:
+        """Incorpora las DOS filas del partido ya ocurrido al estado de cada club."""
+        for slug, lado, fila in (
+            (local, "local", vector_local_fila),
+            (visita, "visita", vector_visita_fila),
+        ):
+            plano = self._plano(fila, lado)
+            if not plano:
+                continue
+            serie = self._clubes.setdefault((temporada, slug), [])
+            serie.append(plano)
+            if len(serie) > self.max_filas:
+                del serie[0]
+            cubo = self._liga.setdefault(temporada, {})
+            for variable, valor in plano.items():
+                acumulado = cubo.setdefault(variable, [0.0, 0])
+                acumulado[0] += valor
+                acumulado[1] += 1
+
+    @staticmethod
+    def _media(serie: Sequence[Dict[str, float]]) -> Dict[str, float]:
+        acumulado: Dict[str, List[float]] = {}
+        for fila in serie:
+            for variable, valor in fila.items():
+                cubo = acumulado.setdefault(variable, [0.0, 0])
+                cubo[0] += valor
+                cubo[1] += 1
+        return {
+            variable: total / conteo
+            for variable, (total, conteo) in acumulado.items()
+            if conteo
+        }
+
+    def matriz_causal(self, temporada: str, local: str, visita: str) -> Dict[str, Any]:
+        """Contrato IPO v2 (`[LN-QBE-039]` §7.6.1) listo para el motor V2."""
+        serie_local = list(self._clubes.get((temporada, local), []))
+        serie_visita = list(self._clubes.get((temporada, visita), []))
+        liga = self._liga.get(temporada, {})
+        return {
+            "local": [dict(fila) for fila in serie_local],
+            "visita": [dict(fila) for fila in serie_visita],
+            "vector_local": self._media(serie_local),
+            "vector_visita": self._media(serie_visita),
+            "medias_liga": {
+                variable: total / conteo
+                for variable, (total, conteo) in liga.items()
+                if conteo
+            },
+        }
+
+
 def construir_entrada(
     conexion: sqlite3.Connection,
     corpus: Corpus,
@@ -266,14 +397,16 @@ def construir_entrada(
     delta_alt = vector.get("v29_local")
     delta_descanso = vector.get("v30_local")
 
+    # [E-50.1 §P-01] Operadores C-2: la ausencia viaja como `None` («no publicado» ⇒ operador no
+    # aplicado y declarado en la traza). Prohibido convertirla en `0.0` fabricado.
     return (
         {
             "home_team_stats": stats_local,
             "away_team_stats": stats_visita,
             "home_team_slug": local,
             "away_team_slug": visita,
-            "delta_alt_metros": float(delta_alt) if delta_alt is not None else 0.0,
-            "delta_descanso_dias": float(delta_descanso) if delta_descanso is not None else 0.0,
+            "delta_alt_metros": float(delta_alt) if delta_alt is not None else None,
+            "delta_descanso_dias": float(delta_descanso) if delta_descanso is not None else None,
             "h2h_matches": _duelos_h2h(corpus, local, visita, momento),
         },
         None,
@@ -298,7 +431,7 @@ def _respaldo_worm(db_path: Path) -> Path:
     return destino
 
 
-def _insert() -> str:
+def _insert(tabla: str = TABLA_DESTINO) -> str:
     columnas = [
         "match_id", "temporada", "model_version", "p_local", "p_empate", "p_visitante",
         "lambda_home", "lambda_away", "phi_lead2_home", "phi_lead2_away", "epistemic_delta",
@@ -306,7 +439,53 @@ def _insert() -> str:
         "variables_con_evidencia", "origen", "fuente_causal", "audit_trace_json", "created_at",
     ]
     marcadores = ", ".join("?" for _ in columnas)
-    return f"INSERT OR REPLACE INTO {TABLA_DESTINO} ({', '.join(columnas)}) VALUES ({marcadores})"
+    return f"INSERT OR REPLACE INTO {tabla} ({', '.join(columnas)}) VALUES ({marcadores})"
+
+
+def _metricas_brier(evaluables: Sequence[Tuple[Any, ...]]) -> Dict[str, Any]:
+    """[LN-QBE-100] Brier multiclase 3N de la P' generada y Alpha de calibración vs mercado.
+
+    * `brier_qbe`: sobre todo partido con marcador legible.
+    * `brier_mercado` y `alpha`: sobre la MISMA intersección (marcador + cuotas de-vig),
+      para que la comparación sea homogénea. `alpha = (1 − BS_qbe/BS_mercado)·100`.
+    """
+    total_qbe = 0.0
+    total_mercado = 0.0
+    total_qbe_mercado = 0.0
+    n_qbe = 0
+    n_mercado = 0
+    for p_local, p_empate, p_visitante, goles_local, goles_visita, odd_h, odd_x, odd_a in evaluables:
+        if goles_local is None or goles_visita is None:
+            continue
+        local, visita = int(goles_local), int(goles_visita)
+        brier = brier_multiclase(float(p_local), float(p_empate), float(p_visitante), local, visita)
+        total_qbe += brier
+        n_qbe += 1
+        if odd_h is None or odd_x is None or odd_a is None:
+            continue
+        cuotas = (float(odd_h), float(odd_x), float(odd_a))
+        if min(cuotas) <= 1.0:
+            continue
+        inversas = [1.0 / cuota for cuota in cuotas]
+        suma = sum(inversas)
+        mercado = [inversa / suma for inversa in inversas]
+        total_mercado += brier_multiclase(mercado[0], mercado[1], mercado[2], local, visita)
+        total_qbe_mercado += brier
+        n_mercado += 1
+
+    brier_qbe = total_qbe / n_qbe if n_qbe else None
+    brier_mercado = total_mercado / n_mercado if n_mercado else None
+    alpha = None
+    if n_mercado and brier_mercado:
+        alpha = (1.0 - (total_qbe_mercado / n_mercado) / brier_mercado) * 100.0
+    return {
+        "n_qbe": n_qbe,
+        "n_mercado": n_mercado,
+        "brier_qbe": brier_qbe,
+        "brier_mercado": brier_mercado,
+        "brier_qbe_misma_muestra": (total_qbe_mercado / n_mercado) if n_mercado else None,
+        "alpha_pct": alpha,
+    }
 
 
 def calcular(
@@ -314,8 +493,23 @@ def calcular(
     temporada: Optional[str] = None,
     *,
     dry_run: bool = False,
+    motor: str = MOTOR_V2,
+    pesos: Optional[Dict[str, float]] = None,
     salida: Any = None,
 ) -> Dict[str, Any]:
+    """Calcula la P' histórica. `motor` = `v2` (GSL-3D v2, estándar), `v3` (v2 + β) o `v1`.
+
+    La ruta V2 construye la matriz causal de cada club con sus partidos previos de la temporada
+    y la inyecta al motor; la V3 añade el vector β (Lasso) al contrato de la matriz, que el
+    motor aplica PRE-Gram-Schmidt ([E-50.4 §T2]); la V1 conserva el comportamiento histórico.
+    """
+    if motor not in MOTORES:
+        raise CalculoError(f"Motor desconocido: {motor!r}. Válidos: {MOTORES}.")
+    tabla_destino = TABLAS_POR_MOTOR[motor]
+    version_modelo = VERSIONES_POR_MOTOR[motor]
+    if motor == MOTOR_V3 and not pesos:
+        raise CalculoError("El motor v3 exige el vector β (`pesos`); sin él es idéntico a v2.")
+
     salida = salida or sys.stdout
     if not db_path.is_file():
         raise CalculoError(f"Bóveda inexistente: {db_path}")
@@ -323,7 +517,7 @@ def calcular(
     conexion = sqlite3.connect(str(db_path), isolation_level=None)
     conexion.execute("PRAGMA foreign_keys = ON")
     try:
-        conexion.execute(DDL)
+        conexion.execute(_ddl(tabla_destino))
         parametros: Tuple[Any, ...] = ()
         filtro = ""
         if temporada:
@@ -336,7 +530,7 @@ def calcular(
               FROM {TABLA_BOVEDA} m
               JOIN {TABLA_VECTOR} v ON v.match_id = m.match_id
              WHERE 1 = 1 {filtro}
-             ORDER BY m.fecha_utc
+             ORDER BY m.fecha_utc, m.match_id
             """,
             parametros,
         )
@@ -346,8 +540,10 @@ def calcular(
             )
 
         corpus = Corpus(_filas(conexion, f"SELECT * FROM {TABLA_BOVEDA}"))
+        acumulador = AcumuladorCausal()
 
         generadas: List[Tuple[str, float, float, float]] = []
+        evaluables: List[Tuple[Any, ...]] = []
         saltados: List[Dict[str, str]] = []
         filas_insert: List[Tuple[Any, ...]] = []
 
@@ -376,7 +572,26 @@ def calcular(
                 saltados.append(
                     {"match_id": match_id, "temporada": temporada_fila, "motivo": str(motivo)}
                 )
+                acumulador.registrar(
+                    temporada_fila,
+                    str(fila.get("home_team_slug") or ""),
+                    str(fila.get("away_team_slug") or ""),
+                    vector,
+                    vector,
+                )
                 continue
+
+            # [SPRINT-50][§7.6] Puente de datos: matriz causal de ambos clubes (rutas V2/V3).
+            if motor in (MOTOR_V2, MOTOR_V3):
+                matriz = acumulador.matriz_causal(
+                    temporada_fila,
+                    str(fila.get("home_team_slug") or ""),
+                    str(fila.get("away_team_slug") or ""),
+                )
+                if motor == MOTOR_V3:
+                    matriz["pesos"] = {clave: float(valor) for clave, valor in (pesos or {}).items()}
+                entrada["matriz_causal"] = matriz
+
             try:
                 salida_core = generar_distribucion_soberana(
                     match_id,
@@ -392,14 +607,36 @@ def calcular(
                         "motivo": f"{type(error).__name__}: {error}",
                     }
                 )
+                acumulador.registrar(
+                    temporada_fila,
+                    str(fila.get("home_team_slug") or ""),
+                    str(fila.get("away_team_slug") or ""),
+                    vector,
+                    vector,
+                )
                 continue
 
+            # El partido ya ocurrió: entra al estado de ambos clubes DESPUÉS de calcularlo.
+            acumulador.registrar(
+                temporada_fila,
+                str(fila.get("home_team_slug") or ""),
+                str(fila.get("away_team_slug") or ""),
+                vector,
+                vector,
+            )
+
             if not salida_core.es_operable:
+                motivo_motor = getattr(salida_core.audit_trace, "motivo_insuficiencia", None) or ""
+                clave_motivo = (
+                    "matriz_causal_insuficiente"
+                    if "MATRIZ_CAUSAL_INSUFICIENTE" in motivo_motor
+                    else "S(I)=0 declarado por el motor"
+                )
                 saltados.append(
                     {
                         "match_id": match_id,
                         "temporada": temporada_fila,
-                        "motivo": "S(I)=0 declarado por el motor",
+                        "motivo": f"{clave_motivo} [{motivo_motor}]" if motivo_motor else clave_motivo,
                     }
                 )
                 continue
@@ -409,7 +646,7 @@ def calcular(
                 (
                     match_id,
                     str(fila.get("temporada") or ""),
-                    MODEL_VERSION,
+                    version_modelo,
                     float(salida_core.p_local),
                     float(salida_core.p_empate),
                     float(salida_core.p_visitante),
@@ -439,6 +676,18 @@ def calcular(
                     float(salida_core.p_visitante),
                 )
             )
+            evaluables.append(
+                (
+                    float(salida_core.p_local),
+                    float(salida_core.p_empate),
+                    float(salida_core.p_visitante),
+                    fila.get("home_goals"),
+                    fila.get("away_goals"),
+                    fila.get("odd_home"),
+                    fila.get("odd_draw"),
+                    fila.get("odd_away"),
+                )
+            )
 
         respaldo = None
         if filas_insert and not dry_run:
@@ -446,14 +695,14 @@ def calcular(
             conexion.execute("BEGIN IMMEDIATE")
             try:
                 for valores in filas_insert:
-                    conexion.execute(_insert(), valores)
+                    conexion.execute(_insert(tabla_destino), valores)
                 conexion.execute("COMMIT")
             except BaseException:
                 conexion.execute("ROLLBACK")
                 raise
 
         integridad = conexion.execute("PRAGMA quick_check").fetchone()[0]
-        total = conexion.execute(f"SELECT COUNT(*) FROM {TABLA_DESTINO}").fetchone()[0]
+        total = conexion.execute(f"SELECT COUNT(*) FROM {tabla_destino}").fetchone()[0]
     finally:
         conexion.close()
 
@@ -481,6 +730,10 @@ def calcular(
         "integridad": integridad,
         "respaldo_worm": str(respaldo) if respaldo else None,
         "dry_run": dry_run,
+        "motor": motor,
+        "tabla": tabla_destino,
+        "model_version": version_modelo,
+        "brier": _metricas_brier(evaluables),
         "muestra": [
             {"match_id": m, "p_local": round(p1, 4), "p_empate": round(px, 4), "p_visitante": round(p2, 4)}
             for m, p1, px, p2 in generadas[:5]
@@ -493,10 +746,19 @@ def calcular(
     }
 
 
+def _num(valor: Any, decimales: int = 6) -> str:
+    """Formato estable para métricas que pueden no existir (None ⇒ `—`)."""
+    if valor is None:
+        return "—"
+    return f"{float(valor):.{decimales}f}"
+
+
 def _tablero(reporte: Dict[str, Any]) -> None:
     print("=" * 78)
     print(f"P' HISTÓRICO — temporada {reporte['temporada'] or 'TODAS'}  [LN-QBE-150]")
     print("=" * 78)
+    print(f"Motor                      : {reporte.get('motor', MOTOR_V1)} · {reporte.get('model_version', MODEL_VERSION)}")
+    print(f"Tabla destino              : {reporte.get('tabla', TABLA_DESTINO)}")
     print(f"Partidos con vector causal : {reporte['candidatos']}")
     print(f"Distribuciones generadas   : {reporte['generadas']}")
     print(f"Partidos saltados          : {reporte['saltadas']}")
@@ -504,6 +766,14 @@ def _tablero(reporte: Dict[str, Any]) -> None:
     print(f"PRAGMA quick_check         : {reporte['integridad']}")
     print(f"Respaldo WORM              : {reporte['respaldo_worm'] or '—'}")
     print(f"Modo dry-run               : {reporte['dry_run']}")
+    metricas = reporte.get("brier") or {}
+    if metricas:
+        print("-" * 78)
+        print("Brier multiclase 3N [LN-QBE-100] · Alpha de calibración")
+        print(f"  QBE      : {_num(metricas.get('brier_qbe'))}   (N={metricas.get('n_qbe')})")
+        print(f"  Mercado  : {_num(metricas.get('brier_mercado'))}   (N={metricas.get('n_mercado')})")
+        print(f"  QBE∩Merc.: {_num(metricas.get('brier_qbe_misma_muestra'))}")
+        print(f"  Alpha    : {_num(metricas.get('alpha_pct'), 2)} %")
     if reporte["promedio_simplex"]:
         p1, px, p2 = reporte["promedio_simplex"]
         print(f"Símplex promedio           : 1={p1}  X={px}  2={p2}  (suma {round(p1+px+p2, 6)})")
@@ -532,12 +802,38 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     analizador.add_argument("--temporada", default=None, help="p. ej. 2018_2019 (omite: todas)")
     analizador.add_argument("--db", default=str(DB_DEFECTO), help="ruta de qbe_historico.db")
     analizador.add_argument("--dry-run", action="store_true", help="calcula sin persistir")
+    analizador.add_argument(
+        "--motor",
+        default=MOTOR_V2,
+        choices=list(MOTORES),
+        help="v2 = GSL-3D v2 con matriz causal (estándar); v1 = baseline sellado (sólo agregados)",
+    )
     analizador.add_argument("--reporte-json", default=None, help="bitácora del cálculo (JSON)")
+    analizador.add_argument(
+        "--pesos",
+        default=None,
+        help="[E-50.6] ruta del JSON {V##: β} para el motor v3 (Lasso). Obligatorio con --motor v3.",
+    )
     argumentos = analizador.parse_args(argv)
+
+    pesos = None
+    if argumentos.pesos:
+        ruta_pesos = Path(argumentos.pesos)
+        if not ruta_pesos.is_file():
+            print(f"🔴 Pesos inexistentes: {ruta_pesos}", file=sys.stderr)
+            return 1
+        pesos = json.loads(ruta_pesos.read_text(encoding="utf-8"))
+        if not isinstance(pesos, dict) or not pesos:
+            print("🔴 El archivo de pesos debe ser un objeto {V##: β} no vacío.", file=sys.stderr)
+            return 1
 
     try:
         reporte = calcular(
-            Path(argumentos.db), argumentos.temporada, dry_run=argumentos.dry_run
+            Path(argumentos.db),
+            argumentos.temporada,
+            dry_run=argumentos.dry_run,
+            motor=argumentos.motor,
+            pesos=pesos,
         )
     except (CalculoError, sqlite3.Error) as error:
         print(f"🔴 {error}", file=sys.stderr)

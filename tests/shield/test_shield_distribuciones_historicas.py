@@ -189,7 +189,9 @@ def test_calculo_persiste_solo_partidos_operables(tmp_path: Path) -> None:
     finally:
         conexion.close()
 
-    reporte = calc.calcular(db, "2018_2019")
+    # [SPRINT-50] El motor V2 es el estándar: este Juez certifica la RUTA V1 (baseline sellado)
+    # de forma explícita, porque su fixture no publica matriz causal (V2 declararía SIN EVIDENCIA).
+    reporte = calc.calcular(db, "2018_2019", motor=calc.MOTOR_V1)
     assert reporte["candidatos"] == 2
     assert reporte["generadas"] == 1
     assert reporte["saltadas"] == 1

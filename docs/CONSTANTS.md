@@ -23,6 +23,14 @@
 | $\tau_{\text{H2H, deep}}$ | Vida Media Multianual H2H | `540.0` | Días | `[LN-QBE-020]` | Ventana longitudinal interanual (~1.5 años) | Prohibido usar como ventana de forma reciente |
 | $\kappa_{\text{H2H, deep}}$ | Constante de Decaimiento H2H Multianual | $\frac{\ln(2)}{540.0} \approx 0.00128338$ | $\text{días}^{-1}$ | `[LN-QBE-020]` | Exponente $e^{-\kappa \Delta t}$ para 5 partidos históricos | Prohibido confundir con $\kappa_{\text{decay}}$ corta |
 
+> **Ámbito de $w_{\text{H2H}}^{\text{amp}}$ y $w_{\text{H2H}}^{\text{piso}}$ (`[LN-QBE-020-B]` §7.7, `E-50.2`).** La
+> amplitud `0.5000`, el piso `0.1500` y $\kappa_{\text{decay}}$ rigen **exclusivamente** la modulación H2H de
+> $\lambda$ en el motor legado `[LN-QBE-040]`, donde no existe kernel ponderado. La **fusión convexa del
+> símplex soberano** (`[LN-QBE-104]`) se gobierna por $w=\min(0.2500,\ 0.0500\cdot N)$ **sin decaimiento**,
+> porque el kernel `[LN-QBE-020-C]` ya pondera cada enfrentamiento con $e^{-\kappa_{\text{H2H,deep}}\Delta t_k}$.
+> Aplicar ambas leyes al mismo objeto descuenta dos veces la misma antigüedad. Queda **prohibido** usar
+> `0.5000` como techo de la fusión: su techo fiduciario es `0.2500`.
+
 ---
 
 ## 2. DOMINIO DE FÍSICA ESTOCÁSTICA Y COMPRESIÓN DE GOLES
@@ -37,6 +45,8 @@
 | $\text{peso}_{GF}$ | Ponderación Señal Volumen | `0.35` | Fracción | `[LN-QBE-035-B]` | Mezcla Opta $xG / GF$ | La suma con $\text{peso}_{xG}$ debe ser $1.0$ |
 | $w_{\text{sede}}$ | Ponderación de Rendimiento en Sede | `0.5000` ($50.0\%$) | Fracción | `[LN-QBE-038]` | Mezcla entre promedio general y split local/visita | Inmutable por diseño |
 | $\Delta\gamma_{\text{plaza}}^{\text{max}}$ | Techo de Intimidación de Plaza | `0.1000` | Log-Ratio | `[LN-QBE-038]` | Bono máximo admisible por localía extrema | No exceder sin prueba de 5 torneos |
+| $\beta_{\text{alt}}$ | Bono de Altitud por 1000 m | `0.0300` | Log-Ratio / 1000 m | `[VAULT-CORE-001]` · `E-50.1` | Operador de localía, sólo $\Delta\text{alt} > 0$ | No usar como cota de veto ni como umbral de morfología |
+| $\beta_{\text{rest}}$ | Bono de Descanso por Día | `0.0200` | Log-Ratio / día | `[VAULT-CORE-001]` · `E-50.1` | $\Delta\text{descanso}$ recortado a $[-3, +3]$ días | Prohibido aplicar el coeficiente fuera de la ventana |
 
 ### Catálogo Canónico de Fortaleza de Plaza ($\Delta\gamma_{\text{plaza}}$)
 * `tigres-uanl` (Estadio Universitario / "El Volcán"): `+0.0700`
@@ -73,6 +83,8 @@
 | $\|\mathcal{A}^*\|_{\max}$ | Techo de Norma de Potencial Ofensivo | `1.0000` | Desv. Estándar | `[LN-QBE-039]` | Límite superior del espacio latente $\mathbb{H}_{\text{att}}$ | Inviolable (Anti-Resonancia) |
 | $\|\mathcal{D}^*\|_{\max}$ | Techo de Norma de Resistencia Defensiva | `1.0000` | Desv. Estándar | `[LN-QBE-039]` | Límite superior del espacio latente $\mathbb{H}_{\text{def}}$ | Inviolable (Anti-Resonancia) |
 | $\|\mathcal{C}^*\|_{\max}$ | Techo de Norma de Contexto y Plaza | `0.2500` | Log-Ratio | `[LN-QBE-039]` | Límite superior del espacio latente $\mathbb{H}_{\text{ctx}}$ | Inviolable (Anti-Resonancia) |
+| $\varepsilon_{\text{log}}$ | Piso Logarítmico de Normalización | `0.5000` | Adimensional | `[LN-QBE-039]` §7.6.3 | $z_i=\ln\left(\frac{v_i+\varepsilon}{\mu_i+\varepsilon}\right)$ | **PROHIBIDO** usarlo como imputación de un valor ausente |
+| $n_{\min}$ | Suficiencia Mínima por Espacio | `2` | Variables | `[LN-QBE-039]` §7.6.6 | $n_A \ge 2 \wedge n_D \ge 2$ evidenciadas no colineales | Prohibido rebajarlo para operar un partido |
 
 ### Parámetros de Cobertura Dinámica (Dutching con Rendimiento)
 | Símbolo | Nombre Canónico | Valor Exacto | Unidad | Nodo Dueño | Dominio de Validez |

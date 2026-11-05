@@ -178,8 +178,21 @@ def test_invariante_3_cableado_en_generador_y_pipeline():
     matriz_pura = calcular_matriz_dixon_coles(lambda_h, lambda_a, rho=0.0, k_max=6)
     matriz_base_sep = calcular_matriz_dixon_coles(lambda_h, lambda_a, rho=RHO_BASE, k_max=6)
 
-    # Sin `rho` provisto ⇒ ley dinámica (idéntica al ρ táctica explícito).
-    assert _masa_empate(matriz_default) == pytest.approx(_masa_empate(matriz_tactica), abs=1e-15)
+    # [E-50.5 §T3] Sin `rho` provisto ⇒ ley CONTINUA. Σλ = 2.60 cae DENTRO de la ventana ±0.10,
+    # por lo que el valor interpolado difiere del extremo táctico (era la discontinuidad la que se
+    # erradicó). Fuera de la ventana, los extremos sellados se conservan EXACTOS.
+    from src.core.distribution_dixon_coles import resolver_rho_suave
+
+    rho_esperado = resolver_rho_suave(lambda_h, lambda_a)
+    assert RHO_TACTICA_DEFICIT < rho_esperado < RHO_BASE, (
+        "La ventana de transición debe interpolar estrictamente entre los dos regímenes."
+    )
+    assert _masa_empate(matriz_default) == pytest.approx(
+        _masa_empate(calcular_matriz_dixon_coles(lambda_h, lambda_a, rho=rho_esperado, k_max=6)),
+        abs=1e-15,
+    )
+    assert resolver_rho_suave(2.50, 0.0) == RHO_TACTICA_DEFICIT, "Extremo táctico intacto."
+    assert resolver_rho_suave(2.80, 0.0) == RHO_BASE, "Extremo base intacto."
     # El default sellado (-0.0500) NO se considera un ρ explícito distinto ⇒ misma física.
     assert _masa_empate(matriz_base_sep) == pytest.approx(_masa_empate(matriz_default), abs=1e-15)
     # Escape hatch: ρ = 0.0 verbatim ⇒ menos empate que la corrección táctica.

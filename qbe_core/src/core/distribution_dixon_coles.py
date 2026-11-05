@@ -10,14 +10,59 @@ from typing import List, Optional, Tuple
 
 # [LN-QBE-040-C] Ley de resolución dinámica de la correlación táctica y constantes selladas
 # (docs/CONSTANTS.md §2). El eje de resolución tiene un único dueño normativo: `src/core/poisson.py`.
-from src.core.poisson import RHO_BASE, resolver_rho_dixon_coles
+from src.core.poisson import (
+    LAMBDA_SUMA_CORTE_TACTICO,
+    RHO_BASE,
+    RHO_TACTICA_DEFICIT,
+    resolver_rho_dixon_coles,
+)
+
+# ═══════════════════════════════════════════════════════════════════════════════════════
+# [E-50.5][Tarea 3] TRANSICIÓN SUAVE DEL ESCALÓN DE ρ — ventana ±0.10 goles
+#
+# El escalón de `[LN-QBE-040-C]` (ρ = −0.12 → −0.05 al cruzar Σλ = 2.65) introduce una
+# discontinuidad de primer orden en la superficie P(β): L-BFGS-B no encuentra gradiente
+# utilizable en la frontera. Se interpola con una sigmoide reescalada dentro de la ventana
+# [2.55, 2.75]; FUERA de ella los valores sellados se conservan EXACTOS (clamp), de modo que
+# los Jueces de frontera y la paridad con `poisson.py` permanecen intactos.
+# ═══════════════════════════════════════════════════════════════════════════════════════
+VENTANA_RHO_SUAVE = 0.1000   # ±0.10 goles alrededor de la frontera táctica
+_SIGMOIDE_K = 8.0            # pendiente de la sigmoide normalizada
+
+
+def _sigmoide_normalizada(t: float) -> float:
+    """Sigmoide reescalada a [0, 1] con s(0) = 0 y s(1) = 1 EXACTOS (C∞ en el interior)."""
+    k = _SIGMOIDE_K
+    inferior = 1.0 / (1.0 + math.exp(k * 0.5))     # σ(−k/2)
+    superior = 1.0 / (1.0 + math.exp(-k * 0.5))    # σ(+k/2)
+    centro = 1.0 / (1.0 + math.exp(-k * (t - 0.5)))
+    return (centro - inferior) / (superior - inferior)
+
+
+def resolver_rho_suave(lambda_h: float, lambda_a: float) -> float:
+    """[E-50.5] ρ continuo: −0.12 exacto en Σλ ≤ 2.55, −0.05 exacto en Σλ ≥ 2.75, sigmoide entre.
+
+    La función es continua en todo ℝ⁺ y monótona creciente en la ventana; en los extremos
+    reproduce bit a bit las constantes selladas, por lo que la paridad con `[LN-QBE-040-C]`
+    se conserva fuera de la banda de transición.
+    """
+    suma = float(lambda_h) + float(lambda_a)
+    inferior = LAMBDA_SUMA_CORTE_TACTICO - VENTANA_RHO_SUAVE
+    superior = LAMBDA_SUMA_CORTE_TACTICO + VENTANA_RHO_SUAVE
+    if suma <= inferior:
+        return float(RHO_TACTICA_DEFICIT)
+    if suma >= superior:
+        return float(RHO_BASE)
+    t = (suma - inferior) / (superior - inferior)
+    return float(RHO_TACTICA_DEFICIT) + (float(RHO_BASE) - float(RHO_TACTICA_DEFICIT)) * _sigmoide_normalizada(t)
 
 
 def calcular_matriz_dixon_coles(
     lambda_h: float,
     lambda_a: float,
     rho: Optional[float] = None,
-    k_max: int = 6
+    k_max: int = 6,
+    rho_suave: bool = True
 ) -> List[List[float]]:
     """
     [Sección 5.3.1, 5.14 y 5.16] Generador paramétrico con corrección de dependencia
@@ -25,12 +70,17 @@ def calcular_matriz_dixon_coles(
 
     [LN-QBE-040-C] Calibración táctica dinámica: si el invocante NO aporta un `rho`
     explícito distinto del default sellado (`RHO_BASE = -0.0500`), la correlación se
-    resuelve por régimen de anotación con `resolver_rho_dixon_coles(lambda_h, lambda_a)`.
-    `rho = 0.0` explícito es el escape hatch de auditoría (sin corrección Dixon-Coles).
+    resuelve por régimen de anotación. `rho = 0.0` explícito es el escape hatch de auditoría.
+    [E-50.5] Con `rho_suave=True` (default legislado) la frontera Σλ = 2.65 se interpola en
+    una ventana de ±0.10 goles; `rho_suave=False` reproduce el escalón sellado de `poisson.py`.
     """
     # 0. [LN-QBE-040-C] Resolución dinámica del régimen de correlación
     if rho is None or float(rho) == RHO_BASE:
-        rho = resolver_rho_dixon_coles(lambda_h, lambda_a)
+        rho = (
+            resolver_rho_suave(lambda_h, lambda_a)
+            if rho_suave
+            else resolver_rho_dixon_coles(lambda_h, lambda_a)
+        )
 
     # 1. Cotas analíticas de admisibilidad de rho (Sección 5.16.1)
     cota_inf = -min(1.0 / max(0.01, lambda_h), 1.0 / max(0.01, lambda_a))

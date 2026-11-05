@@ -22,7 +22,11 @@ import math
 from typing import Dict, Any, Tuple, Optional
 from pydantic import BaseModel, Field
 
-from src.core.intensity_canonical_loglink import estimar_intensidades_loglineal
+from src.core.intensity_canonical_loglink import (
+    KAPPA_NET,
+    InsufficientDataException,
+    estimar_intensidades_loglineal,
+)
 from src.core.distribution_dixon_coles import calcular_matriz_dixon_coles, colapsar_matriz_a_simplex
 from src.core.andre_early_payout import calcular_probabilidad_pago_anticipado
 
@@ -31,13 +35,16 @@ from src.core.sovereign.bayesian_form import contraer_factores_forma_bayesiana
 from src.core.sovereign.h2h_kernel import calcular_matriz_h2h_empirica, TAU_H2H_DEEP
 
 # [LN-QBE-039] & [ARCH-1.4.33] Contenedor de Factores Latentes Tridimensionales (GSL-3D):
-# módulo funcional puro que purga la colinealidad de los splits de sede frente a la señal
-# directora Opta y sella los factores bajo presupuesto cerrado de norma (tanh).
-from src.core.sovereign.orthogonal_factor_engine import resolver_factores_latentes_gsl3d
+# v1 = residuo log-diferencial de sede (ruta declarada); v2 = proyección ortogonal real
+# sobre la matriz causal de 32 variables (docs/LOGIC.md §7.6).
+from src.core.sovereign.orthogonal_factor_engine import (
+    resolver_factores_latentes_gsl3d,
+    resolver_factores_latentes_gsl3d_v2,
+)
 
-# [LN-QBE-038] Peso de la fusión ponderada de sede (promedio general ↔ rendimiento en sede).
-# Sellado en el nodo legislativo: w_sede = 0.50. Sin splits publicados ⇒ se degrada a 0.0.
-W_SEDE = 0.50
+# [E-50.1 §P-01] `W_SEDE = 0.50` queda ERRADICADO: era una constante legislada sin una sola
+# referencia (el peso real del residuo v1 es 1.00). Su reemplazo es la proyección §7.6, que no
+# usa pesos libres de sede.
 
 # [LN-QBE-104] Fusión Convexa del Símplex Soberano (Generador A ∪ Generador C).
 # Sellado en el nodo legislativo `docs/LOGIC.md` → `docs/DIRGEN_VAULT.md` [VAULT-CORE-005]:
@@ -55,27 +62,29 @@ def _splits_de_sede_publicados(home_split: Any, away_split: Any) -> bool:
     """[LN-QBE-038] Suficiencia mínima de los splits de sede: ambos bloques con PJ >= 3.
 
     Cualquier carencia (bloque ausente, no diccionario o muestra insuficiente) degrada
-    limpiamente a la ruta de Nivel 1 sellada `[LN-QBE-035-B]` con w_sede = 0.0 sin inventar
-    registros de sede.
+    limpiamente a la ruta de Nivel 1 sellada `[LN-QBE-035-B]`, sin inventar registros de sede.
     """
     if not isinstance(home_split, dict) or not isinstance(away_split, dict):
         return False
+    if "pj" not in home_split or "pj" not in away_split:
+        return False
     try:
-        return int(home_split.get("pj", 0) or 0) >= 3 and int(away_split.get("pj", 0) or 0) >= 3
+        return int(home_split["pj"]) >= 3 and int(away_split["pj"]) >= 3
     except (TypeError, ValueError):
         return False
 
 
-def _tasa_por_sede(bloque: Dict[str, Any], clave: str, tasa_general: float, pj_general: int) -> float:
+def _tasa_por_sede(bloque: Dict[str, Any], clave: str, match_id: str, lado: str) -> float:
     """[LN-QBE-038] Tasa por partido de un bloque de sede (GF o GC).
 
-    Respaldo inerte: si la fuente no publica la clave, se reconstruye el total general
-    equivalente (tasa_general × PJ_general) para no alterar el promedio. Nunca se fabrica
-    un valor fuera del registro fáctico.
+    [E-50.1 §P-01] Sin respaldo silencioso: si el bloque declara sede (PJ ≥ 3) pero no publica
+    la clave, se levanta `InsufficientDataException`. Nunca se reconstruye un total a partir
+    del promedio general: eso es una imputación, no un dato.
     """
-    pj_sede = max(1, int(bloque.get("pj", pj_general) or 0))
-    respaldo = float(tasa_general) * max(1, int(pj_general))
-    return float(bloque.get(clave, respaldo)) / pj_sede
+    if clave not in bloque:
+        raise InsufficientDataException(match_id, clave, lado)
+    pj_sede = max(1, int(bloque["pj"]))
+    return float(bloque[clave]) / pj_sede
 
 
 # [LN-QBE-102] Sellos de procedencia de la evidencia (Regla de Menor Privilegio [ARCH-1.4.43]):
@@ -136,14 +145,21 @@ def _sello_opta(raw_match_data: Dict[str, Any], xg_es_real_opta: Optional[bool])
     return False
 
 
-def _contexto_efectivo(explicito: float, raw_match_data: Dict[str, Any], clave: str) -> float:
-    """[LN-QBE-102] Parámetro contextual efectivo: explícito si es distinto de 0.0; si no, el publicado."""
+def _contexto_efectivo(
+    explicito: Optional[float], raw_match_data: Dict[str, Any], clave: str
+) -> Optional[float]:
+    """[LN-QBE-102] · [E-50.1 §P-01] Parámetro contextual efectivo (clase C-2).
+
+    Si el llamador aporta un valor distinto de `None`/0.0, manda el explícito; si no, el publicado.
+    Si no se publica, devuelve `None`: el operador queda **no aplicado** y así viaja en la traza.
+    Prohibido devolver `0.0` para significar «no se sabe»: 0.0 es un hecho publicado, no una ausencia.
+    """
     if explicito:
         return float(explicito)
     publicado = raw_match_data.get(clave)
     if isinstance(publicado, (int, float)) and not isinstance(publicado, bool):
         return float(publicado)
-    return 0.0
+    return None
 
 
 # ── [LN-QBE-105] Agregación fáctica de la ventana H2H (V26/V27/V28 del catálogo forense) ──────
@@ -346,10 +362,10 @@ def _paquete_anidado_cinco_pilares(
 
 def _empaquetar_insumos_factivados(
     raw_match_data: Dict[str, Any],
-    delta_alt_metros: float,
-    delta_descanso_dias: float,
-    q_mod_h: float,
-    q_mod_a: float,
+    delta_alt_metros: Optional[float],
+    delta_descanso_dias: Optional[float],
+    q_mod_h: Optional[float],
+    q_mod_a: Optional[float],
     xg_es_real_opta: Optional[bool] = None,
     h2h_stats: Optional[Dict[str, str]] = None,
     cache_macro_stats: Optional[Dict[str, Any]] = None,
@@ -399,10 +415,13 @@ def _empaquetar_insumos_factivados(
         "pj_sede_local": int(pj_sede_local) if pj_sede_local is not None else 0,
         "pj_sede_visita": int(pj_sede_visita) if pj_sede_visita is not None else 0,
         "h2h_conteo": _conteo_h2h(raw_match_data),
-        "q_mod_h": round(float(q_mod_h), 4),
-        "q_mod_a": round(float(q_mod_a), 4),
-        "delta_alt_metros": round(float(delta_alt_metros), 4),
-        "delta_descanso_dias": round(float(delta_descanso_dias), 4),
+        # [E-50.1 §P-02] Operadores C-2: `None` = no publicado ⇒ se declara, no se sustituye por 0.0.
+        "q_mod_h": None if q_mod_h is None else round(float(q_mod_h), 4),
+        "q_mod_a": None if q_mod_a is None else round(float(q_mod_a), 4),
+        "delta_alt_metros": None if delta_alt_metros is None else round(float(delta_alt_metros), 4),
+        "delta_descanso_dias": (
+            None if delta_descanso_dias is None else round(float(delta_descanso_dias), 4)
+        ),
         "xg_es_real_opta": _sello_opta(raw_match_data, xg_es_real_opta),
     }
     if h2h_stats is not None:
@@ -484,6 +503,15 @@ class StochasticAuditTrace(BaseModel):
         default=None,
         description="Telemetría fáctica de los insumos consumidos (tasas canónicas [ARCH-1.4.41], SoT, PJ de sede [LN-QBE-038], ventana H2H) [LN-QBE-102].",
     )
+    # --- [E-50.1] / [LN-QBE-039 §7.6] Trazabilidad de la ruta y de la proyección ortogonal ---
+    motivo_insuficiencia: Optional[str] = Field(
+        default=None,
+        description="Motivo declarado cuando S(I)=0 (Ley Fail-Loud [E-50.1 §P-01]).",
+    )
+    gsl3d: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Traza de GSL-3D v2 por lado: estados por variable, contribuciones, cobertura y suficiencia (§7.6).",
+    )
 
 
 # [VAULT-CORE-005] [LN-QBE-118] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
@@ -518,17 +546,65 @@ class SovereignDistributionOutput(BaseModel):
     )
 
 
+# [E-50.1 §P-01] SALIDA POR IGNORANCIA DECLARADA — nunca un λ calculado con un sustituto.
+def _salida_por_insuficiencia(
+    match_id: str,
+    insumos_factivados: Dict[str, Any],
+    origen_captura: str,
+    timestamp_captura: Optional[str],
+    motivo: str,
+    gsl3d: Optional[Dict[str, Any]] = None,
+) -> SovereignDistributionOutput:
+    """[E-50.1 §P-01] Prior fiduciario R-1 con motivo declarado y traza completa.
+
+    No es un `except` que devuelve un número: es la rama legislada de ignorancia, idéntica en
+    contrato a la de S(I)=0 y con el motivo publicado para que ningún consumidor confunda
+    ignorancia declarada con divergencia de mercado.
+    """
+    trace_insuf = StochasticAuditTrace(
+        match_id=match_id,
+        suficiencia_S_I=0,
+        factores_entrada={},
+        intensidades={"lambda_h": 1.325, "lambda_a": 1.325},
+        distribucion_simplex={"p_1": 0.3333, "p_X": 0.3333, "p_2": 0.3334},
+        phi_lead2={"phi_h": 0.0, "phi_a": 0.0},
+        matriz_resumen={},
+        origen_captura=origen_captura,
+        timestamp_captura=timestamp_captura,
+        insumos_factivados=insumos_factivados,
+        motivo_insuficiencia=motivo,
+        gsl3d=gsl3d,
+    )
+    return SovereignDistributionOutput(
+        match_id=match_id,
+        p_local=0.3333, p_empate=0.3333, p_visitante=0.3334,
+        lambda_home=1.325, lambda_away=1.325,
+        phi_lead2_home=0.0, phi_lead2_away=0.0,
+        es_operable=False,
+        audit_trace=trace_insuf,
+    )
+
+
 # [VAULT-CORE-005] [LN-QBE-118] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
 def evaluar_suficiencia_informativa(raw_match_data: Dict[str, Any]) -> bool:
     """
     [Sección 2.13.1] Evalúa la función indicadora S(I_i) in {0, 1}.
     Requiere al menos 3 partidos jugados por equipo y datos básicos de goles.
-    """
-    h_data = raw_match_data.get("home_team_stats", {})
-    a_data = raw_match_data.get("away_team_stats", {})
 
-    pj_h = int(h_data.get("pj", 0) or 0)
-    pj_a = int(a_data.get("pj", 0) or 0)
+    [E-50.1 §P-01] Sin `dict.get(clave, 0)`: la ausencia de `pj` NO es «cero partidos», es
+    «no publicado»; en ambos casos S(I)=0, pero el camino es explícito y no un default literal.
+    """
+    h_data = raw_match_data.get("home_team_stats")
+    a_data = raw_match_data.get("away_team_stats")
+    if not isinstance(h_data, dict) or not isinstance(a_data, dict):
+        return False
+    if "pj" not in h_data or "pj" not in a_data:
+        return False
+    try:
+        pj_h = int(h_data["pj"])
+        pj_a = int(a_data["pj"])
+    except (TypeError, ValueError):
+        return False
 
     if pj_h < 3 or pj_a < 3:
         return False
@@ -562,6 +638,22 @@ def _extraer_bloque_forma_10p(raw_match_data: Dict[str, Any]) -> Optional[Tuple[
     return None
 
 
+def _campo_obligatorio(
+    bloque: Dict[str, Any], clave: str, match_id: str = "", lado: str = ""
+) -> float:
+    """[E-50.1 §P-01] Lectura de evidencia obligatoria: ausencia ⇒ `InsufficientDataException`.
+
+    Sustituye a `dict.get(clave, <literal>)`. Un `None` explícito de la fuente es ausencia
+    declarada, no un cero.
+    """
+    if clave not in bloque or bloque[clave] is None:
+        raise InsufficientDataException(match_id, clave, lado)
+    try:
+        return float(bloque[clave])
+    except (TypeError, ValueError):
+        raise InsufficientDataException(match_id, clave, lado)
+
+
 def _factores_forma_bayesiana(raw_match_data: Dict[str, Any], mu_liga: float) -> Optional[Tuple[float, float, float, float]]:
     """
     [LN-QBE-036] Deriva (A_home, D_away, A_away, D_home) desde la forma reciente (10P) + ancla macro.
@@ -581,30 +673,30 @@ def _factores_forma_bayesiana(raw_match_data: Dict[str, Any], mu_liga: float) ->
     if bloque is None:
         return None
     home, away = bloque
-    q_mod_home = float(home.get("q_mod", 1.0) or 1.0)
-    q_mod_away = float(away.get("q_mod", 1.0) or 1.0)
+    q_mod_home = 1.0 if "q_mod" not in home or home["q_mod"] is None else float(home["q_mod"])
+    q_mod_away = 1.0 if "q_mod" not in away or away["q_mod"] is None else float(away["q_mod"])
 
     # 1. Ataque Local (A*_home) y Defensa Local (D*_home, signo legislado)
     a_home = contraer_factores_forma_bayesiana(
-        float(home["xg_10p"]), float(home["gf_10p"]),
-        float(home["xg_macro"]), float(home["gf_macro"]),
+        _campo_obligatorio(home, "xg_10p"), _campo_obligatorio(home, "gf_10p"),
+        _campo_obligatorio(home, "xg_macro"), _campo_obligatorio(home, "gf_macro"),
         mu_liga=mu_liga, q_mod=q_mod_home,
     ).a_contraido
     d_home = -contraer_factores_forma_bayesiana(
-        float(home["xga_10p"]), float(home["gc_10p"]),
-        float(home["xga_macro"]), float(home["gc_macro"]),
+        _campo_obligatorio(home, "xga_10p"), _campo_obligatorio(home, "gc_10p"),
+        _campo_obligatorio(home, "xga_macro"), _campo_obligatorio(home, "gc_macro"),
         mu_liga=mu_liga, q_mod=q_mod_home,
     ).a_contraido
 
     # 2. Ataque Visita (A*_away) y Defensa Visita (D*_away, signo legislado)
     a_away = contraer_factores_forma_bayesiana(
-        float(away["xg_10p"]), float(away["gf_10p"]),
-        float(away["xg_macro"]), float(away["gf_macro"]),
+        _campo_obligatorio(away, "xg_10p"), _campo_obligatorio(away, "gf_10p"),
+        _campo_obligatorio(away, "xg_macro"), _campo_obligatorio(away, "gf_macro"),
         mu_liga=mu_liga, q_mod=q_mod_away,
     ).a_contraido
     d_away = -contraer_factores_forma_bayesiana(
-        float(away["xga_10p"]), float(away["gc_10p"]),
-        float(away["xga_macro"]), float(away["gc_macro"]),
+        _campo_obligatorio(away, "xga_10p"), _campo_obligatorio(away, "gc_10p"),
+        _campo_obligatorio(away, "xga_macro"), _campo_obligatorio(away, "gc_macro"),
         mu_liga=mu_liga, q_mod=q_mod_away,
     ).a_contraido
 
@@ -612,61 +704,71 @@ def _factores_forma_bayesiana(raw_match_data: Dict[str, Any], mu_liga: float) ->
 
 
 # [VAULT-CORE-005] [LN-QBE-118] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
-def derivar_factores_estructurales(raw_match_data: Dict[str, Any], mu_liga: float = 2.65) -> Tuple[float, float, float, float]:
+def _mezcla_opta(bloque: Dict[str, Any], clave: str, tasa_goles: float, pj: int) -> float:
+    """[LN-QBE-035-B] Mezcla 0.65·xG + 0.35·goles (CONSTANTS §2), con ausencia DECLARADA.
+
+    [E-50.1 §P-01] Si la fuente no publica xG/xGA, no se sustituye por un literal ni se
+    «reconstruye» un ancla inexistente: se usa la tasa de goles sola. Además el resultado es
+    idéntico al de la ruta histórica `xg := gf`, porque 0.65·f + 0.35·f ≡ f: cero regresión
+    numérica acompañando la erradicación del mock.
+    """
+    valor = bloque.get(clave)
+    if isinstance(valor, (int, float)) and not isinstance(valor, bool) and float(valor) > 0.0:
+        return (0.65 * (float(valor) / pj)) + (0.35 * tasa_goles)
+    return tasa_goles
+
+
+# [VAULT-CORE-005] [LN-QBE-118] VÍA B — formalización de paridad canónica ([LN-QBE-139]/[LN-QBE-140]).
+def derivar_factores_estructurales(
+    raw_match_data: Dict[str, Any], mu_liga: float = 2.65, match_id: str = ""
+) -> Tuple[float, float, float, float]:
     """
     [Sección 4.5 y 4.6] Convierte métricas de Nivel 1 en factores log-diferenciales centrados en media cero:
     Retorna: (A_home, D_away, A_away, D_home)
-    """
-    h = raw_match_data.get("home_team_stats", {})
-    a = raw_match_data.get("away_team_stats", {})
 
-    pj_h = max(1, int(h.get("pj", 8)))
-    pj_a = max(1, int(a.get("pj", 8)))
+    [E-50.1 §P-01] `pj`, `gf` y `gc` son evidencia C-1 OBLIGATORIA: su ausencia levanta
+    `InsufficientDataException(match_id, clave, lado)`. Prohibido `h.get("gf", 10)`.
+    """
+    h = _bloque_factico(raw_match_data, "home_team_stats")
+    a = _bloque_factico(raw_match_data, "away_team_stats")
+
+    pj_h = max(1, int(_campo_obligatorio(h, "pj", match_id, "local")))
+    pj_a = max(1, int(_campo_obligatorio(a, "pj", match_id, "visita")))
+
+    gf_h = _campo_obligatorio(h, "gf", match_id, "local")
+    gc_h = _campo_obligatorio(h, "gc", match_id, "local")
+    gf_a = _campo_obligatorio(a, "gf", match_id, "visita")
+    gc_a = _campo_obligatorio(a, "gc", match_id, "visita")
 
     mu_base_equipo = max(0.5, mu_liga / 2.0)
 
-    # 1. Ataque Local (Tasa por partido)
-    gf_h_per_game = float(h.get("gf", 10)) / pj_h
-    xg_total_h = float(h.get("xg", 0.0) or 0.0)
-    xg_h_per_game = (xg_total_h / pj_h) if xg_total_h > 0.0 else gf_h_per_game
-    att_h_rate = (0.65 * xg_h_per_game) + (0.35 * gf_h_per_game)
+    # 1. Ataque Local · 2. Defensa Visita · 3. Ataque Visita · 4. Defensa Local
+    gf_h_per_game = gf_h / pj_h
+    gc_a_per_game = gc_a / pj_a
+    gf_a_per_game = gf_a / pj_a
+    gc_h_per_game = gc_h / pj_h
+
+    att_h_rate = _mezcla_opta(h, "xg", gf_h_per_game, pj_h)
+    def_a_rate = _mezcla_opta(a, "xga", gc_a_per_game, pj_a)
+    att_a_rate = _mezcla_opta(a, "xg", gf_a_per_game, pj_a)
+    def_h_rate = _mezcla_opta(h, "xga", gc_h_per_game, pj_h)
+
     A_home = math.log(max(0.2, att_h_rate) / mu_base_equipo)
-
-    # 2. Defensa Visita (Tasa por partido)
-    gc_a_per_game = float(a.get("gc", 12)) / pj_a
-    xga_total_a = float(a.get("xga", 0.0) or 0.0)
-    xga_a_per_game = (xga_total_a / pj_a) if xga_total_a > 0.0 else gc_a_per_game
-    def_a_rate = (0.65 * xga_a_per_game) + (0.35 * gc_a_per_game)
     D_away = -math.log(max(0.2, def_a_rate) / mu_base_equipo)
-
-    # 3. Ataque Visita
-    gf_a_per_game = float(a.get("gf", 7)) / pj_a
-    xg_total_a = float(a.get("xg", 0.0) or 0.0)
-    xg_a_per_game = (xg_total_a / pj_a) if xg_total_a > 0.0 else gf_a_per_game
-    att_a_rate = (0.65 * xg_a_per_game) + (0.35 * gf_a_per_game)
     A_away = math.log(max(0.2, att_a_rate) / mu_base_equipo)
-
-    # 4. Defensa Local
-    gc_h_per_game = float(h.get("gc", 10)) / pj_h
-    xga_total_h = float(h.get("xga", 0.0) or 0.0)
-    xga_h_per_game = (xga_total_h / pj_h) if xga_total_h > 0.0 else gc_h_per_game
-    def_h_rate = (0.65 * xga_h_per_game) + (0.35 * gc_h_per_game)
     D_home = -math.log(max(0.2, def_h_rate) / mu_base_equipo)
 
-    # 5. [LN-QBE-039] & [ARCH-1.4.33] Contenedor de Factores Latentes Tridimensionales (GSL-3D)
-    #    [ALGO-PROTECTED] Sustituye la suma lineal ingenua de la fusión de sede por el Residuo
-    #    Ortogonal Log-Diferencial de Sede (v_sede_perp = ln(tasa_sede / tasa_gen) − gamma_base)
-    #    y la síntesis acotada A* = tanh(A_gen + v_sede_perp), con |A*| <= 1.0 y |D*| <= 1.0.
-    #    Sin splits publicados (PJ < 3) ⇒ ruta de Nivel 1 `[LN-QBE-035-B]` intacta.
-    home_split = raw_match_data.get("home_split_stats")
-    away_split = raw_match_data.get("away_split_stats")
+    # 5. [LN-QBE-039] Ruta declarada v1 — residuo ortogonal log-diferencial de sede.
+    #    Se conserva como degradación EXPLÍCITA cuando el registro no publica la matriz causal
+    #    que exige la proyección §7.6 (GSL-3D v2). No se presenta como ortogonalización.
+    home_split = _bloque_factico(raw_match_data, "home_split_stats")
+    away_split = _bloque_factico(raw_match_data, "away_split_stats")
     if _splits_de_sede_publicados(home_split, away_split):
-        # Señales brutas por partido del anfitrión (generales y de sede) que alimentan el residual.
-        gf_h_gen = float(h.get("gf", 10)) / pj_h
-        gc_h_gen = float(h.get("gc", 10)) / pj_h
+        gf_h_gen = gf_h_per_game
+        gc_h_gen = gc_h_per_game
 
-        gf_h_sede = _tasa_por_sede(home_split, "gf", gf_h_gen, pj_h)
-        gc_h_sede = _tasa_por_sede(home_split, "gc", gc_h_gen, pj_h)
+        gf_h_sede = _tasa_por_sede(home_split, "gf", match_id, "local")
+        gc_h_sede = _tasa_por_sede(home_split, "gc", match_id, "local")
 
         gsl_local = resolver_factores_latentes_gsl3d(
             A_gen=A_home, D_gen=D_home,
@@ -675,17 +777,12 @@ def derivar_factores_estructurales(raw_match_data: Dict[str, Any], mu_liga: floa
             gamma_base=0.15, es_local=True
         )
 
-        # ALT-I ([LN-QBE-039] — AXIOMA DE ASIMETRÍA DE SEDE, Decreto VAR-2026-GSL3D-1D-DEGENERACY):
-        # el residuo ortogonal de sede v_sede_perp se extrae y aplica EXCLUSIVAMENTE al club
-        # anfitrión (local). El visitante conserva su evaluación estructural basal [LN-QBE-035-B]
-        # (Nivel 1) intacta, impidiendo que su fragilidad foránea infle artificialmente λ_H vía
-        # D_away*. Sin splits publicados (PJ < 3) la ruta de Nivel 1 permanece intacta.
+        # ALT-I: el residuo de sede se aplica EXCLUSIVAMENTE al anfitrión; el visitante conserva
+        # su evaluación estructural basal [LN-QBE-035-B] intacta.
         A_home, D_home = gsl_local.A_star, gsl_local.D_star
-        D_away, A_away = D_away, A_away  # Conserva Nivel 1 estructural
 
-    # [SPRINT 3 / H-16] Capa 4 — Capa 4 ([LN-QBE-036]): si el registro fáctico publica `form_10p`,
-    # el operador bayesiano sellado SUSTITUYE de forma gobernada la mezcla analítica base; si no,
-    # se conserva la ruta sellada [LN-QBE-035-B] sin una sola variación.
+    # [SPRINT 3 / H-16] Capa 4 ([LN-QBE-036]): si el registro publica `form_10p`, el operador
+    # bayesiano sellado SUSTITUYE de forma gobernada la mezcla analítica base.
     factores_bayesianos = _factores_forma_bayesiana(raw_match_data, mu_liga)
     if factores_bayesianos is not None:
         return factores_bayesianos
@@ -693,15 +790,155 @@ def derivar_factores_estructurales(raw_match_data: Dict[str, Any], mu_liga: floa
 
 
 def derivar_factores_con_procedencia(
-    raw_match_data: Dict[str, Any], mu_liga: float = 2.65
+    raw_match_data: Dict[str, Any], mu_liga: float = 2.65, match_id: str = ""
 ) -> Tuple[Tuple[float, float, float, float], str]:
     """
     Envoltorio trazable de `derivar_factores_estructurales`: publica los factores y su PROCEDENCIA
     legislada ('bayesiano_10p' [LN-QBE-036] o 'analitico_base' [LN-QBE-035-B]) para la traza forense.
     """
     if _extraer_bloque_forma_10p(raw_match_data) is not None:
-        return derivar_factores_estructurales(raw_match_data, mu_liga), "bayesiano_10p"
-    return derivar_factores_estructurales(raw_match_data, mu_liga), "analitico_base"
+        return derivar_factores_estructurales(raw_match_data, mu_liga, match_id), "bayesiano_10p"
+    return derivar_factores_estructurales(raw_match_data, mu_liga, match_id), "analitico_base"
+
+
+# [E-50.7][FASE 5.1] EXPOSICIÓN LIMPIA DEL MOTOR GSL-3D v2 (sólo lectura, sin matemática nueva).
+def derivar_factores_estructurales_v2(
+    matriz_causal: Dict[str, Any]
+) -> Optional[Tuple[float, float, float, float, Dict[str, Any]]]:
+    """[E-50.7] Factor (A_home, D_away, A_away, D_home) desde el contrato IPO v2 (§7.6).
+
+    Reúne en UNA sola llamada la proyección ortogonal de ambos clubes para consumidores de
+    investigación: devuelve `(A_home, D_away, A_away, D_home, gsl3d_traza)` si ambos lados
+    satisfacen la cobertura mínima, o `None` si la matriz no publica evidencia suficiente
+    (equivale a `S(I)=0`). Cero fabricación: la insuficiencia se declara, no se rellena.
+    """
+    if not isinstance(matriz_causal, dict):
+        raise InsufficientDataException("", "matriz_causal", "partido")
+    medias_liga = matriz_causal.get("medias_liga")
+    if not isinstance(medias_liga, dict) or not medias_liga:
+        raise InsufficientDataException("", "medias_liga", "liga")
+    pesos = matriz_causal.get("pesos")
+    gsl_local = resolver_factores_latentes_gsl3d_v2(
+        matriz_causal.get("local"), matriz_causal.get("vector_local"), medias_liga, pesos=pesos
+    )
+    gsl_visita = resolver_factores_latentes_gsl3d_v2(
+        matriz_causal.get("visita"), matriz_causal.get("vector_visita"), medias_liga, pesos=pesos
+    )
+    traza = {"local": gsl_local.model_dump(), "visita": gsl_visita.model_dump()}
+    if not (gsl_local.suficiente and gsl_visita.suficiente):
+        return None
+    return (
+        gsl_local.A_star,
+        gsl_visita.D_star,
+        gsl_visita.A_star,
+        gsl_local.D_star,
+        traza,
+    )
+
+
+# ═══════════════════════════════════════════════════════════════════════════════════════
+# [E-50.9][FASE 6] CAPA 1 — SÚPER-SEÑAL (V06 xG · V07 SoT · V12 xGA), SIN GSL-3D, α FIJA
+#
+# Contrato de entrada V6 (lo construye el laboratorio `scripts/investigacion/fase6_*`):
+#   raw_match_data = {
+#       "home_team_stats": {"pj", "xg": tasa_xG, "sot": tasa_SoT, "xga": tasa_xGA},
+#       "away_team_stats": {…},
+#       "medias_liga": {"xg": μ_xG, "sot": μ_SoT, "xga": μ_xGA},   # media de liga por temporada
+#   }
+# Los factores se pasan DIRECTOS a la ecuación log-lineal; la ligadura α queda FIJA en el punto
+# canónico (μ=2.65, γ=0.15 ⇒ α=0.203603): prohibido inyectar plaza/altitud/descanso en α.
+# ═══════════════════════════════════════════════════════════════════════════════════════
+GAMMA_FIJO_V6 = 0.15
+
+
+def derivar_factores_super_senal(
+    raw_match_data: Dict[str, Any], match_id: str = ""
+) -> Tuple[float, float, float, float]:
+    """[E-50.9] Factor log-diferencial desde V06/V07 (ataque) y V12 (defensa), sin ortogonalización.
+
+    Normalización log-ratio contra la media de liga sellada (misma filosofía §7.6.3):
+
+        xg_n = (xG + 1)/(μ_xG + 1) · sot_n = (SoT + 1)/(μ_SoT + 1) · xga_n = (xGA + 1)/(μ_xGA + 1)
+        A = ln(0.65·xg_n + 0.35·sot_n) · D = −ln(xga_n)
+    """
+    h = raw_match_data.get("home_team_stats")
+    a = raw_match_data.get("away_team_stats")
+    medias = raw_match_data.get("medias_liga")
+    if not isinstance(h, dict) or not isinstance(a, dict):
+        raise InsufficientDataException(match_id, "team_stats", "partido")
+    if not isinstance(medias, dict) or not all(clave in medias for clave in ("xg", "sot", "xga")):
+        raise InsufficientDataException(match_id, "medias_liga", "liga")
+
+    def _factor(xg: float, sot: float, xga: float) -> Tuple[float, float]:
+        xg_n = (float(xg) + 1.0) / (float(medias["xg"]) + 1.0)
+        sot_n = (float(sot) + 1.0) / (float(medias["sot"]) + 1.0)
+        xga_n = (float(xga) + 1.0) / (float(medias["xga"]) + 1.0)
+        ataque = math.log(max(0.2, 0.65 * xg_n + 0.35 * sot_n))
+        defensa = -math.log(max(0.2, xga_n))
+        return ataque, defensa
+
+    def _tasas(bloque: Dict[str, Any], lado: str) -> Tuple[float, float, float]:
+        for clave in ("xg", "sot", "xga"):
+            if clave not in bloque or bloque[clave] is None:
+                raise InsufficientDataException(match_id, clave, lado)
+        return float(bloque["xg"]), float(bloque["sot"]), float(bloque["xga"])
+
+    xg_h, sot_h, xga_h = _tasas(h, "local")
+    xg_a, sot_a, xga_a = _tasas(a, "visita")
+    A_home, D_home = _factor(xg_h, sot_h, xga_h)
+    A_away, D_away = _factor(xg_a, sot_a, xga_a)
+    return A_home, D_away, A_away, D_home
+
+
+def generar_distribucion_v6(
+    match_id: str,
+    raw_match_data: Dict[str, Any],
+    mu_liga: float = 2.65,
+    kappa_net: float = KAPPA_NET,
+    rho: float = -0.05,
+) -> SovereignDistributionOutput:
+    """[E-50.9][FASE 6] Generador V6: súper-señal → α fija → λ → Dixon-Coles → André → símplex.
+
+    Cero GSL-3D, cero plaza/altitud/descanso: `α = ln(2.65) − ln(1+e^0.15) = 0.203603` FIJO.
+    """
+    try:
+        A_h, D_a, A_a, D_h = derivar_factores_super_senal(raw_match_data, match_id)
+    except InsufficientDataException as error:
+        return _salida_por_insuficiencia(
+            match_id, {}, ORIGEN_CAPTURA_HISTORICO, None, f"V6:{error.clave}:{error.lado}"
+        )
+
+    lambda_h, lambda_a = estimar_intensidades_loglineal(
+        A_h, D_a, A_a, D_h,
+        mu_liga=mu_liga, gamma_home_base=GAMMA_FIJO_V6,
+        home_team_slug=None, delta_alt_metros=None, delta_descanso_dias=None,
+        kappa_net=kappa_net,
+    )
+    matriz_2d = calcular_matriz_dixon_coles(lambda_h, lambda_a, rho=rho)
+    p1, px, p2 = colapsar_matriz_a_simplex(matriz_2d)
+    phi_h = calcular_probabilidad_pago_anticipado(matriz_2d, es_local=True)
+    phi_a = calcular_probabilidad_pago_anticipado(matriz_2d, es_local=False)
+
+    traza = StochasticAuditTrace(
+        match_id=match_id,
+        suficiencia_S_I=1,
+        factores_entrada={"A_home": A_h, "D_away": D_a, "A_away": A_a, "D_home": D_h},
+        intensidades={"lambda_home": lambda_h, "lambda_away": lambda_a, "ratio": round(lambda_h / lambda_a, 2)},
+        distribucion_simplex={"p_1": p1, "p_X": px, "p_2": p2},
+        phi_lead2={"phi_home": phi_h, "phi_away": phi_a},
+        matriz_resumen={"0_0": round(matriz_2d[0][0], 4), "1_0": round(matriz_2d[1][0], 4), "1_1": round(matriz_2d[1][1], 4)},
+        origen_factores="super_senal",
+        origen_captura=ORIGEN_CAPTURA_HISTORICO,
+    )
+    return SovereignDistributionOutput(
+        match_id=match_id,
+        p_local=p1, p_empate=px, p_visitante=p2,
+        lambda_home=lambda_h, lambda_away=lambda_a,
+        phi_lead2_home=phi_h, phi_lead2_away=phi_a,
+        es_operable=True,
+        audit_trace=traza,
+        origen_factores="super_senal",
+    )
 
 
 def derivar_discrepancia_epistemica(
@@ -835,10 +1072,10 @@ def generar_distribucion_soberana(
     raw_match_data: Dict[str, Any],
     mu_liga: float = 2.65,
     gamma_home_base: float = 0.15,
-    delta_alt_metros: float = 0.0,
-    delta_descanso_dias: float = 0.0,
-    q_mod_h: float = 1.0,
-    q_mod_a: float = 1.0,
+    delta_alt_metros: Optional[float] = None,
+    delta_descanso_dias: Optional[float] = None,
+    q_mod_h: Optional[float] = None,
+    q_mod_a: Optional[float] = None,
     rho: float = -0.05,
     origen_captura: str = ORIGEN_CAPTURA_HISTORICO,
     timestamp_captura: Optional[str] = None,
@@ -848,10 +1085,14 @@ def generar_distribucion_soberana(
     """
     [TRATADO VOLUMEN I] Generador Soberano Universal de la Distribución del Partido.
     Pipeline completo: Datos -> S(I) -> Factores -> Intensidades acotadas -> Dixon-Coles 2D -> André -> Simplex.
+
+    [E-50.1] Los operadores contextuales (`Δalt`, `Δrest`, `q_mod`) son clase C-2: su default es
+    `None` («no publicado» ⇒ operador no aplicado y declarado), nunca `0.0`.
+    [LN-QBE-039 §7.6] Si el registro publica `matriz_causal`, GSL-3D v2 gobierna (A,D); en su
+    ausencia rige la ruta declarada v1/basal, que NO se presenta como ortogonalización.
     """
-    # 0. [LN-QBE-102] Contexto fáctico EFECTIVO: el parámetro explícito manda; en su default
-    #    canónico (0.0) se adopta la magnitud publicada por el registro, de modo que la matemática
-    #    y la telemetría `insumos_factivados` declaren EXACTAMENTE el mismo número (cero maquillaje).
+    # 0. [LN-QBE-102] Contexto fáctico EFECTIVO: el parámetro explícito manda; si no, la magnitud
+    #    publicada por el registro; si tampoco, `None` (operador no aplicado).
     delta_alt_efectivo = _contexto_efectivo(delta_alt_metros, raw_match_data, "delta_alt_metros")
     delta_descanso_efectivo = _contexto_efectivo(delta_descanso_dias, raw_match_data, "delta_descanso_dias")
     insumos_factivados = _empaquetar_insumos_factivados(
@@ -862,29 +1103,44 @@ def generar_distribucion_soberana(
 
     # 1. Comprobación de Suficiencia Fáctica S(I_i)
     if not evaluar_suficiencia_informativa(raw_match_data):
-        trace_insuf = StochasticAuditTrace(
-            match_id=match_id,
-            suficiencia_S_I=0,
-            factores_entrada={},
-            intensidades={"lambda_h": 1.325, "lambda_a": 1.325},
-            distribucion_simplex={"p_1": 0.3333, "p_X": 0.3333, "p_2": 0.3334},
-            phi_lead2={"phi_h": 0.0, "phi_a": 0.0},
-            matriz_resumen={},
-            origen_captura=origen_captura,
-            timestamp_captura=timestamp_captura,
-            insumos_factivados=insumos_factivados
-        )
-        return SovereignDistributionOutput(
-            match_id=match_id,
-            p_local=0.3333, p_empate=0.3333, p_visitante=0.3334,
-            lambda_home=1.325, lambda_away=1.325,
-            phi_lead2_home=0.0, phi_lead2_away=0.0,
-            es_operable=False,
-            audit_trace=trace_insuf
+        return _salida_por_insuficiencia(
+            match_id, insumos_factivados, origen_captura, timestamp_captura,
+            "S(I)=0: muestra insuficiente o `pj` no publicado (evidencia C-1).",
         )
 
-    # 2. Derivación de Factores Estructurales (procedencia legislada publicada por Capa 4)
-    (A_h, D_a, A_a, D_h), origen_factores = derivar_factores_con_procedencia(raw_match_data, mu_liga)
+    # 2. Derivación de Factores Estructurales
+    # 2-a. [LN-QBE-039 §7.6] IPO v2 — proyección ortogonal real sobre la matriz causal.
+    matriz_causal = raw_match_data.get("matriz_causal")
+    gsl3d_traza: Optional[Dict[str, Any]] = None
+    if matriz_causal is not None:
+        if not isinstance(matriz_causal, dict):
+            raise InsufficientDataException(match_id, "matriz_causal", "partido")
+        medias_liga = matriz_causal.get("medias_liga")
+        if not isinstance(medias_liga, dict) or not medias_liga:
+            raise InsufficientDataException(match_id, "medias_liga", "liga")
+        # [E-50.4 §T2] El vector β viaja en el contrato de la matriz y se aplica PRE-GS.
+        pesos_gsl = matriz_causal.get("pesos")
+        gsl_local = resolver_factores_latentes_gsl3d_v2(
+            matriz_causal.get("local"), matriz_causal.get("vector_local"), medias_liga, pesos=pesos_gsl)
+        gsl_visita = resolver_factores_latentes_gsl3d_v2(
+            matriz_causal.get("visita"), matriz_causal.get("vector_visita"), medias_liga, pesos=pesos_gsl)
+        gsl3d_traza = {
+            "local": gsl_local.model_dump(),
+            "visita": gsl_visita.model_dump(),
+        }
+        if not (gsl_local.suficiente and gsl_visita.suficiente):
+            motivo = "; ".join(m for m in (gsl_local.motivo, gsl_visita.motivo) if m)
+            return _salida_por_insuficiencia(
+                match_id, insumos_factivados, origen_captura, timestamp_captura,
+                f"MATRIZ_CAUSAL_INSUFICIENTE: {motivo}", gsl3d=gsl3d_traza,
+            )
+        A_h, D_a = gsl_local.A_star, gsl_visita.D_star
+        A_a, D_h = gsl_visita.A_star, gsl_local.D_star
+        origen_factores = "gsl3d_v2"
+    else:
+        # 2-b. Ruta declarada (v1 de sede / basal). Sin pretensión de ortogonalización.
+        (A_h, D_a, A_a, D_h), origen_factores = derivar_factores_con_procedencia(
+            raw_match_data, mu_liga, match_id)
 
     # 3. Estimación de Intensidades con Ligadura de alpha y Damping tanh
     #    [LN-QBE-038] `home_team_slug` habilita el bono sellado de intimidación de plaza:
@@ -963,6 +1219,8 @@ def generar_distribucion_soberana(
         # [LN-QBE-104] Símplex paramétrico puro (Generador A) y Δ_epist(∞) de la fusión.
         simplex_poisson=s_poisson,
         epistemic_delta=delta_epist_infinito,
+        # [LN-QBE-039 §7.6] Traza de la proyección ortogonal (None si rige la ruta declarada v1).
+        gsl3d=gsl3d_traza,
     )
 
     return SovereignDistributionOutput(

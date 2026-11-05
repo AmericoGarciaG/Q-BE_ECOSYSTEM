@@ -82,3 +82,11 @@ data/extracted_footystats/temporada_2025_2026.json
 data/extracted_footystats/temporada_2026_2027.json
 data/sondas_exploracion/sofascore_sample.mhtml
 data/raw_ligamx_min_x_min/MinXMin_2015-2016_Clau_Ame_vs_MTY.mhtml
+
+# [SPRINT-49] Laboratorio de calibración: artefactos locales y dependencia vendorizada
+.lab-sprint49/
+.vendor/
+.pip-tmp/
+.pt-tmp/
+scripts/investigacion/_probe.txt
+.lab-sprint50/

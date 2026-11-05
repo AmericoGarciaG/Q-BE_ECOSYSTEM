@@ -146,6 +146,15 @@ Contiene scrapers, proveedores, normalizadores, daemons y el Data Nexus. Su depe
 
 La ingesta publica hechos estructurados con procedencia, sello temporal y estado de evidencia. Un campo ausente no se rellena: se marca `SIN EVIDENCIA` y se propaga la causa.
 
+**Contrato de entrada del núcleo (`E-50.1`, `[VAULT-CORE-001]`).** La frontera `qbe_ingestion → qbe_core` distingue dos clases de insumo y no las mezcla:
+
+| Clase | Insumos | Ausencia |
+|:---:|---|---|
+| **C-1 · Evidencia estadística** | `gf`, `gc`, `xg`, `xga`, `V01…V32` | `InsufficientDataException` o `S(I)=0`. Prohibido todo default literal. |
+| **C-2 · Operador contextual** | `Δalt`, `Δrest`, `q_mod`, `Δγ_plaza` | Operador **no aplicado** y declarado en la traza. Nunca `0.0` fabricado. |
+
+La contravención se clasifica como Clase I (Fabricación Sintética, `GOVERNANCE.md §1.1.3`). El motor GSL-3D v2 (`[LN-QBE-039]` §7.6) exige además la **matriz causal** $M\in\mathbb{R}^{n\times32}$ por club ($n\ge10$, pre-kickoff): la ingesta que sólo publique agregados escalares no habilita proyección ortogonal alguna y el partido se resuelve con `S(I)=0`.
+
 ### 4.2 Contrato de 32 variables
 
 El catálogo vigente es `[LN-QBE-120]`: 6 dimensiones y 32 variables (`V01`…`V32`). El DTO conserva el nombre histórico `variables_44` por compatibilidad de red, pero su cardinalidad es 32. El contrato visible no se renombra sin Ficha de Varianza.
