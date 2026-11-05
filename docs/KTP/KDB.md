@@ -1,17 +1,19 @@
 # Q-BE ECOSYSTEM — BASE DE CONOCIMIENTO DEL PROYECTO (KDB)
 
 **Documento:** `KDB.md` — Single Pane of Glass  
-**Versión:** 1.3.0<br>
+**Versión:** 1.4.0<br>
 **Estado:** `[ALGO-PROTECTED]` — Conocimiento Estable Certificado  
 **Proyecto:** `Q_BE_ECOSYSTEM`  
 **Autoridad Suprema:** Américo García Guerrero (Director Humano)  
 **Marco:** Kybern Industrial Framework v13.5 (DirGen Operational Edition)  
-**Expediente:** `SPRINT-45-EXPANSION-CAUSAL-Y-RESCATE-EN-VIVO`<br>
+**Expediente:** `SPRINT-50-REINGENIERIA-INDUSTRIAL-QBE-CORE`<br>
 **Nodos:** `[LN-QBE-138]` / `[ARCH-1.4.74]`  
 **Juez:** `qbe_core/tests/test_shield_ktp_package_integrity.py`  
-**Última consolidación:** 2026-11-01<br>
-**Actualización KTP:** 2026-11-01<br>
-**Fuente de la consolidación:** `docs/KTP/history/AKT_2026-11-01_SPRINT-45-EXPANSION-CAUSAL-Y-RESCATE-EN-VIVO.md` (Sprint 45)
+**Última consolidación:** 2026-11-04<br>
+**Actualización KTP:** 2026-11-04<br>
+**Fuente de la consolidación:** `docs/KTP/history/AKT_2026-11-04_SPRINT-50-REINGENIERIA-INDUSTRIAL-QBE-CORE.md` (Sprint 50)
+
+> **Nota de consolidación (2026-11-04):** se consolida el delta del `SPRINT-50-REINGENIERIA-INDUSTRIAL-QBE-CORE`: ratificación del Decreto D1–D5 (`VAR-2026-SPRINT50-CORE`), materialización de la Fase 2A (clausura de masa, Invariante L-1) y 2B (GSL-3D v2), súper-señal V6 con su barrido de κ, Sistema Inmune Fiduciario (27.31 % de veto), motor anti-sesgo de 3 zonas (ROI negativo en las tres) y el cementerio del ML predictivo (`legacy_ml/`). El sprint **no se cierra**: la Fase 9 (De-vig Shin, consenso multicasa, derivados) queda como deuda viva en §10. Bóveda verificada en solo lectura: 3,870 partidos, 3,726 con cuotas completas, 12 temporadas.
 
 > **Nota de consolidación (2026-11-01):** cierre del `SPRINT-45-EXPANSION-CAUSAL-Y-RESCATE-EN-VIVO`. Se consolida la extracción causal minuto a minuto (301 partidos, 13,443 eventos), el vector de 32 variables con 9 derivadas y 23 `SIN EVIDENCIA`, la calibración in-sample 2015-2016 y la formalización VÍA B de 8 ayudantes (Censo de Núcleo en 0). Quedan abiertos `C01-C08`, el Daemon en vivo, el split Train/Test y el Censo ampliado de `qbe_business` (72 Clase IV).
 
@@ -220,6 +222,8 @@ La tabla `historical_match_causal_vars` guarda una fila por partido con `derivad
 | Eventos persistidos | **13,443** | `historical_match_events` |
 | Filas de variables causales | **3,000** | `historical_match_causal_vars` (2,699 `FOTMOB_MATCHDETAILS` + 301 `LIGAMX_MXM`) |
 | Distribuciones P' históricas | **2,737** | `historical_sovereign_distributions` (`[LN-QBE-150]`) |
+| Distribuciones P' V2 (GSL-3D v2) | **2,727** | `historical_sovereign_distributions_v2` |
+| Distribuciones P' V3 | **2,727** | `historical_sovereign_distributions_v3` |
 | Temporadas con 32 variables completas | **0** | `historical_match_causal_vars.derivadas = 32` |
 | Temporadas con 9 variables | **1** (`2015_2016`, 301/334) | `historical_match_causal_vars.derivadas = 9` |
 | Cobertura xG por partido | **0 filas** | `xg_home` y `xg_away` no poblados |
@@ -314,6 +318,29 @@ El Observatorio (`/consenso`, `[LN-QBE-148]` Φ) ya calcula el **Alpha históric
 * **Lectura:** el mercado FootyStats sigue siendo marginalmente mejor calibrado que Q-BE en el histórico (−2.3 % a −3.9 %); el signo negativo es resultado, no defecto. Ningún porcentaje se fabrica: sin P' el Alpha es ausente.
 * **Desglose por jornada:** no se publica en el modo global porque `historical_matches` no porta número de jornada; la UI lo declara en lugar de inventarlo.
 
+### 5.6 Súper-Señal V6, Sistema Inmune y motor anti-sesgo — `SPRINT-50`
+
+El motor V6 (`generar_distribucion_v6`, `qbe_core/src/core/sovereign_pipeline.py`) aísla exclusivamente `V06` (xG), `V07` (SoT) y `V12` (xGA) por temporada, sin GSL-3D y con α fija de `0.203603` en el punto canónico. Resultados reproducidos en solo lectura el 2026-11-04:
+
+| Evidencia | Valor | Fuente |
+|---|---:|---|
+| Barrido κ en Train `[0.35, 0.55]` | **κ\* = 0.35** (Brier `0.642249`, N=990) | `scripts/investigacion/fase6_supersenal.py` |
+| V6 Test con κ\* | Brier `0.617547` (N=1,084) | ídem |
+| V1 en la misma muestra | Brier `0.616470` (N=1,012) | ídem |
+| FootyStats (mercado) | Brier `0.598721` (N=1,084) | ídem |
+| Alpha V6 Test vs mercado | **−3.14 %** | ídem |
+| Sistema Inmune: veto `QBE-00` | **296 / 1,084 = 27.31 %** | `triage.veto_inmunidad_fiduciaria` |
+| Desglose del veto | 206 `SOBREASEDIO_DEFENSIVO` + 90 `INEFICACIA_OFENSIVA` | ídem |
+| Anti-sesgo Z1 Consenso `\|P−q\|<0.03` | ROI **−8.29 %** (N=249) | `scripts/investigacion/fase8_sesgo_popular.py` |
+| Anti-sesgo Z2 Peligro `P−q>0.10` | ROI **−20.11 %** (N=18) | ídem |
+| Anti-sesgo Z3 Fade `q−P>0.08` | ROI **−14.94 %** (N=426) | ídem |
+| Cobertura sintética Z3 | ROI **−5.86 %** (N=426) | ídem |
+| Prima Popular (top 5) | Morelia `+0.0851` (16) · Monterrey `+0.0691` (237) · Cruz Azul `+0.0550` (250) · Tigres `+0.0538` (256) · América `+0.0465` (263) | ídem |
+
+> **Lectura honesta.** V6 **no** supera a V1 (`0.6175` vs `0.6165`) ni al mercado (`0.5987`); su Alpha es negativo y las tres zonas anti-sesgo pierden dinero. El motor puro no ha demostrado ventaja en 1X2. El Índice de Prima Popular es paramétrico (sin nombres cableados): los clubes listados son resultado, no configuración.
+
+> **Sello de producción.** `κ* = 0.35` es el óptimo empírico del experimento V6; el damping sellado del motor sigue en `KAPPA_NET = 0.25` (Invariante 9, §3). Adoptar κ\* en producción exige Ficha de Varianza y re-sellado.
+
 ---
 
 ## 6. ESTADO FINANCIERO VIGENTE
@@ -351,6 +378,12 @@ El Observatorio (`/consenso`, `[LN-QBE-148]` Φ) ya calcula el **Alpha históric
 | Dutching y parámetro δ | `qbe_core/src/core/portfolio.py`, `docs/LOGIC.md` | `qbe_core/tests/test_shield_dynamic_dutching_delta.py` |
 | Cartera, Kelly y hard-caps | `qbe_core/src/core/portfolio.py`, `docs/CONSTANTS.md` | `qbe_core/tests/test_shield_portfolio_math.py`, `test_shield_portfolio_integrity_and_floor.py` |
 | Damping y `κ_net` | `qbe_core/src/core/intensity_canonical_loglink.py` | `qbe_core/tests/test_shield_sovereign_engine.py` |
+| Súper-Señal V6 (V06/V07/V12) | `qbe_core/src/core/sovereign_pipeline.py` (`generar_distribucion_v6`) | `tests/shield/test_shield_core_v6_supersenal.py` |
+| Sistema Inmune Fiduciario (veto `QBE-00`) | `qbe_core/src/core/triage.py` (`veto_inmunidad_fiduciaria`) | `tests/shield/test_shield_core_v6_supersenal.py` |
+| Clausura de masa (Invariante L-1) | `qbe_core/src/core/intensity_canonical_loglink.py` | `qbe_core/tests/test_shield_core_v2_rigor.py` |
+| GSL-3D v2 y puente de matriz | `qbe_core/src/core/sovereign/orthogonal_factor_engine.py` | `tests/shield/test_shield_core_v2_puente_matriz.py`, `test_shield_core_v3_enmiendas.py` |
+| Motor anti-sesgo y Prima Popular | `scripts/investigacion/fase8_sesgo_popular.py` | Sin Juez dedicado (`SIN EVIDENCIA`); solo lectura de bóveda |
+| Cementerio del ML predictivo | `qbe_observatory/src/observatory/legacy_ml/` | Prohibido reimportar desde `qbe_core` o el pipeline V6 |
 | Désiré André y +PA | `qbe_core/src/core/andre_early_payout.py` | `qbe_core/tests/test_shield_sovereign_pipeline.py` |
 | Persistencia y gateway | `qbe_storage/src/storage/gateway.py` | `qbe_storage/tests/test_shield_gateway_readonly_isolation.py` |
 | Ingesta histórica y parser | `qbe_ingestion/src/ingestion/` | `qbe_ingestion/tests/test_shield_historical_load_integrity.py`, `test_shield_mhtml_parser_and_season_integrity.py` |
@@ -380,6 +413,9 @@ El Observatorio (`/consenso`, `[LN-QBE-148]` Φ) ya calcula el **Alpha históric
 | `[LN-QBE-145]` | LOGIC | Diccionario Canónico de Alias de Liga MX (`ligamx.net` → bóveda) | SELLADO |
 | `[LN-QBE-146]` | LOGIC | Motor de Derivación de Variables Causales | SELLADO |
 | `[LN-QBE-147]` | LOGIC | Motor de Calibración y Perturbación de Variables Causales | SELLADO |
+| `[LN-QBE-148]` | LOGIC | Motor de Consenso Ponderado (Wisdom of the Crowds) | SELLADO |
+| `[LN-QBE-149]` | LOGIC | Motor de Detección de Rupturas de Consenso (Radar de Sindicatos) | SELLADO |
+| `[LN-QBE-150]` | LOGIC | Motor de Cálculo de Distribuciones Históricas (P') | SELLADO |
 | `[ARCH-1.4.72]` | ARCH | Pipeline de Inyección Histórica Multianual y Reflection DDL | SELLADO |
 | `[ARCH-1.4.73]` | ARCH | Extractor Histórico Masivo de FotMob | SELLADO — deuda de cuerpo declarada |
 | `[ARCH-1.4.74]` | ARCH | Topología y Subsistema Documental de Transferencia KTP | SELLADO |
@@ -439,6 +475,11 @@ La Fase B exige el Censo de Paridad Canónica de `docs/GOVERNANCE.md` §3.5. **A
 | Cobertura causal limitada a `2015_2016` | 0 temporadas con 32 variables; solo `2015_2016` con 9 variables y 301/334 partidos. Las otras 11 temporadas no tienen eventos. | Extraer eventos de las 11 temporadas restantes o declarar el alcance de la calibración. | Ingesta / Arquitecto |
 | Sonda `auditar_boveda_historica.py` ausente | No existe el instrumento canónico de auditoría de cobertura; la cobertura se midió con consulta SQL de solo lectura. | Materializar la sonda y su Juez; ejecutarla contra `qbe_historico.db`. | Constructor |
 | Censo ampliado de `qbe_business`: 72 hallazgos Clase IV | El Censo de Núcleo (`qbe_core`) está en 0; el barrido de §3.5 sobre `qbe_business/src` reporta 72 nodos sin etiqueta, fuera de la VÍA B del Sprint 45. | Abrir VÍA B específica para `qbe_business` o excepción formal del Director. | Arquitecto |
+| **Fase 9 no materializada** (De-vig Shin, consenso multicasa, \(P_{mid}\), derivados Under 2.5 / BTTS) | Bloquea la estrategia económica aprobada; el 1X2 puro no ha demostrado Alpha (§5.6). | Implementar en `qbe_core` (`consensus.py`, `distribution_dixon_coles.py`) con Jueces y backtest sobre los 3,726 partidos con cuotas completas. | Constructor / Arquitecto |
+| Proveedor histórico de momios único (FootyStats) | Sin derivados ni segunda casa histórica: el consenso multicasa no se puede reconstruir hacia atrás. | Integrar OddsPortal o BetExplorer Pro; declarar cobertura. | Arquitecto / Director |
+| Kelly y hard-caps no automatizados en `qbe_business` | El motor calcula probabilidades; la Mesa de Apuestas no dimensiona capital automáticamente. | Implementar Kelly atenuado con los hard-caps de §6. | Constructor |
+| UI de coberturas y derivados ausente | La UI solo muestra 1X2; no refleja \(P_{mid}\) ni derivados. | Rediseñar la vista de la Mesa de Apuestas. | Constructor |
+| `κ* = 0.35` no adoptado en producción | El óptimo empírico del barrido V6 no entró al motor (`KAPPA_NET = 0.25`); hay divergencia entre experimento y sello. | Ficha de Varianza para re-sellar; o declarar 0.25 como definitivo. | Director / Arquitecto |
 
 ---
 
@@ -460,6 +501,8 @@ La Fase B exige el Censo de Paridad Canónica de `docs/GOVERNANCE.md` §3.5. **A
 | Acta activa | `docs/KTP/AKT.md` |
 | Acta histórica Sprint 41 | `docs/KTP/history/AKT_2026-10-31_SPRINT-41-TRANSICION-Y-CONSISTENCIA-BG.md` |
 | Acta histórica Sprint 45 | `docs/KTP/history/AKT_2026-11-01_SPRINT-45-EXPANSION-CAUSAL-Y-RESCATE-EN-VIVO.md` |
+| Acta histórica Sprint 48 | `docs/KTP/history/AKT_2026-11-03_SPRINT-48-LLENADO-HISTORICO-MASIVO.md` |
+| Acta histórica Sprint 50 | `docs/KTP/history/AKT_2026-11-04_SPRINT-50-REINGENIERIA-INDUSTRIAL-QBE-CORE.md` |
 | Archivo histórico | `docs/KTP/history/` |
 
 > **Mantenimiento:** este documento se actualiza solo por consolidación formal. La versión, la fecha y el acta de origen se registran en cada cambio. No se edita para “hacer pasar” un test; si la ley cambia, se emite la Ficha de Varianza correspondiente.
