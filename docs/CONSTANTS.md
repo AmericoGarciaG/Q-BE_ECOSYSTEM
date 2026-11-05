@@ -194,6 +194,7 @@
 | $\text{Cap}_{\text{partido}}$ (`0.08`) | $\text{Cap}_{\text{cartera}}$ (`0.25`) | El cap individual no puede superar el 32% del cap de cartera (relación $0.08/0.25$) | `[LN-QBE-070-B]` |
 | $\tau_{\text{disp}}$ (`0.12`) | $\text{Tol}_{\text{tablas}}$ (`0.08` MXN) | Uno mide desacuerdo epistémico en probabilidad; el otro indemnidad bancaria en pesos | `[LN-QBE-070-B]` / `[LN-QBE-070]` |
 | $\text{Cap}_{\text{partido}}$ (`0.08`) | $\text{Cap}_{\text{underdog}}$ (`0.015`) | **Jamás son intercambiables**: la cota del 1.5% es un techo adicional EXCLUSIVO de la Familia R y no sustituye el hard-cap individual | `[LN-QBE-070-B]` / `[LN-QBE-115]` |
+| $P_{\text{mid}}$ (2.º vértice de $P'$) | $P_{\text{consenso}}$ / $\vec{q}^{\,\text{mkt}}$ (mercado de-vigado) | **Jamás son homónimos.** $P_{\text{mid}}$ queda reservado **exclusivamente** al segundo resultado más probable de la física soberana ($P_{\max}\ge P_{\text{mid}}\ge P_{\text{low}}$); nombrar "P_mid" al consenso de mercado es una violación nominal. El mercado des-marginado se denomina unívocamente $P_{\text{consenso}}$ o $\vec{q}^{\,\text{mkt}}$ | `[LN-QBE-059]` / `[LN-QBE-148]` / `[LN-QBE-151]` |
 
 ---
 
@@ -227,6 +228,25 @@
 | $\text{Timeout}_{\text{daemon live}}$ | `CONST_TIMEOUT_DAEMON_LIVE` | `30000` | ms | `[ARCH-1.4.75]` | Techo de espera por extracción en el Daemon Multicasa; al vencer dispara `TimeoutError` sin colgar el hilo. |
 | $W_{\min}$ | `CONST_PESO_CONSENSO_MIN` | `0.05` | Fracción | `[LN-QBE-148]` | Piso de peso por casino en el Consenso Ponderado; por debajo, la fuente no contribuye al Símplex consensuado. |
 | $\Delta_{\text{sindicato}}$ | `CONST_DELTA_SINDICATO_PCT` | `0.10` | Fracción | `[LN-QBE-149]` | Umbral de tasa de cambio de momios que dispara la alerta del Radar de Sindicatos. |
+
+---
+
+## 11. DOMINIO DE MICROESTRUCTURA DE MERCADO (SHIN)
+
+| Símbolo | Nombre Canónico | Valor Exacto | Unidad | Nodo Dueño | Dominio de Validez | Prohibición de Reúso |
+|:---:|---|---|:---:|:---:|---|---|
+| $\varepsilon_{\text{shin}}$ | `EPSILON_SHIN` | `1e-9` | Adimensional | `[LN-QBE-151]` | Tolerancia absoluta de convergencia del resolvedor no lineal de Shin y de la aserción de conservación $\sum_k p_k = 1.0 \pm \varepsilon_{\text{shin}}$ | **PROHIBIDO** usarla como tolerancia de símplex del consenso (`[LN-QBE-148]` rige `1e-6`), como umbral de descarte, como cota de redondeo de presentación o como indemnidad bancaria |
+| $N_{\text{iter, shin}}^{\max}$ | `MAX_ITER_SHIN` | `100` | Iteraciones | `[LN-QBE-151]` | Techo de iteraciones del método de bisección/Brent sobre $z \in [0, \min_k \pi_k]$ | **PROHIBIDO** elevarlo para "salvar" una convergencia: sin raíz en la iteración 100 ⇒ `InvalidOddsException` (fail-loud), jamás un valor de frontera |
+| $O_{\min}^{\text{shin}}$ | `SHIN_ODDS_MIN` | `1.0500` | Cuota decimal | `[LN-QBE-151]` | Cota inferior de admisibilidad de cuotas 1X2 para el des-margen | **PROHIBIDO** reutilizarla como piso de rentabilidad, como cuota mínima de boleto o como cota de morfología Γ |
+| $O_{\max}^{\text{shin}}$ | `SHIN_ODDS_MAX` | `50.0000` | Cuota decimal | `[LN-QBE-151]` | Cota superior de admisibilidad de cuotas 1X2 para el des-margen | **PROHIBIDO** confundirla con `CLAMP_GOLES_MAX` (`6.00`), con `OMEGA_MAX` (`1.60`) o usarla como umbral de veto |
+
+> **Regla Anti-Homónimos de $P_{\text{mid}}$ (`[LN-QBE-059]` / `[LN-QBE-148]` / `[LN-QBE-151]`).**
+> Queda **explícitamente prohibido** nombrar $P_{\text{mid}}$ al consenso de mercado. El símbolo
+> $P_{\text{mid}}$ queda reservado **exclusivamente** al segundo resultado más probable de la física
+> soberana, con el orden canónico $P_{\max} \ge P_{\text{mid}} \ge P_{\text{low}}$ sobre los tres
+> vértices de $P'$. El mercado des-marginado —incluido el que produce `[LN-QBE-151]`— se denomina
+> unívocamente $P_{\text{consenso}}$ o $\vec{q}^{\,\text{mkt}}$. La infracción es de Clase III
+> (Colisión de Literales, `docs/GOVERNANCE.md` §1.1.3) y bloquea el Censo de Paridad Canónica.
 
 ---
 

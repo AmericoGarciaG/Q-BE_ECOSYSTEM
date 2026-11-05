@@ -7,6 +7,7 @@ antes de invocar la extracción fáctica o el análisis estocástico profundo.
 """
 
 from typing import List, Dict, Any, Tuple, Optional
+from collections.abc import Mapping
 import math
 
 
@@ -171,3 +172,150 @@ def veto_inmunidad_fiduciaria(
             "motivo": "Defensa bajo asedio (SoTA ≥ p90) con forma 5P en caída (V31 ≤ p25).",
         }
     return None
+
+
+# ═══════════════════════════════════════════════════════════════════════════════════════
+# [LN-QBE-060-B] / §27 — ORQUESTADOR DE MUNDO 2 (Paso 0 · Sistema Inmune Fiduciario)
+#
+# El Mundo 1 calcula P' y el consenso de mercado completos e independientes. Al transitar
+# al Mundo 2, el Paso 0 evalúa el Sistema Inmune ANTES de leer una sola cuota: si dispara,
+# el partido colapsa a QBE-00 con $0.00 MXN y traza de ambas distribuciones. Los Pasos 1
+# (cuarentena fiduciaria) y 2 (selección de cobertura) se delegan a `[LN-QBE-060-B]`
+# (`triaje_determinista_9_estrategias`): una sola fuente de verdad para la cascada.
+# ═══════════════════════════════════════════════════════════════════════════════════════
+
+TOLERANCIA_SIMPLEX_MUNDO2: float = 1e-9
+
+
+def _validar_simplex_mundo2(nombre: str, distribucion: Any) -> Dict[str, float]:
+    """[LN-QBE-060-B] Aduana: la distribución debe llegar completa y sumar 1.0 ± 1e-9."""
+    if not isinstance(distribucion, Mapping):
+        raise ValueError(
+            f"{nombre} debe ser un mapping de probabilidades; se recibió {type(distribucion).__name__}."
+        )
+    faltantes = [
+        clave for clave in ("p_local", "p_empate", "p_visitante") if clave not in distribucion
+    ]
+    if faltantes:
+        raise ValueError(f"{nombre} incompleta: faltan {', '.join(faltantes)}.")
+    valores: Dict[str, float] = {}
+    for clave in ("p_local", "p_empate", "p_visitante"):
+        crudo = distribucion[clave]
+        if isinstance(crudo, bool) or not isinstance(crudo, (int, float)):
+            raise ValueError(f"{nombre}.{clave} no numérica: {crudo!r}.")
+        valor = float(crudo)
+        if not math.isfinite(valor) or not (0.0 <= valor <= 1.0):
+            raise ValueError(f"{nombre}.{clave} fuera de [0, 1]: {crudo!r}.")
+        valores[clave] = valor
+    total = math.fsum(valores.values())
+    if abs(total - 1.0) > TOLERANCIA_SIMPLEX_MUNDO2:
+        raise ValueError(
+            f"{nombre} no es un símplex: Σ = {total!r} ≠ 1.0 "
+            f"(tolerancia {TOLERANCIA_SIMPLEX_MUNDO2:g})."
+        )
+    return valores
+
+
+def _validar_percentiles_mundo2(percentiles: Any) -> Dict[str, Mapping]:
+    """[LN-QBE-060-B] Aduana: los tres bloques de percentiles del Sistema Inmune."""
+    if not isinstance(percentiles, Mapping):
+        raise ValueError(
+            f"percentiles debe ser un mapping; se recibió {type(percentiles).__name__}."
+        )
+    salida: Dict[str, Mapping] = {}
+    for clave in ("p25", "p75", "p90"):
+        if clave not in percentiles:
+            raise ValueError(f"percentiles incompletos: falta el bloque '{clave}'.")
+        bloque = percentiles[clave]
+        if not isinstance(bloque, Mapping):
+            raise ValueError(f"percentiles['{clave}'] debe ser un mapping; se recibió {type(bloque).__name__}.")
+        salida[clave] = bloque
+    return salida
+
+
+def _validar_vector_mundo2(vector: Any) -> Dict[str, float]:
+    """[LN-QBE-060-B] Aduana: variables causales numéricas y finitas."""
+    if not isinstance(vector, Mapping):
+        raise ValueError(f"vector debe ser un mapping; se recibió {type(vector).__name__}.")
+    salida: Dict[str, float] = {}
+    for clave, crudo in vector.items():
+        if isinstance(crudo, bool) or not isinstance(crudo, (int, float)):
+            raise ValueError(f"vector['{clave}'] no numérica: {crudo!r}.")
+        valor = float(crudo)
+        if not math.isfinite(valor):
+            raise ValueError(f"vector['{clave}'] no finita: {crudo!r}.")
+        salida[clave] = valor
+    return salida
+
+
+def triaje_financiero_mundo2(
+    match_id: str,
+    distribucion_soberana: Mapping,
+    consenso_mercado: Mapping,
+    cuotas: Mapping,
+    vector: Mapping,
+    percentiles: Mapping,
+    gamma: float = 0.67,
+) -> Dict[str, Any]:
+    """[LN-QBE-060-B] Orquestador de Mundo 2 con compuerta de Paso 0 (Sistema Inmune).
+
+    Secuencia obligatoria: (0) Sistema Inmune —sin leer cuotas—; (1) cuarentena
+    fiduciaria (``not es_operable`` o Δ_epist > τ_disp = 0.12) y (2) selección de
+    cobertura, ambas delegadas a `triaje_determinista_9_estrategias`. Un veto devuelve
+    ``codigo="QBE-00"``, ``capital_mxn=0.0``, ``boletos=[]``, ``cuotas_evaluadas=False``
+    y la traza con ambas distribuciones. En un veredicto operable ``capital_mxn`` es
+    ``None``: el triaje no dimensiona capital (competencia de ``[LN-QBE-070]``).
+    """
+    if not isinstance(match_id, str) or not match_id.strip():
+        raise ValueError(f"match_id inválido: {match_id!r}.")
+    _validar_simplex_mundo2("distribucion_soberana", distribucion_soberana)
+    _validar_simplex_mundo2("consenso_mercado", consenso_mercado)
+    bloques = _validar_percentiles_mundo2(percentiles)
+    vector_valido = _validar_vector_mundo2(vector)
+
+    traza: Dict[str, Any] = {
+        "p_simplex": dict(distribucion_soberana),
+        "p_consenso": dict(consenso_mercado),
+        "vector": dict(vector),
+        "percentiles": {clave: dict(bloque) for clave, bloque in bloques.items()},
+    }
+
+    # ── PASO 0 · SISTEMA INMUNE FIDUCIARIO (antes de toda lectura de cuotas) ──
+    veto = veto_inmunidad_fiduciaria(vector_valido, bloques["p25"], bloques["p75"], bloques["p90"])
+    if veto is not None:
+        return {
+            "codigo": "QBE-00",
+            "paso_0": True,
+            "arquetipo_veto": veto["arquetipo_veto"],
+            "motivo_codigo": veto["arquetipo_veto"],
+            "motivo": veto["motivo"],
+            "capital_mxn": 0.0,
+            "cuotas_evaluadas": False,
+            "boletos": [],
+            "traza": traza,
+        }
+
+    # ── PASOS 1-2 · CUARENTENA Y COBERTURA (cascada sellada `[LN-QBE-060-B]`) ──
+    from src.core.contracts.portfolio_math import triaje_determinista_9_estrategias
+
+    payload = {
+        "p_local": float(distribucion_soberana["p_local"]),
+        "p_empate": float(distribucion_soberana["p_empate"]),
+        "p_visitante": float(distribucion_soberana["p_visitante"]),
+        # Defaults espejo de la cascada sellada: la ausencia de la bandera no es
+        # evidencia de inoperancia; el llamador ya pasó por la aduana S(I).
+        "es_operable": bool(distribucion_soberana.get("es_operable", True)),
+        "delta_epist": float(distribucion_soberana.get("delta_epist", 0.0)),
+    }
+    veredicto = triaje_determinista_9_estrategias(payload, cuotas, gamma=float(gamma))
+    return {
+        **veredicto,
+        "paso_0": False,
+        "arquetipo_veto": None,
+        "motivo_codigo": veredicto["codigo"],
+        "motivo": veredicto.get("nombre", ""),
+        "capital_mxn": 0.0 if veredicto["codigo"] == "QBE-00" else None,
+        "cuotas_evaluadas": True,
+        "boletos": [],
+        "traza": traza,
+    }

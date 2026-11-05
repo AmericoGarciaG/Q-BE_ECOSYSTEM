@@ -459,8 +459,10 @@ El promedio por $\sqrt{n}$ (RMS) impide que añadir variables infle el factor: d
 | `[LN-QBE-148]` | Motor de Consenso Ponderado (Wisdom of the Crowds) | `motor` | SELLADO |
 | `[LN-QBE-149]` | Motor de Detección de Rupturas de Consenso (Radar de Sindicatos) | `motor` | SELLADO |
 | `[LN-QBE-150]` | Motor de Cálculo de Distribuciones Históricas (P') | `motor` | SELLADO |
+| `[LN-QBE-151]` | Motor de Des-margen Implícito de Shin (Shin De-vigging Engine) | `motor` | SELLADO |
+| `[LN-QBE-152]` | Proyector Analítico de Mercados Derivados (Totales & BTTS) | `motor` | SELLADO |
 
-_Total: 138 identificadores._
+_Total: 140 identificadores._
 
 ---
 
@@ -925,3 +927,142 @@ Enmienda del Director (Sprint 48). El motor anterior deriva lo que la narrativa 
 * **Invariantes:** cero fuga temporal (el resultado del partido evaluado jamás entra en su propio registro de entrada); cero imputaciones; `qbe_core` se importa y no se modifica; `sovereign_distributions` (tabla viva) no se lee ni se escribe; el símplex persistido suma 1 con tolerancia 1e-9.
 * **Fail-Loud:** bóveda inexistente, tabla de destino sin DDL aplicable, o `PRAGMA quick_check` distinto de `ok` ⇒ código de salida 1 y traza. Un partido sin `S(I_i)` no es un fallo del motor: es un descarte declarado.
 * **[SHIELD]:** `tests/shield/test_shield_distribuciones_historicas.py`.
+
+---
+
+## 25. MOTOR DE DES-MARGEN IMPLÍCITO DE SHIN
+
+### ID: `[LN-QBE-151]` Motor de Des-margen Implícito de Shin (Shin De-vigging Engine)
+
+* **Ω (Resumen):** Inversión determinista del modelo de microestructura de mercado de Shin (1991, 1993) para extraer la probabilidad libre de margen y purgar el sesgo favorito-longshot que la normalización proporcional de `[LN-QBE-007-C]` no corrige. El motor no estima, no aprende y no consulta red: resuelve una ecuación de punto fijo sobre la terna de cuotas y devuelve el símplex intrínseco del mercado.
+* **I (Input):** tupla de cuotas decimales $O=(O_1,O_X,O_2)\in\mathbb{R}^3$ con $O_k\in[O_{\min}^{\text{shin}},O_{\max}^{\text{shin}}]=[1.0500,50.0000]$ (`docs/CONSTANTS.md` §11). La posición es semántica —$O_1$ local, $O_X$ empate, $O_2$ visitante— y la función no reordena.
+* **P (Process) [ALGO-PROTECTED] [DIRGEN-STRICT]:**
+  1. Probabilidades implícitas brutas $\pi_k=1/O_k$ y sobremargen $S=\sum_{k=1}^{3}\pi_k$ (`overround_bruto`).
+  2. **Sin margen o arbitraje:** si $S\le 1.0000$, se declara $z=0$ y $p_k=\pi_k/S$. No se resuelve la ecuación: con $S<1$ la terna no admite des-margen de Shin y el sesgo favorito-longshot no es identificable.
+  3. **Bisección/Brent sobre $z$** en el intervalo $[0,\min_k\pi_k]$, con $\varepsilon_{\text{shin}}=10^{-9}$ y $N_{\text{iter,shin}}^{\max}=100$, sobre
+     $$F(z)=\sum_{k=1}^{3}\sqrt{z^2+4(1-z)\frac{\pi_k^2}{S}}-2-z=0$$
+  4. Probabilidades verdaderas:
+     $$p_k=\frac{\sqrt{z^2+4(1-z)\frac{\pi_k^2}{S}}-z}{2(1-z)}$$
+  5. **Aserción de conservación:** $\sum_k p_k=1.0\pm\varepsilon_{\text{shin}}$ y $p_k>0$. Si la aserción falla ⇒ `InvalidOddsException`; jamás un reescalado de cortesía.
+* **Nota de consistencia analítica (errata D-1 del expediente `SPRINT-50`):** la forma $\sum_k\sqrt{\cdot}-2=0$ es incompatible con la conservación. En su raíz, $\sum_k p_k=(2-3z)/(2-2z)<1$ para todo $z>0$, y el favorito *pierde* masa frente a la normalización proporcional (verificado en $(1.90,3.40,4.00)$: $z=0.0810$, $\sum p=0.9559$, $p_{\text{fav}}<\pi_{\text{fav}}/S$). La forma equivalente $\sum_k\sqrt{\cdot}=2+z$ es la única que satisface $\sum_k p_k=1$ por construcción y reproduce el fixture exigido ($z=0.0354$, $p_{\text{fav}}=0.49994>\pi_{\text{fav}}/S=0.49168$). Se legisla la forma consistente; la forma $\sum_k\sqrt{\cdot}-2=0$ queda **prohibida**.
+* **O (Output):** DTO inmutable `ShinDevigResult` (`@dataclass(frozen=True)`) con `p_local`, `p_empate`, `p_visitante`, `z_insider` y `overround_bruto`. El DTO no porta la matriz ni el casino de origen: es un valor del mercado, no una fila de la bóveda.
+* **Contrato de materialización (Paso 3, sin margen creativo):**
+
+  ```text
+  qbe_core/src/core/consensus.py
+
+  @dataclass(frozen=True)
+  class ShinDevigResult:
+      p_local: float
+      p_empate: float
+      p_visitante: float
+      z_insider: float
+      overround_bruto: float
+
+  class InvalidOddsException(ValueError): ...
+
+  def desmarginar_shin(cuotas: Sequence[float]) -> ShinDevigResult: ...
+  ```
+
+  Etiqueta obligatoria en el docstring de la función: `[LN-QBE-151]`. El cuerpo no importa `numpy`, `scipy`, `pandas` ni módulos de `qbe_business`/`qbe_ingestion`.
+* **Φ (Transición):** hacia `[LN-QBE-148]` (Consenso Multicasa: cada fila de casino se de-viga con Shin antes de ponderar) y hacia `[LN-QBE-070]` (Cálculo de Alpha contra $P_{\text{consenso}}$).
+* **Invariantes:** función pura y determinista (mismas cuotas ⇒ mismo DTO y mismo $z$); cero I/O, cero reloj, cero aleatoriedad; el orden de la terna nunca se reordena; el resultado no se redondea en el motor (el redondeo es de presentación).
+* **Fail-Loud:** terna incompleta, cuota no finita (`NaN`/`inf`), cuota $\le 1.0$, cuota negativa, `None` o cadena no numérica ⇒ `InvalidOddsException`, que hereda de `ValueError`. Sin raíz en el intervalo tras $N_{\text{iter,shin}}^{\max}$ iteraciones ⇒ `InvalidOddsException` con el intervalo y los signos de $F(0)$/$\min_k\pi_k$ en el mensaje. **Prohibido** devolver ceros, un prior uniforme o un valor de frontera silencioso.
+* **[SHIELD]:** `qbe_core/tests/test_shield_shin_devig.py`
+
+---
+
+## 26. PROYECTOR ANALÍTICO DE MERCADOS DERIVADOS
+
+### ID: `[LN-QBE-152]` Proyector Analítico de Mercados Derivados (Totales & BTTS)
+
+* **Ω (Resumen):** Proyección analítica exacta de la matriz conjunta de marcadores $M^*_{xy}\in\mathbb{R}^{7\times7}$ de Dixon-Coles hacia los mercados de Totales (Over/Under 2.5) y Ambos Equipos Anotan (BTTS), sin re-estimaciones paralelas ni simulación. El proyector no vuelve a estimar $\lambda$, $\rho$ ni la matriz: consume la matriz ya normalizada y suma regiones disjuntas.
+* **I (Input):** matriz estocástica finita normalizada $M^*_{xy}$ ($7\times7$, índices $x,y\in\{0,\dots,6\}$; $x$ goles del local, $y$ goles del visitante). Debe cumplir $M^*_{xy}\ge 0$ y $\sum_{x,y}M^*_{xy}=1.0\pm10^{-9}$.
+* **P (Process) [ALGO-PROTECTED] [DIRGEN-STRICT]:**
+  1. $P(\text{Under }2.5)=\sum_{x+y\le 2}M^*_{xy}=M^*_{00}+M^*_{10}+M^*_{01}+M^*_{20}+M^*_{11}+M^*_{02}$.
+  2. $P(\text{Over }2.5)=1.0-P(\text{Under }2.5)$.
+  3. $P(\text{BTTS No})=\sum_{y=0}^{6}M^*_{0y}+\sum_{x=0}^{6}M^*_{x0}-M^*_{00}$ (unión de primera fila y primera columna; la celda $00$ se descuenta una sola vez).
+  4. $P(\text{BTTS Sí})=1.0-P(\text{BTTS No})=\sum_{x=1}^{6}\sum_{y=1}^{6}M^*_{xy}$.
+  5. Cuotas justas de equilibrio: $O^*=1/P$; $P=0$ ⇒ `float("inf")` declarado (mercado imposible), nunca un número fabricado.
+* **O (Output):** DTO inmutable `DerivativeMarketsProjection` (`@dataclass(frozen=True)`) con `p_under_25`, `p_over_25`, `p_btts_si`, `p_btts_no` y las cuatro cuotas justas `cuota_under_25`, `cuota_over_25`, `cuota_btts_si`, `cuota_btts_no`.
+* **Contrato de materialización (Paso 3, sin margen creativo):**
+
+  ```text
+  qbe_core/src/core/distribution_dixon_coles.py
+
+  @dataclass(frozen=True)
+  class DerivativeMarketsProjection:
+      p_under_25: float
+      p_over_25: float
+      p_btts_si: float
+      p_btts_no: float
+      cuota_under_25: float
+      cuota_over_25: float
+      cuota_btts_si: float
+      cuota_btts_no: float
+
+  class MatrixIntegrityError(ValueError): ...
+
+  def proyectar_mercados_derivados(
+      matriz: Sequence[Sequence[float]],
+  ) -> DerivativeMarketsProjection: ...
+  ```
+
+  Etiqueta obligatoria en el docstring de la función: `[LN-QBE-152]`. La función no invoca `calcular_matriz_dixon_coles`: recibe la matriz ya construida y sellada.
+* **Φ (Transición):** hacia `triage.py` (Estrategia `QBE-C2` — Cobertura Derivada Totales) y a la Mesa de Apuestas; el mercado derivado no reemplaza al 1X2, lo complementa.
+* **Invariantes:** partición exacta $|P(\text{Under})+P(\text{Over})-1|\le10^{-12}$ y $|P(\text{BTTS Sí})+P(\text{BTTS No})-1|\le10^{-12}$; ninguna renormalización de la matriz de entrada; el proyector no conoce cuotas de mercado (sólo produce $O^*$ de equilibrio); cero I/O.
+* **Fail-Loud:** dimensión distinta de $7\times7$, celda negativa, celda no finita o suma distinta de $1.0\pm10^{-9}$ ⇒ `MatrixIntegrityError`, que hereda de `ValueError`. **Prohibido** renormalizar, recortar a cero o "arreglar" la matriz corrupta: una matriz inválida no es un mercado, es un fallo de integridad.
+* **[SHIELD]:** `qbe_core/tests/test_shield_derivative_markets.py`
+
+---
+
+## 27. DOCTRINA DE COBERTURA EN DOS NIVELES Y SECUENCIA DEL SISTEMA INMUNE
+
+> **Enmienda operativa a `[LN-QBE-060-B]` / `[LN-QBE-060-C]`.** No crea identificadores nuevos: refina el contrato de la cascada de triaje y del veto fiduciario ya sellados.
+
+### 27.1 Nivel 1 — Cobertura Probabilística (Mundo 1)
+
+Determina la **concentración física del partido** en el símplex $P'$: sus tres vértices ordenados $(P_{\max},P_{\text{mid}},P_{\text{low}})$, con rescate territorial por altitud `[LN-QBE-124]`. Es **ciega a cuotas y a dinero**: no lee `odds_ticks`, no conoce el consenso y no acepta un veto de mercado como insumo. Su única deuda es fáctica ($S(I_i)$, `[LN-QBE-100]`).
+
+### 27.2 Nivel 2 — Cobertura Financiera (Mundo 2)
+
+Decisión de **asignación de capital en ventanilla**. Toma $P_{\text{mid}}$ como candidato natural y ejerce, en este orden, cuatro facultades: **ratificación** (`QBE-H1`/`QBE-H2`), **desplazamiento** a $P_{\text{low}}$, **mutación** a derivados (`[LN-QBE-152]`) o **veto** (`QBE-00`). El Nivel 2 jamás reescribe $P'$: la consume.
+
+### 27.3 Secuencia de ejecución del Sistema Inmune
+
+1. $P'$ (Distribución Soberana) y $P_{\text{consenso}}$ (Consenso de Mercado) se calculan de forma **completa e independiente** en el Mundo 1. Ninguno de los dos se amputa, se trunca ni se colapsa a un prior por la expectativa de un veto posterior.
+2. Al transitar al Mundo 2 (`triage.py`), el **Paso 0 obligatorio** es la evaluación del Sistema Inmune Fiduciario (`veto_inmunidad_fiduciaria`: `SOBREASEDIO_DEFENSIVO` e `INEFICACIA_OFENSIVA`).
+3. Si el Sistema Inmune dispara, el partido **colapsa inmediatamente a veto `QBE-00`** con capital $\$0.00\text{ MXN}$, sin evaluar cuotas y sin asignar boletos, preservando **ambas distribuciones** en la traza forense.
+
+### 27.4 Contrato del orquestador de Mundo 2 (Paso 0)
+
+```text
+qbe_core/src/core/triage.py
+
+def triaje_financiero_mundo2(
+    match_id: str,
+    distribucion_soberana: Mapping[str, float],      # P' (p_local, p_empate, p_visitante)
+    consenso_mercado: Mapping[str, float],           # P_consenso / q^mkt
+    cuotas: Mapping[str, float],                     # L / E / V
+    vector: Mapping[str, float],                     # variables causales del lado evaluado
+    percentiles: Mapping[str, Mapping[str, float]],  # {"p25":…, "p75":…, "p90":…}
+) -> Dict[str, Any]
+```
+
+Salida obligatoria (claves tipadas, sin ambigüedad):
+
+| Clave | Tipo | Contrato |
+|---|---|---|
+| `codigo` | `str` | `"QBE-00"` si el Paso 0 dispara; en otro caso, el código de la cascada `[LN-QBE-060-B]`. |
+| `paso_0` | `bool` | `True` sólo si el veredicto proviene del Sistema Inmune. |
+| `arquetipo_veto` | `str \| None` | `"SOBREASEDIO_DEFENSIVO"`, `"INEFICACIA_OFENSIVA"` o `None`. |
+| `motivo_codigo` | `str` | Código tipado del motivo; en el veto, el nombre del arquetipo. |
+| `motivo` | `str` | Explicación legible de la regla disparada. |
+| `capital_mxn` | `float` | `0.0` exacto en veto. |
+| `cuotas_evaluadas` | `bool` | `False` en veto: la aduana de cuotas no se ejecutó. |
+| `boletos` | `list` | Lista vacía en veto: no se asignó capital. |
+| `traza` | `dict` | Copia íntegra de `p_simplex` y `p_consenso` (más `vector` y `percentiles`) para peritaje. |
+
+* **Invariantes:** el Paso 0 precede a toda lectura de cuotas; un veto nunca devuelve un `alpha` ni un boleto; la traza conserva los tres vértices de $P'$; el orquestador no recalcula $P'$ ni $P_{\text{consenso}}$.
+* **Fail-Loud:** `percentiles` incompleto, `vector` no mapeable o distribución con suma distinta de $1.0\pm10^{-9}$ ⇒ excepción tipada (`ValueError`), no un veto fabricado.
+* **[SHIELD]:** `qbe_core/tests/test_shield_immune_system_sequence.py`

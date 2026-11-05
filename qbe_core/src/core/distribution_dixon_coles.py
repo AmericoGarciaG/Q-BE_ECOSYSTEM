@@ -6,7 +6,8 @@ Base de Gobierno: Kybern Framework v12.0 [ARCH-1.3.4] / Tratado Volumen I (Secci
 """
 
 import math
-from typing import List, Optional, Tuple
+from dataclasses import dataclass
+from typing import List, Optional, Sequence, Tuple
 
 # [LN-QBE-040-C] Ley de resolución dinámica de la correlación táctica y constantes selladas
 # (docs/CONSTANTS.md §2). El eje de resolución tiene un único dueño normativo: `src/core/poisson.py`.
@@ -157,3 +158,120 @@ def colapsar_matriz_a_simplex(matriz_2d: List[List[float]]) -> Tuple[float, floa
     p_2 = round(1.0 - p_1 - p_X, 4)
 
     return p_1, p_X, p_2
+
+
+# ═══════════════════════════════════════════════════════════════════════════════════════
+# [LN-QBE-152] PROYECTOR ANALÍTICO DE MERCADOS DERIVADOS (Totales & BTTS)
+#
+# Proyección exacta de la matriz conjunta M*_xy (7×7) hacia Under/Over 2.5 y BTTS. Consume
+# la matriz ya normalizada y sellada: no re-estima λ, ρ ni la matriz, ni conoce cuotas de
+# mercado. Sin I/O. Tolerancia de integridad: docs/LOGIC.md §26 (1e-9).
+# ═══════════════════════════════════════════════════════════════════════════════════════
+
+DIM_MATRIZ_DERIVADOS: int = 7
+TOLERANCIA_INTEGRIDAD_MATRIZ: float = 1e-9
+
+
+class MatrixIntegrityError(ValueError):
+    """[LN-QBE-152] Matriz fuera de contrato: dimensión, signo, finitud o suma distinta de 1.0."""
+
+
+@dataclass(frozen=True)
+class DerivativeMarketsProjection:
+    """[LN-QBE-152] Proyección inmutable de la matriz hacia Totales y BTTS (probabilidades y cuotas justas)."""
+
+    p_under_25: float
+    p_over_25: float
+    p_btts_si: float
+    p_btts_no: float
+    cuota_under_25: float
+    cuota_over_25: float
+    cuota_btts_si: float
+    cuota_btts_no: float
+
+
+def _validar_matriz_derivados(matriz_2d: Sequence[Sequence[float]]) -> List[List[float]]:
+    """[LN-QBE-152] Aduana de integridad: 7×7, celdas finitas ≥ 0 y suma 1.0 ± 1e-9."""
+    if matriz_2d is None:
+        raise MatrixIntegrityError("Matriz ausente: se esperaba M*_xy de 7×7.")
+    try:
+        filas = [list(fila) for fila in matriz_2d]
+    except TypeError:
+        raise MatrixIntegrityError(
+            f"Matriz no iterable: {type(matriz_2d).__name__}."
+        ) from None
+    if len(filas) != DIM_MATRIZ_DERIVADOS:
+        raise MatrixIntegrityError(
+            f"Matriz de {len(filas)} filas: se exige exactamente {DIM_MATRIZ_DERIVADOS}×{DIM_MATRIZ_DERIVADOS}."
+        )
+    for indice_fila, fila in enumerate(filas):
+        if len(fila) != DIM_MATRIZ_DERIVADOS:
+            raise MatrixIntegrityError(
+                f"Fila {indice_fila} con {len(fila)} columnas: se exige {DIM_MATRIZ_DERIVADOS}×{DIM_MATRIZ_DERIVADOS}."
+            )
+        for indice_columna, celda in enumerate(fila):
+            if isinstance(celda, bool) or not isinstance(celda, (int, float)):
+                raise MatrixIntegrityError(
+                    f"Celda ({indice_fila},{indice_columna}) no numérica: {celda!r}."
+                )
+            valor = float(celda)
+            if not math.isfinite(valor):
+                raise MatrixIntegrityError(
+                    f"Celda ({indice_fila},{indice_columna}) no finita: {celda!r}."
+                )
+            if valor < 0.0:
+                raise MatrixIntegrityError(
+                    f"Celda ({indice_fila},{indice_columna}) negativa: {valor!r}."
+                )
+            fila[indice_columna] = valor
+
+    total = math.fsum(math.fsum(fila) for fila in filas)
+    if abs(total - 1.0) > TOLERANCIA_INTEGRIDAD_MATRIZ:
+        raise MatrixIntegrityError(
+            f"Matriz no estocástica: Σ M*_xy = {total!r} ≠ 1.0 "
+            f"(tolerancia {TOLERANCIA_INTEGRIDAD_MATRIZ:g}). Prohibida la renormalización."
+        )
+    return filas
+
+
+def _cuota_justa(probabilidad: float) -> float:
+    """[LN-QBE-152] O* = 1/P; P = 0 ⇒ mercado imposible (``inf`` declarado), nunca un número fabricado."""
+    return math.inf if probabilidad <= 0.0 else 1.0 / probabilidad
+
+
+def proyectar_mercados_derivados(
+    matriz_2d: Sequence[Sequence[float]],
+) -> DerivativeMarketsProjection:
+    """[LN-QBE-152] Proyección analítica exacta de M*_xy hacia Totales (Over/Under 2.5) y BTTS.
+
+    * Under 2.5 = Σ_{x+y ≤ 2} M*_xy; Over 2.5 = 1 − Under.
+    * BTTS Sí = Σ_{x ≥ 1, y ≥ 1} M*_xy (suma directa de la región: equivalente exacta de
+      1 − BTTS No y numéricamente no negativa); BTTS No = 1 − BTTS Sí.
+    * Cuotas justas O* = 1/P. La matriz se consume sellada: no se renormaliza ni se recorta.
+    """
+    matriz = _validar_matriz_derivados(matriz_2d)
+
+    p_under_25 = math.fsum(
+        matriz[x][y]
+        for x in range(DIM_MATRIZ_DERIVADOS)
+        for y in range(DIM_MATRIZ_DERIVADOS)
+        if x + y <= 2
+    )
+    p_over_25 = 1.0 - p_under_25
+    p_btts_si = math.fsum(
+        matriz[x][y]
+        for x in range(1, DIM_MATRIZ_DERIVADOS)
+        for y in range(1, DIM_MATRIZ_DERIVADOS)
+    )
+    p_btts_no = 1.0 - p_btts_si
+
+    return DerivativeMarketsProjection(
+        p_under_25=p_under_25,
+        p_over_25=p_over_25,
+        p_btts_si=p_btts_si,
+        p_btts_no=p_btts_no,
+        cuota_under_25=_cuota_justa(p_under_25),
+        cuota_over_25=_cuota_justa(p_over_25),
+        cuota_btts_si=_cuota_justa(p_btts_si),
+        cuota_btts_no=_cuota_justa(p_btts_no),
+    )
