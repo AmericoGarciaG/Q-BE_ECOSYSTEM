@@ -1,7 +1,7 @@
 # Q-BE ECOSYSTEM — BASE DE CONOCIMIENTO DEL PROYECTO (KDB)
 
 **Documento:** `KDB.md` — Single Pane of Glass  
-**Versión:** 1.5.0<br>
+**Versión:** 1.6.0<br>
 **Estado:** `[ALGO-PROTECTED]` — Conocimiento Estable Certificado  
 **Proyecto:** `Q_BE_ECOSYSTEM`  
 **Autoridad Suprema:** Américo García Guerrero (Director Humano)  
@@ -9,9 +9,11 @@
 **Expediente:** `SPRINT-50-REINGENIERIA-INDUSTRIAL-QBE-CORE`<br>
 **Nodos:** `[LN-QBE-138]` / `[ARCH-1.4.74]`  
 **Juez:** `qbe_core/tests/test_shield_ktp_package_integrity.py`  
-**Última consolidación:** 2026-11-05<br>
-**Actualización KTP:** 2026-11-05<br>
-**Fuente de la consolidación:** `docs/KTP/AKT.md` (Sprint 50 — cierre de Fase 9)
+**Última consolidación:** 2026-11-06<br>
+**Actualización KTP:** 2026-11-06<br>
+**Fuente de la consolidación:** `docs/KTP/AKT.md` (Sprint 50 — cierre de Fase 9 y enrutador dual de bóvedas)
+
+> **Nota de consolidación (2026-11-06) — v1.6.0, vista `/desempeno` y enrutador dual.** Se consolida `[DES-QBE-078]` (vista unificada de desempeño, Dark Fintech, mando rector, barras invertidas y persistencia de acordeón) y `[ARCH-1.4.78]` (enrutador dual de bóvedas: snapshot vivo para `2026_2027` y `qbe_historico.db` para las temporadas históricas y `Todas`), con `GET /` → `302 /desempeno`. Verificado en solo lectura: `2025_2026` sirve **305** partidos en **34** bloques de jornada; `Todas` agrega **2,726** partidos (**2,679** con vector de mercado) en **305** bloques. `2016_2017` y `2017_2018` siguen en **0** distribuciones P′ y se declaran vacías. Se homologó el navbar de las cuatro superficies y se retiró la portada pasiva `index.html`. Deudas nuevas: **D-50.11** (sincronía `ARCH.md` §18.2) y **D-50.12** (colisión de puerto `:8002`).
 
 > **Nota de consolidación (2026-11-05) — cierre de Fase 9.** Se consolidan los nodos `[LN-QBE-151]` (des-margen de Shin) y `[LN-QBE-152]` (proyector de derivados), la doctrina de cobertura en dos niveles (§27) y la compuerta Paso 0 del Sistema Inmune. Se aplicó el parche **V-1** al denominador xG de la reconstrucción histórica y se re-materializó `P'` (2.737 filas): la brecha de λ cayó de **−8,20 % a −1,83 %** y el BSS de derivados de **−4,70 % a −0,73 %** (Under) y de **−2,70 % a −0,38 %** (BTTS). El **Censo de Paridad quedó en 0 hallazgos** (27 archivos, VÍA B sobre 23 ayudantes). El modelo sigue **sin resolución** sobre totales (`R² = 1,01 %`): `QBE-C2` permanece congelado. Bóveda: **3,870** partidos, 12 temporadas.
 
@@ -95,8 +97,10 @@ Este es el **Axioma de Dos Mundos**: el mundo del mercado —observado, imperfec
 |---|---|---|
 | Base viva OLTP | `data/qbe_database.db` | Escritura gobernada por gateway. |
 | Snapshot OLAP | `data/snapshots/qbe_database_snapshot.db` | Solo lectura. |
-| Bóveda histórica | `qbe_observatory/data/qbe_historico.db` | OLAP histórico; lectura para calibración. |
+| Bóveda histórica | `qbe_observatory/data/qbe_historico.db` | OLAP histórico; lectura para calibración y para `/desempeno` (enrutador dual `[ARCH-1.4.78]`). |
 | Eventos y variables causales | `historical_match_events`, `historical_match_causal_vars` en `qbe_observatory/data/qbe_historico.db` | OLAP histórico; lectura para derivación y calibración. |
+| Vista unificada de desempeño | `GET /desempeno` (`qbe_observatory`) | Jinja2 de solo lectura; enrutador dual de bóvedas. |
+| Raíz del Observatorio | `GET /` → `HTTP 302 /desempeno` | Sin portada pasiva (`index.html` retirado). |
 | Gateway | `qbe_storage/src/storage/gateway.py` | Persistencia transversal. |
 | Núcleo matemático | `qbe_core/src/core/` | `[DIRGEN-STRICT]`, cero I/O. |
 
@@ -371,6 +375,22 @@ La Fase 9 materializó tres contratos en `qbe_core` y los certificó con 35 aser
 
 **Convenciones de métrica.** Brier 3N = multiclase / 3 (`[LN-QBE-100]`); mercados binarios normalizados por 2. El Alpha de derivados se declara `SIN EVIDENCIA` porque la bóveda no publica cuotas de Totales ni de BTTS (sólo 1X2 de FootyStats y captura Q-BE Live).
 
+### 5.8 Vista unificada `/desempeno` y enrutador dual de bóvedas — `[ARCH-1.4.78]` · FIX
+
+`GET /desempeno` (`[DES-QBE-078]`) conmuta la fuente según la temporada solicitada: `2026_2027 · Actual` se sirve del snapshot vivo por el builder canónico; `Todas` y las temporadas históricas se sirven de la bóveda OLAP en solo lectura (`mode=ro` + `PRAGMA query_only=ON`), cruzando `historical_matches` con `historical_sovereign_distributions`. El orden fiduciario se delega en `resolver_orden_fiduciario_con_indiferencia` `[LN-QBE-124]`; el des-margen en `[LN-QBE-151]`/`[VAULT-CORE-007-C]`; el Brier 3N en `[LN-QBE-100]`. Sin parámetro la vista aterriza en la temporada en curso.
+
+| Consulta | Partidos | Jornadas | Brier Q-BE | Brier Mkt (Shin) | Alpha | Rescate Q-BE | Rescate Mercado | N (coincidencia) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `2026_2027 · Actual` | 134 | 15 | 0.2149 | 0.2111 | −1.80 % | 71.6 % | 73.6 % | 110 |
+| `2025_2026` | 305 | 34 | 0.2043 | 0.1999 | −2.20 % | 78.4 % | 76.4 % | 305 |
+| `Todas` | 2,726 | 305 | 0.2115 | 0.2036 | −3.88 % | 74.6 % | 77.6 % | 2,679 |
+| `2016_2017` | 0 | 0 | `SIN EVIDENCIA` | `SIN EVIDENCIA` | `SIN EVIDENCIA` | `SIN EVIDENCIA` | `SIN EVIDENCIA` | 0 |
+
+* **Agrupación:** `historical_matches` no porta número de jornada; el corpus se agrupa en bloques cronológicos de 9 partidos por temporada (declarado, no inventado).
+* **Denominadores:** Briers y Alpha se agregan sobre la muestra coincidente P′ ∩ q_mkt ∩ resultado; la Tasa de Rescate usa el par `{r_max, r_mid}` en Modo Q-BE y `{max q, second_max q}` en Modo Mercado.
+* **Exclusiones declaradas:** 47 partidos de `Todas` sin vector de mercado quedan fuera del Brier de mercado y se marcan `SIN EVIDENCIA`; `2016_2017`/`2017_2018` no tienen P′ (0 filas) y se declaran vacías. La temporada en curso se excluye del corpus histórico para no duplicar fixtures.
+* **Jueces:** `qbe_observatory/tests/test_shield_desempeno_route.py` y `test_shield_desempeno_visual_semantics.py` (24 casos entre ambos).
+
 ---
 
 ## 6. ESTADO FINANCIERO VIGENTE
@@ -421,6 +441,9 @@ La Fase 9 materializó tres contratos en `qbe_core` y los certificó con 35 aser
 | Variables causales y calibración | `qbe_core/src/core/sovereign/derivar_variables_causales.py`, `calibrar_perturbacion.py` | `qbe_core/tests/test_shield_derivacion_causal.py`, `test_shield_calibracion.py` |
 | Paridad canónica y Censo | `scripts/auditoria/auditar_paridad_bg.py` | `qbe_core/tests/test_shield_canonical_parity.py` |
 | Observatorio y calibración | `qbe_observatory/src/observatory/` | `qbe_observatory/tests/test_shield_obs.py`, `test_visor_auditoria_calibracion.py` |
+| Vista unificada de desempeño | `qbe_observatory/app/routes/desempeno_ui.py`, `app/services/desempeno_view.py`, `app/templates/desempeno.html` | `qbe_observatory/tests/test_shield_desempeno_route.py`, `test_shield_desempeno_visual_semantics.py` |
+| Enrutador dual de bóvedas | `qbe_observatory/app/services/desempeno_view.py` | Ídem (`test_shield_desempeno_route.py`) |
+| Navbar único del Observatorio | `qbe_observatory/app/templates/_navbar.html` + `base.html` | `qbe_observatory/tests/test_shield_desempeno_route.py` |
 | Transferencia KTP | `docs/KTP/` | `qbe_core/tests/test_shield_ktp_package_integrity.py` |
 
 **Regla de intervención:** primero se lee la ley en `docs/`; después se crea o ajusta el Juez; solo entonces se modifica el código. Bajo `[DIRGEN-STRICT]`, una prueba que falla detiene el proceso y exige `DIRGEN_VARIANCE_REQUEST.md`; no se corrige por ensayo y error.
@@ -446,6 +469,10 @@ La Fase 9 materializó tres contratos en `qbe_core` y los certificó con 35 aser
 | `[LN-QBE-148]` | LOGIC | Motor de Consenso Ponderado (Wisdom of the Crowds) | SELLADO |
 | `[LN-QBE-149]` | LOGIC | Motor de Detección de Rupturas de Consenso (Radar de Sindicatos) | SELLADO |
 | `[LN-QBE-150]` | LOGIC | Motor de Cálculo de Distribuciones Históricas (P') | SELLADO |
+| `[LN-QBE-151]` | LOGIC | Motor de Des-margen Implícito de Shin (Shin De-vigging Engine) — IPO Node | SELLADO |
+| `[LN-QBE-152]` | LOGIC | Proyector Analítico de Mercados Derivados (Totales & BTTS) — IPO Node | SELLADO |
+| `[DES-QBE-078]` | DISEÑO | Vista Unificada de Desempeño y Coberturas Probabilísticas (`/desempeno`) | SELLADO |
+| `[ARCH-1.4.78]` | ARCH | Enrutador y Fachada de Desempeño Híbrido (`qbe_observatory`) | SELLADO |
 | `[ARCH-1.4.72]` | ARCH | Pipeline de Inyección Histórica Multianual y Reflection DDL | SELLADO |
 | `[ARCH-1.4.73]` | ARCH | Extractor Histórico Masivo de FotMob | SELLADO — deuda de cuerpo declarada |
 | `[ARCH-1.4.74]` | ARCH | Topología y Subsistema Documental de Transferencia KTP | SELLADO |
@@ -485,13 +512,15 @@ La Fase 9 materializó tres contratos en `qbe_core` y los certificó con 35 aser
 
 ### 9.2 Compuerta de Censo de Paridad Canónica
 
-La Fase B exige el Censo de Paridad Canónica de `docs/GOVERNANCE.md` §3.5. **Cierre `SPRINT-50` (2026-11-05):** el Censo se ejecutó sobre `qbe_core/src/core` (27 archivos) y quedó en **0 hallazgos** (Clases I, II, III y IV), tras la VÍA B de 23 ayudantes heredados. Bandeja `docs/KTP/GL_update.md` con SHA-256 `cb5c8cf9…`. El barrido ampliado de §3.5 sobre `qbe_business/src` reporta **72 hallazgos Clase IV** preexistentes; se registran como deuda separada y no se declaran en 0.
+La Fase B exige el Censo de Paridad Canónica de `docs/GOVERNANCE.md` §3.5. **Cierre `SPRINT-50` (2026-11-05):** el Censo se ejecutó sobre `qbe_core/src/core` (27 archivos) y quedó en **0 hallazgos** (Clases I, II, III y IV), tras la VÍA B de 23 ayudantes heredados. Bandeja `docs/KTP/GL_update.md` con SHA-256 `cb5c8cf9…`. El barrido ampliado de §3.5 sobre `qbe_business/src` reporta **72 hallazgos Clase IV** preexistentes; se registran como deuda separada y no se declaran en 0. **Re-verificado (2026-11-06):** 27 archivos, 0 hallazgos.
 
 ---
 
 ## 10. DEUDAS ABIERTAS DECLARADAS
 
 **Cerradas en la consolidación v1.5.0 (2026-11-05):** `D-50.01` (denominador xG — parche V-1 aplicado y `P'` re-materializada), `D-50.05` (23 Clase IV — Censo en 0) y `D-50.10` (consolidación KDB). El detalle vive en `docs/VAR-2026-F9-02.md` y en el AKT.
+
+**Cerradas en la consolidación v1.6.0 (2026-11-06):** `D-50.09` (`.pytest_tmp/` y `.tmp_run/` ignorados por `.gitignore`).
 
 | ID | Deuda | Impacto | Acción siguiente | Responsable |
 |---|---|---|---|---|
@@ -501,7 +530,8 @@ La Fase B exige el Censo de Paridad Canónica de `docs/GOVERNANCE.md` §3.5. **C
 | **D-50.06** | 23 partidos con cuotas corruptas `(1.50, 3.00, 1.50)` (overround 1,667) | Contaminan cualquier métrica que no aplique la aduana `[LN-QBE-007-H]` | Purga o cuarentena declarada en `historical_matches` | Ingesta |
 | **D-50.07** | Percentiles del Sistema Inmune in-sample y no persistidos | La tasa de veto (12,10 %) no es comparable entre corridas | Persistir percentiles calibrados con split Train/Test | Arquitecto |
 | **D-50.08** | Shin no aporta valor económico medible en 1X2 (Δ = −6,955×10⁻⁵, t = −0,94) | Coste de complejidad sin retorno demostrado | Mantener (es correcto) y documentar que no es fuente de Alpha | Arquitecto |
-| **D-50.09** | `.pytest_tmp/` no versionado en la raíz | Ruido en `git status` | Añadir a `.gitignore` o limpiar | Constructor |
+| **D-50.11** | `docs/ARCH.md` §18.2 no lista los campos vivos del DTO de desempeño (`etiqueta`, `n_mercado`, `alpha_pct`, `tasa_rescate_pct`) ni los orígenes `historico_olap`/`dual_vault` | Deriva documental: el contrato legislado va por detrás del código sellado | Sincronizar la tabla de DTOs y el enrutador dual en el libro de arquitectura | Arquitecto |
+| **D-50.12** | Proceso vivo en `:8002` (Data Nexus) desbloquea `/api/admin/status/drift`, ruta-puente exenta por diseño | Falso positivo en `test_spa_desactiva_backtesting_y_admin` de `qbe_business` cuando el daemon está en línea | Aislar `QBE_INGESTION_URL` en el Juez o eximir la ruta-puente en la aserción | Infraestructura |
 | xG por partido no poblado en `historical_matches` | Limitación de modelos que requieren xG a nivel partido. | Cargar o declarar `SIN EVIDENCIA` por temporada. | Ingesta / Arquitecto |
 | Wrapper CLI `scripts/auditoria/auditar_coherencia_cartelera.py` ausente | El pre-vuelo se ejecuta por módulo, no por wrapper. | Crear wrapper o actualizar la referencia documental. | Arquitecto |
 | Cuerpo de `[ARCH-1.4.73]` ausente | Deuda documental; no afecta el ID. | Reconciliar en un sprint documental posterior. | Arquitecto |
@@ -540,6 +570,7 @@ La Fase B exige el Censo de Paridad Canónica de `docs/GOVERNANCE.md` §3.5. **C
 | Acta histórica Sprint 45 | `docs/KTP/history/AKT_2026-11-01_SPRINT-45-EXPANSION-CAUSAL-Y-RESCATE-EN-VIVO.md` |
 | Acta histórica Sprint 48 | `docs/KTP/history/AKT_2026-11-03_SPRINT-48-LLENADO-HISTORICO-MASIVO.md` |
 | Acta histórica Sprint 50 | `docs/KTP/history/AKT_2026-11-04_SPRINT-50-REINGENIERIA-INDUSTRIAL-QBE-CORE.md` |
+| Acta histórica Sprint 50 (cierre Fase 9 + enrutador dual) | `docs/KTP/history/AKT_2026-11-06_SPRINT-50-REINGENIERIA-INDUSTRIAL-QBE-CORE.md` |
 | Archivo histórico | `docs/KTP/history/` |
 
 > **Mantenimiento:** este documento se actualiza solo por consolidación formal. La versión, la fecha y el acta de origen se registran en cada cambio. No se edita para “hacer pasar” un test; si la ley cambia, se emite la Ficha de Varianza correspondiente.
