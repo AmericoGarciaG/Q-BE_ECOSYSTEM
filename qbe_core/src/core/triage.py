@@ -135,20 +135,25 @@ def veto_inmunidad_fiduciaria(
     p75: Dict[str, float],
     p90: Dict[str, float],
 ) -> Optional[Dict[str, Any]]:
-    """[E-50.10] Veto QBE-00 por ineficiencia o sobreasedio, o `None` si el club está sano.
+    """[LN-QBE-060-C] Veto QBE-00 por ineficiencia o sobreasedio, o `None` si el club está sano.
 
     * R1 · INEFICACIA_OFENSIVA: xG alto (V06) pero big chances falladas (V09) e indisciplina
       (V25) elevadas ⇒ favorito inflado por volumen sin conversión.
     * R2 · SOBREASEDIO_DEFENSIVO: SoTA muy alto (V13) con forma 5P en caída (V31) ⇒ defensa
       estructuralmente frágil.
+
+    [E-50.10] El umbral viaja como parámetro: aquí no hay números mágicos locales.
     """
     def _alto(var: str) -> bool:
+        """[LN-QBE-060-C] Variable en o por encima del percentil 75."""
         return float(vector.get(var, 0.0)) >= float(p75.get(var, math.inf))
 
     def _muy_alto(var: str) -> bool:
+        """[LN-QBE-060-C] Variable en o por encima del percentil 90."""
         return float(vector.get(var, 0.0)) >= float(p90.get(var, math.inf))
 
     def _bajo(var: str) -> bool:
+        """[LN-QBE-060-C] Variable en o por debajo del percentil 25."""
         return float(vector.get(var, 0.0)) <= float(p25.get(var, -math.inf))
 
     if _alto("V06") and _muy_alto("V09") and _alto("V25"):

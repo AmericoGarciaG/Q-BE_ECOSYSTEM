@@ -408,8 +408,9 @@ Las rutas legadas solo pueden aparecer en este mapa o en un bloque de procedenci
 | `[ARCH-1.6.22]` | Materialización del Ensemble Convexo y del Puente de Δ_epist Real (`qbe_core/src/core/sovereign_pipeline.py`, `qbe_storage/src/storage/distribution_sync.py`) [ARCH-PILLAR] | `qbe_storage` | SELLADO |
 | `[ARCH-1.7.0]` | Lanzador de Servidor con Sonda de Salud (run_app.py) [ARCH-PILLAR] (H10) | `qbe_ingestion` | SELLADO |
 | `[ARCH-1.7.1]` | Piso Mínimo de Ventanilla ($2.00 MXN) y Escalamiento Proporcional [BIZ-LOGIC] [ALGO-PROTECTED] (H1) | `qbe_ingestion` | SELLADO |
+| `[ARCH-1.4.78]` | Enrutador y Fachada de Desempeño Híbrido (`qbe_observatory`): `/desempeno`, Redirect 302 y DTOs de Desempeño [ARCH-PILLAR] | `qbe_observatory` | SELLADO |
 
-_Total: 143 identificadores._
+_Total: 144 identificadores._
 
 
 ---
@@ -638,3 +639,77 @@ CREATE TABLE IF NOT EXISTS historical_sovereign_distributions (
 *   **P (Process):** Backup previo, DDL idempotente de `odds_ticks` y `match_causal_vars`, UPSERT de snapshots, ticks, distribuciones y las 32 dimensiones causales. `[GOVERNANCE-01]`: `None` se omite.
 *   **O (Output):** Reporte de consola con ticks de momios rescatados y variables de 32 dimensiones rescatadas.
 *   **Φ (Transición):** Consumidor activo: `orquestador_live.py` y el Juez de Paridad `[LN-QBE-140]`.
+
+---
+
+## 18. ENRUTADOR Y FACHADA DE DESEMPEÑO HÍBRIDO
+
+### [ARCH-1.4.78] Enrutador y Fachada de Desempeño Híbrido (`qbe_observatory`)
+
+*   **Ω (Resumen):** una sola ruta `GET /desempeno` sirve la lectura unificada de desempeño (Brier Q-BE vs. consenso de mercado) sobre el snapshot 3NF, con el conmutador de *Mando Rector* de `[DES-QBE-078]`. `GET /` deja de renderizar la portada pasiva y redirige a la ruta semántica.
+*   **I (Input):** snapshot 3NF `data/snapshots/qbe_database_snapshot.db` en solo lectura, a través del builder canónico de calibración (`reporte_calibracion_canonico` / `cargar_vista_calibracion`), más los parámetros de consulta. No se abre la base viva y no se ejecuta lógica de `qbe_business`.
+*   **P (Process):**
+    1. `GET /` → `HTTP 302` con `Location: /desempeno` (se admite `301`). La portada pasiva `qbe_observatory/app/templates/index.html` queda derogada; el redirect se declara en `qbe_observatory/app/main.py`.
+    2. `GET /desempeno` → router `qbe_observatory/app/routes/desempeno_ui.py` + fachada `qbe_observatory/app/services/desempeno_view.py`. La fachada proyecta el reporte canónico a los DTO y emite **ambas** clasificaciones del resultado consumado (`vertice_qbe`, `vertice_mercado`); el pintor solo transcribe la del mando activo.
+    3. **Fail-Loud:** el dominio de `casino` es `{caliente, novibet, betway, footystats}` y el de `devig` es `{shin, proporcional}`. Cualquier otro valor lanza `ValueError` y la petición falla ruidosamente: no hay sustitución silenciosa por la fuente por defecto ni degradación a `shin`.
+    4. Lectura estrictamente de solo lectura (`mode=ro` + `PRAGMA query_only=ON`): cero escrituras, cero caché de estado y cero acoplamiento CQRS.
+*   **O (Output):** HTML server-side (`qbe_observatory/app/templates/desempeno.html`) y el DTO que lo sostiene. Shin, cuotas individuales y vectores causales coexisten en un mismo DTO de lectura sin invocar el lado de comando.
+*   **Φ (Transición):** consumidor activo: `qbe_observatory/app/templates/desempeno.html`.
+
+#### 18.1 Parámetros de consulta de `GET /desempeno`
+
+| Parámetro | Tipo | Dominio / defecto | Semántica |
+|---|---|---|---|
+| `mando` | texto | `qbe` \| `mercado` — defecto `qbe` | Fuente rectora del coloreado y de la jerarquía de barras. |
+| `temporada` | texto | `YYYY_YYYY` — defecto: la última disponible | Universo histórico servido por la fachada. |
+| `jornada_desde` | entero | `>= 1` — defecto: mínimo del universo | Extremo inferior del rango declarado. |
+| `jornada_hasta` | entero | `>= jornada_desde` — defecto: máximo del universo | Extremo superior del rango declarado. |
+| `casino` | texto repetible | ⊆ `{caliente, novibet, betway, footystats}` — defecto: las cuatro | Fuentes de mercado que componen el consenso des-marginado. Un valor fuera del dominio ⇒ `ValueError`. |
+| `devig` | texto | `shin` \| `proporcional` — defecto `shin` | Método de des-marginado del consenso. Un valor fuera del dominio ⇒ `ValueError`. |
+
+#### 18.2 Contratos DTO
+
+`DesempenoKPIsOut` — banda de cinco macro KPIs del universo filtrado.
+
+| Campo | Tipo | Semántica |
+|---|---|---|
+| `total_partidos` | `int` | Denominador fáctico de la muestra. |
+| `n_jornadas` | `int` | Jornadas con al menos un partido auditable. |
+| `brier_qbe` | `float \| None` | Brier multicategórico 1X2 (3N) del símplex Q-BE. |
+| `brier_mercado` | `float \| None` | Brier del consenso des-marginado con el método declarado. |
+| `alpha_desempeno_pct` | `float \| None` | Alpha Q-BE vs. mercado, transcrito del reporte canónico. |
+| `tasa_rescate_pct` | `float \| None` | Éxito Primario + Segundo (cobertura). |
+
+`DesempenoJornadaOut` — contenedor desplegable de la parrilla.
+
+| Campo | Tipo | Semántica |
+|---|---|---|
+| `jornada` | `int` | Número de jornada (`data-jornada`). |
+| `total_partidos` | `int` | Partidos listados en la jornada. |
+| `brier_qbe` / `brier_mercado` | `float \| None` | Media de la jornada; `None` sin evidencia. |
+| `partidos` | `List[DesempenoPartidoOut]` | Tarjetas de la jornada, en orden de cartelera. |
+
+`DesempenoPartidoOut` — tarjeta de partido (coexistencia de fuentes sin CQRS).
+
+| Campo | Tipo | Semántica |
+|---|---|---|
+| `id_partido`, `local`, `visitante`, `marcador`, `resultado_real` | `str` | Identidad y desenlace consumado (`LOCAL` / `EMPATE` / `VISITANTE`). |
+| `brier_qbe` / `brier_mercado` | `float \| None` | Brier del partido por fuente. |
+| `es_cold_start`, `suficiencia_s_i` | `bool`, `int` | `S = 0` declara el prior de ignorancia. |
+| `p_local`, `p_empate`, `p_visitante` | `float \| None` | Símplex soberano P′. |
+| `q_local`, `q_empate`, `q_visitante` | `float \| None` | Consenso des-marginado `q_mkt`. |
+| `momios` | `Dict[str, float]` | Cuotas decimales individuales (`L` / `E` / `V`). |
+| `r_max`, `r_mid`, `r_low` | `str` | Orden fiduciario Q-BE emitido por el núcleo (rol por vértice). |
+| `vertice_qbe` | `str \| None` | `max` / `mid` / `low` / `cold_start` del resultado consumado en la lectura Q-BE. |
+| `vertice_mercado` | `str \| None` | `max` / `mid` / `low` del resultado consumado en el orden del consenso. |
+| `shin_z` | `float \| None` | Parámetro `z` de Shin del consenso. |
+| `spread_cuotas` | `float \| None` | Spread de cuotas inter-casinos. |
+| `semaforos` | `Dict[str, str]` | Tetralogía `OPTA/SEDE/H2H/CTX`. |
+| `atribucion_disponible`, `atribucion_driver` | `bool`, `str \| None` | Driver factorial dominante. |
+| `variables_44` | `Dict[str, Any]` | Catálogo causal de 32 variables (card polimórfica del modal). |
+
+#### 18.3 Autoridad de la ruta
+
+El redirect de `/` y la ruta `/desempeno` no introducen un quinto pilar ni una base nueva: son la fachada de lectura del Observatorio sobre el mismo snapshot y el mismo builder canónico que alimentan `/visor` y `/consenso`. La fachada no reimplementa Brier, Alpha, Poisson ni Shin: los transcribe.
+
+*   **[SHIELD]:** `qbe_observatory/tests/test_shield_desempeno_route.py` (ruta, redirect 302 y navbar de cuatro pestañas) y `qbe_observatory/tests/test_shield_desempeno_visual_semantics.py` (inversión de barras, coloreado por mando y Fail-Loud de dominio).

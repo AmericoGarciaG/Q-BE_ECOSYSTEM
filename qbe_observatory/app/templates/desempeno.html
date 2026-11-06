@@ -1,0 +1,402 @@
+{% extends "base.html" %}
+{% from "_macros.html" import vacio %}
+{#
+  [DES-QBE-078] Vista Unificada de Desempeño y Coberturas Probabilísticas.
+  Régimen [DBBD-FUNGIBLE] en la capa de presentación: la plantilla TRANSCRIBE el
+  DTO servido por `app/services/desempeno_view.py` (docs/ARCH.md §18.2).
+
+  Reglas duras (docs/DESIGN.md §7.4):
+  · `data-mando-rector` se declara UNA sola vez por página, en `<main>`.
+  · `vertice_qbe` / `vertice_mercado` llegan ya clasificados por el servidor:
+    Jinja no ordena la P′ ni el consenso, sólo elige la lectura del mando activo.
+  · Las barras se invierten con el mando: blanca (`--text`) = fuente rectora,
+    gris (`--muted`) = fuente subordinada.
+  · Sin evidencia no se pinta un cero: `vacio()` declara el guion y el literal.
+#}
+
+{% macro celda(partido, clave, etiqueta, p, q, cuota, mando, q_max) %}
+  {%- set resultado = partido.resultado_real -%}
+  {%- set es_cold = partido.es_cold_start -%}
+  {%- set acierto = (resultado == clave) -%}
+  {%- set es_r_max = (clave == partido.r_max) and not es_cold -%}
+  {%- set es_q_max = (q is number) and (q_max is not none) and (q == q_max) -%}
+  {%- if mando == 'qbe' -%}
+    {%- set barra_sup = 'qbe' if es_r_max else none -%}
+    {%- set barra_inf = 'mercado' if es_q_max else none -%}
+  {%- else -%}
+    {%- set barra_sup = 'mercado' if es_q_max else none -%}
+    {%- set barra_inf = 'qbe' if es_r_max else none -%}
+  {%- endif -%}
+  {%- set vertice = none -%}
+  {%- if acierto -%}
+    {%- if mando == 'qbe' -%}
+      {%- set vertice = 'cold_start' if es_cold else (partido.vertice_qbe if partido.vertice_qbe in ['max', 'mid', 'low', 'cold_start'] else none) -%}
+    {%- else -%}
+      {%- set vertice = partido.vertice_mercado if partido.vertice_mercado in ['max', 'mid', 'low'] else none -%}
+    {%- endif -%}
+  {%- endif -%}
+  {%- if vertice == 'max' -%}
+    {%- set titulo_vertice = 'Acierto Primario · el resultado real cayó en el vértice de mayor probabilidad de la fuente rectora' -%}
+  {%- elif vertice == 'mid' -%}
+    {%- set titulo_vertice = 'Rescate de Cobertura · el resultado real cayó en el segundo vértice de la fuente rectora' -%}
+  {%- elif vertice == 'low' -%}
+    {%- set titulo_vertice = 'Ruptura Residual · el resultado real cayó en el vértice de menor probabilidad de la fuente rectora' -%}
+  {%- elif vertice == 'cold_start' -%}
+    {%- set titulo_vertice = 'Cold Start · S = 0: el resultado es un hecho consumado; su vértice no se tiñe' -%}
+  {%- else -%}
+    {%- set titulo_vertice = 'Resultado consumado' -%}
+  {%- endif -%}
+  <div class="mc-celda{% if acierto %} mc-celda-acierto{% endif %}"
+       data-clave="{{ clave }}"
+       data-acierto="{{ 'true' if acierto else 'false' }}"
+       {%- if vertice %} data-vertice="{{ vertice }}"{% endif %}
+       {%- if barra_sup %} data-barra-sup="{{ barra_sup }}"{% endif %}
+       {%- if barra_inf %} data-barra-inf="{{ barra_inf }}"{% endif %}>
+    <span class="mc-celda-cabecera">
+      <span class="mc-celda-titulo">{{ etiqueta }}</span>
+      <span class="mc-celda-marcas">
+        {%- if acierto -%}
+          <span class="mc-marca-acierto" title="{{ titulo_vertice }}" role="img" aria-label="{{ titulo_vertice }}">
+            <svg class="mc-balon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#mc-balon"></use></svg>
+          </span>
+        {%- endif -%}
+      </span>
+    </span>
+    <span class="mc-fila">
+      <span class="mc-etiqueta">P′</span>
+      <span class="mc-valor">{% if p is number %}{{ "%.1f"|format(p * 100) }}%{% else %}{{ vacio('Probabilidad Q-BE no publicada en el snapshot') }}{% endif %}</span>
+    </span>
+    <span class="mc-fila">
+      <span class="mc-etiqueta">Mkt</span>
+      <span class="mc-valor">{% if q is number %}{{ "%.1f"|format(q * 100) }}%{% else %}{{ vacio('Sin cuotas de mercado para este partido: no hay consenso des-marginado') }}{% endif %}</span>
+    </span>
+    <span class="mc-fila">
+      <span class="mc-etiqueta">@</span>
+      <span class="mc-valor">{% if cuota is number and cuota > 1 %}{{ "%.2f"|format(cuota) }}{% else %}{{ vacio('Cuota decimal no publicada en el snapshot') }}{% endif %}</span>
+    </span>
+    {%- if acierto -%}
+      <span class="visor-sr-only">{{ titulo_vertice }}.</span>
+    {%- endif -%}
+  </div>
+{%- endmacro %}
+
+
+{% macro tarjeta(partido, mando, motivo_spread) %}
+  {%- set momios = partido.momios if partido.momios is mapping else {} -%}
+  {%- set con_q = (partido.q_local is number) and (partido.q_empate is number) and (partido.q_visitante is number) -%}
+  {%- set q_max = ([partido.q_local, partido.q_empate, partido.q_visitante] | max) if con_q else none -%}
+<article class="mc-card" role="listitem" data-partido-id="{{ partido.id_partido }}"
+         data-cold-start="{{ 'true' if partido.es_cold_start else 'false' }}"
+         aria-label="{{ partido.local }} contra {{ partido.visitante }}{% if partido.marcador %} · {{ partido.marcador }}{% endif %}">
+  {%- if partido.es_cold_start %}
+  <div class="mc-sellos">
+    <span class="visor-badge visor-badge-cold" title="Suficiencia de Datos = 0: sin evidencia fáctica; se evalúa el prior puro del modelo">❄️ Cold Start · S = 0</span>
+  </div>
+  {%- endif %}
+
+  <header class="mc-head">
+    <span class="mc-equipo">
+      {%- if partido.local_escudo_url -%}
+        <img class="mc-escudo" src="{{ partido.local_escudo_url }}" alt="" loading="lazy" decoding="async" onerror="this.hidden = true">
+      {%- endif -%}
+      <span class="mc-equipo-nombre" title="{{ partido.local }}">{{ partido.local }}</span>
+    </span>
+    <span class="mc-marcador">{% if partido.marcador %}{{ partido.marcador }}{% else %}{{ vacio('Marcador no publicado en el snapshot') }}{% endif %}</span>
+    <span class="mc-equipo mc-equipo-visita">
+      <span class="mc-equipo-nombre" title="{{ partido.visitante }}">{{ partido.visitante }}</span>
+      {%- if partido.visitante_escudo_url -%}
+        <img class="mc-escudo" src="{{ partido.visitante_escudo_url }}" alt="" loading="lazy" decoding="async" onerror="this.hidden = true">
+      {%- endif -%}
+    </span>
+  </header>
+
+  <p class="mc-brier">
+    <span class="mc-brier-item">
+      <span class="mc-brier-kicker">Brier QBE</span>
+      {%- if partido.brier_qbe is number -%}
+        <span class="mc-brier-valor">{{ "%.4f"|format(partido.brier_qbe) }}</span>
+      {%- else -%}
+        {{ vacio('Brier Q-BE no publicado para este partido') }}
+      {%- endif -%}
+    </span>
+    <span class="mc-brier-sep" aria-hidden="true">·</span>
+    <span class="mc-brier-item">
+      <span class="mc-brier-kicker">Mkt</span>
+      {%- if partido.brier_mercado is number -%}
+        <span class="mc-brier-valor">{{ "%.4f"|format(partido.brier_mercado) }}</span>
+      {%- else -%}
+        {{ vacio('Sin cuotas de cierre para este partido: no hay Brier de mercado') }}
+      {%- endif -%}
+    </span>
+  </p>
+
+  <div class="mc-grid">
+    {{ celda(partido, 'LOCAL', '1 · LOCAL', partido.p_local, partido.q_local, momios.get('L'), mando, q_max) }}
+    {{ celda(partido, 'EMPATE', 'X · EMPATE', partido.p_empate, partido.q_empate, momios.get('E'), mando, q_max) }}
+    {{ celda(partido, 'VISITANTE', '2 · VISITANTE', partido.p_visitante, partido.q_visitante, momios.get('V'), mando, q_max) }}
+  </div>
+
+  <footer class="mc-foot">
+    {%- if mando == 'qbe' %}
+      <div class="mc-foot-atribucion">
+        {%- if partido.atribucion_disponible and partido.atribucion_driver -%}
+          {%- set driver = partido.atribucion_driver -%}
+          {%- if ' Local (' in driver -%}{%- set favorece = 'local' -%}
+          {%- elif ' Visita (' in driver -%}{%- set favorece = 'visita' -%}
+          {%- else -%}{%- set favorece = 'neutro' -%}{%- endif -%}
+          <span class="visor-pildora visor-pildora-{{ favorece }}" data-favorece="{{ favorece }}"
+                title="Driver factorial principal · bando {{ favorece }}">{{ driver }}</span>
+        {%- else -%}
+          {{ vacio('Atribución factorial no disponible: el motor no declaró driver para este partido') }}
+        {%- endif -%}
+      </div>
+      <div class="mc-foot-semaforos" aria-label="Tetralogía fáctica de salud de datos">
+        {%- set salud = partido.semaforos if partido.semaforos is mapping else {} -%}
+        {%- for clave_sem, nombre in [('opta', 'OPTA'), ('sede', 'SEDE'), ('h2h', 'H2H'), ('ctx', 'CTX')] -%}
+          {%- set estado = salud.get(clave_sem) or 'NEUTRO' -%}
+          <span class="hud-semaforo" data-semaforo="{{ nombre }}" data-estado="{{ estado }}"
+                title="{{ nombre }}: {{ estado|lower }}" role="img"
+                aria-label="{{ nombre }}: {{ estado|lower }}">● {{ nombre }}</span>
+        {%- endfor -%}
+      </div>
+      {#- El panel 32V es forense del snapshot vivo. Un partido de la bóveda
+          histórica no tiene fragmento servido: el botón no se pinta en falso. #}
+      {%- if partido.origen_captura != 'HISTORICO' %}
+      <button type="button" class="btn-ver-44-vars"
+              data-vars44-url="/visor/partido/{{ partido.id_partido }}/variables"
+              data-vars44-titulo="🔬 {{ partido.local }} vs {{ partido.visitante }}{% if partido.marcador %} · {{ partido.marcador }}{% endif %}"
+              title="Inspección forense del catálogo de 32 variables">🔬 Catálogo Fáctico (32V)</button>
+      {%- endif %}
+    {%- else %}
+      <div class="dsp-foot-mercado" aria-label="Telemetría del consenso de mercado">
+        <span class="dsp-chip" data-shin-z="{% if partido.shin_z is number %}{{ '%+.4f'|format(partido.shin_z) }}{% else %}SIN EVIDENCIA{% endif %}"
+              title="Parámetro z del des-margen de Shin [LN-QBE-151]">
+          <span class="dsp-chip-kicker">z Shin</span>
+          {% if partido.shin_z is number %}{{ '%+.4f'|format(partido.shin_z) }}{% else %}—{% endif %}
+        </span>
+        <span class="dsp-chip" data-spread-cuotas="{% if partido.spread_cuotas is number %}{{ '%.4f'|format(partido.spread_cuotas) }}{% else %}SIN EVIDENCIA{% endif %}"
+              title="{{ motivo_spread }}">
+          <span class="dsp-chip-kicker">Spread inter-casinos</span>
+          {% if partido.spread_cuotas is number %}{{ '%.4f'|format(partido.spread_cuotas) }}{% else %}—{% endif %}
+        </span>
+      </div>
+    {%- endif %}
+  </footer>
+</article>
+{%- endmacro %}
+
+
+{% block contenido %}
+{%- set mando = vista.mando | default('qbe') -%}
+{%- set filtros = vista.filtros | default({}) -%}
+{%- set kpis = vista.kpis | default({}) -%}
+{%- set jornadas_disponibles = filtros.jornadas | default([]) -%}
+{# Sprite único del balón: se declara UNA vez y cada casilla lo referencia. #}
+<svg class="mc-sprite" aria-hidden="true" focusable="false" width="0" height="0">
+  <symbol id="mc-balon" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <path fill="currentColor" d="M12 8.5 L15.3 10.9 L14 14.8 L10 14.8 L8.7 10.9 Z"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
+          d="M12 8.5 V4 M15.3 10.9 L19.5 9.5 M14 14.8 L16.8 18 M10 14.8 L7.2 18 M8.7 10.9 L4.5 9.5"/>
+  </symbol>
+</svg>
+
+<main class="dsp" data-mando-rector="{{ mando }}">
+  {# ── Barra de comando y control · [DES-QBE-078 · REV.2] ───────────────────
+     Componente de tarjeta oscura (`card card-clean`), sin `<fieldset>` ni
+     `<legend>` nativos: grupos de filtro, selects y radios con estilo propio. #}
+  <section class="card card-clean p-20 mb-24 dsp-comando" aria-label="Barra de comando y control">
+    <form class="dsp-filtros" method="get" action="/desempeno" id="form-filtros-desempeno">
+      <div class="flex-align-center gap-16 mb-16 flex-wrap">
+        <div class="filter-group">
+          <label class="filter-label" for="filtro-temporada">TEMPORADA</label>
+          <select id="filtro-temporada" name="temporada" class="select-dark">
+            {%- for temporada in vista.temporadas_disponibles | default([]) %}
+            <option value="{{ temporada }}"{% if temporada == filtros.temporada %} selected{% endif %}>{{ temporada }}</option>
+            {%- else %}
+            <option value="Todas" selected>Todas las temporadas</option>
+            {%- endfor %}
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <span class="filter-label">RANGO DE JORNADAS</span>
+          <div class="flex-align-center gap-8">
+            <select name="jornada_desde" class="select-dark" aria-label="Jornada inicial">
+              {%- for numero in jornadas_disponibles %}
+              <option value="{{ numero }}"{% if numero == filtros.jornada_min %} selected{% endif %}>J{{ numero }}</option>
+              {%- else %}
+              <option value="">J—</option>
+              {%- endfor %}
+            </select>
+            <span class="text-muted">a</span>
+            <select name="jornada_hasta" class="select-dark" aria-label="Jornada final">
+              {%- for numero in jornadas_disponibles %}
+              <option value="{{ numero }}"{% if numero == filtros.jornada_max %} selected{% endif %}>J{{ numero }}</option>
+              {%- else %}
+              <option value="">J—</option>
+              {%- endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="mando-rector-selector mb-16 p-12 bg-base border-rounded" role="group" aria-label="Mando Rector">
+        <span class="text-caption font-bold text-muted mr-16">MANDO RECTOR:</span>
+        <label class="radio-custom mr-16">
+          <input type="radio" name="mando" value="qbe"{% if mando == 'qbe' %} checked{% endif %}>
+          <span>Q-BE Soberano (P′)</span>
+        </label>
+        <label class="radio-custom">
+          <input type="radio" name="mando" value="mercado"{% if mando == 'mercado' %} checked{% endif %}>
+          <span>Consenso de Mercado (q<sup>mkt</sup>)</span>
+        </label>
+      </div>
+
+      <div class="flex-between flex-wrap gap-16">
+        <div class="flex-align-center gap-12 flex-wrap">
+          <span class="text-caption text-muted">FUENTES DE MERCADO:</span>
+          {%- for fuente in filtros.fuentes_disponibles | default([]) %}
+          <label class="check-custom">
+            <input type="checkbox" name="casino" value="{{ fuente }}"{% if fuente in (filtros.fuentes | default([])) %} checked{% endif %}>
+            <span>{{ fuente | capitalize }}</span>
+          </label>
+          {%- endfor %}
+        </div>
+        <div class="flex-align-center gap-12">
+          <label class="filter-label" for="filtro-devig">DE-VIG</label>
+          <select id="filtro-devig" name="devig" class="select-dark">
+            <option value="shin"{% if filtros.devig == 'shin' %} selected{% endif %}>Shin (1991)</option>
+            <option value="proporcional"{% if filtros.devig == 'proporcional' %} selected{% endif %}>Proporcional</option>
+          </select>
+          <button type="submit" class="btn btn-primary btn-sm">Aplicar</button>
+          <a href="/desempeno" class="btn btn-secondary btn-sm">Restablecer</a>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  {# ── Banda de macro KPIs · [DES-QBE-078 · REV.3] ──────────────────────────
+     Bicolor: el Brier de MENOR error se pinta en `text-accent`; el mayor en
+     `text-muted`; empate exacto ⇒ ambos en acento. El Mando Rector lidera la
+     posición: en `mercado`, la tarjeta del consenso antecede a la de Q-BE. #}
+  {%- set qbe_brier = kpis.brier_qbe -%}
+  {%- set mkt_brier = kpis.brier_mercado -%}
+  {%- set qbe_clase = 'text-accent' if (qbe_brier is number and mkt_brier is number and qbe_brier <= mkt_brier) else ('text-muted' if qbe_brier is number else '') -%}
+  {%- set mkt_clase = 'text-accent' if (qbe_brier is number and mkt_brier is number and mkt_brier <= qbe_brier) else ('text-muted' if mkt_brier is number else '') -%}
+  {%- set n_muestra = kpis.n_mercado | default(0) -%}
+  {%- set tarjetas_brier = [
+        {'kpi': 'brier-qbe', 'label': 'BRIER Q-BE (3N)', 'valor': qbe_brier, 'clase': qbe_clase,
+         'nota': 'Símplex Soberano P′ · N=' ~ n_muestra},
+        {'kpi': 'brier-mercado', 'label': 'BRIER MERCADO', 'valor': mkt_brier, 'clase': mkt_clase,
+         'nota': 'Consenso ' ~ ('Shin (1991)' if filtros.devig == 'shin' else 'Proporcional') ~ ' (N=' ~ n_muestra ~ ')'}
+      ] -%}
+  {%- if mando == 'mercado' -%}{%- set tarjetas_brier = [tarjetas_brier[1], tarjetas_brier[0]] -%}{%- endif -%}
+  <section class="grid-5-kpis mb-24" aria-label="Macro KPIs unificados">
+    <div class="kpi-card card card-clean" data-kpi="partidos">
+      <div class="kpi-label">PARTIDOS AUDITADOS</div>
+      <div class="kpi-value">{{ kpis.total_partidos if kpis.total_partidos is number else '—' }}</div>
+      <div class="kpi-sub">{{ kpis.n_jornadas|default(0) }} Jornadas auditadas</div>
+    </div>
+    {%- for tarjeta in tarjetas_brier %}
+    <div class="kpi-card card card-clean" data-kpi="{{ tarjeta.kpi }}">
+      <div class="kpi-label">{{ tarjeta.label }}</div>
+      <div class="kpi-value{% if tarjeta.clase %} {{ tarjeta.clase }}{% endif %}">{% if tarjeta.valor is number %}{{ "%.4f"|format(tarjeta.valor) }}{% else %}{{ vacio('Brier no disponible en la muestra coincidente del universo filtrado') }}{% endif %}</div>
+      <div class="kpi-sub">{{ tarjeta.nota }}</div>
+    </div>
+    {%- endfor %}
+    <div class="kpi-card card card-clean" data-kpi="alpha">
+      <div class="kpi-label">ALPHA DE DESEMPEÑO</div>
+      <div class="kpi-value{% if kpis.alpha_desempeno_pct is number %} {{ 'text-success' if kpis.alpha_desempeno_pct >= 0 else 'text-danger' }}{% endif %}">{% if kpis.alpha_desempeno_pct is number %}{{ "%+.2f%%"|format(kpis.alpha_desempeno_pct) }}{% else %}{{ vacio('Alpha no medible: falta el Brier del consenso') }}{% endif %}</div>
+      <div class="kpi-sub">Q-BE vs. Mercado</div>
+    </div>
+    <div class="kpi-card card card-clean" data-kpi="rescate">
+      <div class="kpi-label">TASA DE RESCATE</div>
+      <div class="kpi-value text-success">{% if kpis.tasa_rescate_pct is number %}{{ "%.1f%%"|format(kpis.tasa_rescate_pct) }}{% else %}{{ vacio('Sin partidos evaluables') }}{% endif %}</div>
+      <div class="kpi-sub">Éxito Cobertura (Prim + Seg)</div>
+    </div>
+  </section>
+
+  {%- if vista.error %}
+  <p class="dsp-aviso" role="status">{{ vista.error }}</p>
+  {%- endif %}
+
+  <section class="dsp-parrilla" aria-label="Parrilla de desempeño por partido">
+    {%- for jornada in vista.jornadas | default([]) %}
+    {%- set jq = jornada.brier_qbe -%}
+    {%- set jm = jornada.brier_mercado -%}
+    {%- set jq_clase = 'text-accent' if (jq is number and jm is number and jq <= jm) else ('text-muted' if jq is number else '') -%}
+    {%- set jm_clase = 'text-accent' if (jq is number and jm is number and jm <= jq) else ('text-muted' if jm is number else '') -%}
+    {%- set alpha_j = jornada.alpha_pct -%}
+    <details class="dsp-jornada jornada-accordion" data-jornada="{{ jornada.jornada }}"{% if loop.first %} open{% endif %}>
+      <summary class="jornada-header-bar">
+        <span class="jornada-bar-left">
+          <span class="chevron-icon" aria-hidden="true">▾</span>
+          <span class="jornada-titulo">{% if jornada.etiqueta %}{{ jornada.etiqueta }}{% else %}JORNADA {{ jornada.jornada }}{% endif %}</span>
+          <span class="badge badge-neutral">{{ jornada.total_partidos }} PARTIDOS</span>
+        </span>
+        <span class="jornada-bar-right">
+          <span class="jornada-metric">Rescate: <strong>{% if jornada.tasa_rescate_pct is number %}{{ "%.1f%%"|format(jornada.tasa_rescate_pct) }}{% else %}—{% endif %}</strong></span>
+          <span class="jornada-metric">Alpha: <strong class="{{ 'text-success' if (alpha_j is number and alpha_j >= 0) else ('text-danger' if alpha_j is number else '') }}">{% if alpha_j is number %}{{ "%+.2f%%"|format(alpha_j) }}{% else %}—{% endif %}</strong></span>
+          {%- if mando == 'qbe' %}
+          <span class="jornada-metric">Brier QBE: <strong data-brier="qbe" class="{{ jq_clase }}">{% if jq is number %}{{ "%.4f"|format(jq) }}{% else %}—{% endif %}</strong></span>
+          <span class="jornada-metric">Mkt: <strong data-brier="mercado" class="{{ jm_clase }}">{% if jm is number %}{{ "%.4f"|format(jm) }}{% else %}—{% endif %}</strong></span>
+          {%- else %}
+          <span class="jornada-metric">Mkt: <strong data-brier="mercado" class="{{ jm_clase }}">{% if jm is number %}{{ "%.4f"|format(jm) }}{% else %}—{% endif %}</strong></span>
+          <span class="jornada-metric">Brier QBE: <strong data-brier="qbe" class="{{ jq_clase }}">{% if jq is number %}{{ "%.4f"|format(jq) }}{% else %}—{% endif %}</strong></span>
+          {%- endif %}
+        </span>
+      </summary>
+      <div class="mc-grid dsp-grid">
+        {%- for partido in jornada.partidos %}
+        {{ tarjeta(partido, mando, vista.motivo_spread | default('')) }}
+        {%- endfor %}
+      </div>
+    </details>
+    {%- else %}
+    <p class="dsp-vacio">
+      SIN EVIDENCIA · el universo filtrado no tiene partidos auditables.
+      {%- if vista.motivo_vacio %} {{ vista.motivo_vacio }}{% elif vista.error %} {{ vista.error }}{% endif %}
+    </p>
+    {%- endfor %}
+  </section>
+</main>
+
+{% include "_vars44_modal.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/visor-vars44.js?v=2026QBE_V1" defer></script>
+{# [DES-QBE-078 · REV.3] Persistencia del estado del acordeón por jornada.
+   Al aplicar filtros la página se recarga: el foco de auditoría debe sobrevivir.
+   `data-jornada` es la llave estable; sin `localStorage` la vista abre la J1. #}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      const STORAGE_KEY = "qbe_desempeno_acordeones_abiertos";
+      let abiertos = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+
+      const detalles = document.querySelectorAll("details.jornada-accordion");
+      if (detalles.length > 0) {
+          if (abiertos.length === 0) {
+              detalles[0].open = true;
+              localStorage.setItem(STORAGE_KEY, JSON.stringify([detalles[0].getAttribute("data-jornada")]));
+          } else {
+              detalles.forEach(d => {
+                  const jId = d.getAttribute("data-jornada");
+                  d.open = abiertos.includes(jId);
+              });
+          }
+
+          detalles.forEach(d => {
+              d.addEventListener("toggle", function() {
+                  let estado = [];
+                  document.querySelectorAll("details.jornada-accordion").forEach(el => {
+                      if (el.open) estado.push(el.getAttribute("data-jornada"));
+                  });
+                  localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
+              });
+          });
+      }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,26 @@
+{#
+  [DES-QBE-078] Navbar ÚNICO del Observatorio — fuente única de las cuatro pestañas.
+  docs/DESIGN.md §7.4.1. Se incluye desde `base.html` (vista `/desempeno`) y desde
+  las tres plantillas legacy (`visor`, `consenso`, `backtesting`): una sola copia
+  del marcado, cero deriva nominal entre superficies.
+
+  La pestaña activa se resuelve por `request.url.path`, de modo que los routers no
+  necesitan declarar estado de navegación. En un render sintético sin `request`
+  (los Jueces de The Shield renderizan la plantilla con contexto mínimo) ninguna
+  pestaña se marca como activa.
+#}
+{%- set ruta_actual = request.url.path if (request is defined and request) else '' -%}
+{%- set ruta_actual = ruta_actual.rstrip('/') or '/' -%}
+<header class="header-container">
+  <div class="header-brand">Q-BE <span>Observatory</span></div>
+  <nav class="header-nav" aria-label="Navegación del Observatorio">
+    <a class="tab-btn{% if ruta_actual == '/desempeno' %} active{% endif %}" href="/desempeno"
+       {%- if ruta_actual == '/desempeno' %} aria-current="page"{% endif %}>📊 Desempeño y Coberturas</a>
+    <a class="tab-btn{% if ruta_actual == '/visor' %} active{% endif %}" href="/visor"
+       {%- if ruta_actual == '/visor' %} aria-current="page"{% endif %}>🔬 Auditoría de Calibración</a>
+    <a class="tab-btn{% if ruta_actual == '/consenso' %} active{% endif %}" href="/consenso"
+       {%- if ruta_actual == '/consenso' %} aria-current="page"{% endif %}>🌐 Consenso de Mercado</a>
+    <a class="tab-btn{% if ruta_actual == '/backtesting' %} active{% endif %}" href="/backtesting"
+       {%- if ruta_actual == '/backtesting' %} aria-current="page"{% endif %}>📈 Backtesting</a>
+  </nav>
+</header>

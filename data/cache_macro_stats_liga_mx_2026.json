@@ -565,8 +565,8 @@
       "yellow_cards_per_match": 1.0
     },
     "club-america": {
-      "accurate_long_balls_per_match": 29.3,
-      "accurate_passes_per_match": 377.8,
+      "accurate_long_balls_per_match": 29.2,
+      "accurate_passes_per_match": 377.9,
       "agregados_plantilla": {
         "goals_prevented_squad": {
           "alcance": "top publicado por el proveedor",
@@ -597,14 +597,14 @@
       "big_chances_created_per_match": 2.4667,
       "big_chances_missed_per_match": 1.1333,
       "clean_sheets": 4.0,
-      "clearances_per_match": 20.4,
+      "clearances_per_match": 20.5,
       "corners_per_match": 6.4,
-      "defensive_actions_per_match": 45.3,
+      "defensive_actions_per_match": 45.5,
       "fouls_per_match": 13.4,
       "goals_conceded_per_match": 1.4,
       "goals_per_match": 2.4,
       "goals_prevented_squad": 0.6,
-      "interceptions_per_match": 9.6,
+      "interceptions_per_match": 9.7,
       "nombre_fuente": "CF América",
       "partidos_jugados": 15,
       "penalties_conceded_total": 4.0,
@@ -949,7 +949,7 @@
     },
     "deportivo-toluca": {
       "accurate_long_balls_per_match": 30.6,
-      "accurate_passes_per_match": 447.9,
+      "accurate_passes_per_match": 447.7,
       "agregados_plantilla": {
         "goals_prevented_squad": {
           "alcance": "top publicado por el proveedor",
@@ -982,7 +982,7 @@
       "clean_sheets": 4.0,
       "clearances_per_match": 20.3,
       "corners_per_match": 7.0667,
-      "defensive_actions_per_match": 48.2,
+      "defensive_actions_per_match": 48.3,
       "fouls_per_match": 11.8,
       "goals_conceded_per_match": 1.4,
       "goals_per_match": 2.1,
@@ -1002,7 +1002,7 @@
       "sot_per_match": 6.2,
       "sota_per_match": 4.6,
       "sweeper_actions": 1.1,
-      "tackles_per_match": 17.3,
+      "tackles_per_match": 17.4,
       "team_id": 6618,
       "touches_opp_box_per_match": 28.4,
       "xa_squad": 19.9,
@@ -1097,7 +1097,7 @@
         "xa_squad": {
           "alcance": "top publicado por el proveedor",
           "modo": "suma",
-          "n_jugadores": 27
+          "n_jugadores": 28
         },
         "xgot_squad": {
           "alcance": "top publicado por el proveedor",
@@ -1472,8 +1472,8 @@
     "V31": "Forma 5P: derivada del historial propio de resultados (`Q-BE`).",
     "V32": "Varianza ΔxPTS: derivada del historial propio de resultados (`Q-BE`)."
   },
-  "generado_at": "2026-11-03T16:52:22Z",
-  "hash_sha256": "0aab078973c338f2733d85775fc25faf1a575d3ffa20c29eab55a50c6e0c61e7",
+  "generado_at": "2026-11-05T21:56:50Z",
+  "hash_sha256": "3ce4c5a2b42c99a6f5f9c8c0a45a73c17f44c5bbfb791ea7829773ddf86b86e0",
   "huecos": [
     "necaxa:clean_sheets",
     "cruz-azul:red_cards_per_match"

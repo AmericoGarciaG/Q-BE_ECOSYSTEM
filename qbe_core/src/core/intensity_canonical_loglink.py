@@ -15,7 +15,7 @@ from typing import Optional, Tuple, Dict
 # [E-50.1 §P-01] CONTRATO DE ERROR — DATO ESTRUCTURALMENTE OBLIGATORIO AUSENTE
 # ═══════════════════════════════════════════════════════════════════════════════════════
 class InsufficientDataException(Exception):
-    """[E-50.1 §P-01] Evidencia obligatoria ausente en la ruta de cálculo.
+    """[LN-QBE-035-B] Evidencia obligatoria ausente en la ruta de cálculo (E-50.1 §P-01).
 
     La levanta la aduana de entrada del núcleo, NUNCA la aritmética. Porta `match_id`, `clave`
     y `lado`. PROHIBIDO capturarla para devolver un valor: el llamador la traduce a `S(I)=0`
@@ -23,6 +23,7 @@ class InsufficientDataException(Exception):
     """
 
     def __init__(self, match_id: str = "", clave: str = "", lado: str = "") -> None:
+        """[LN-QBE-035-B] Construye la excepción tipada con la coordenada de la evidencia ausente."""
         self.match_id = str(match_id)
         self.clave = str(clave)
         self.lado = str(lado)
@@ -79,7 +80,7 @@ def calcular_alpha_ligadura(
     *,
     gamma_home: Optional[float] = None,
 ) -> float:
-    """[Sección 4.9.1 · E-50.1] Ligadura estructural con CLAUSURA DE MASA:
+    """[LN-QBE-040] Ligadura estructural con CLAUSURA DE MASA (Sección 4.9.1 · E-50.1):
 
         alpha = ln(mu_liga) - ln(1.0 + exp(gamma_efectivo))
 
@@ -140,7 +141,7 @@ def estimar_intensidades_loglineal(
     home_team_slug: Optional[str] = None,
     kappa_net: float = KAPPA_NET,
 ) -> Tuple[float, float]:
-    """[Sección 4.9 · E-50.1] Arquitectura Canónica Log-Lineal con CLAUSURA DE MASA:
+    """[LN-QBE-040] Arquitectura Canónica Log-Lineal con CLAUSURA DE MASA (Sección 4.9 · E-50.1):
 
         ln(lambda_H) = alpha + gamma_efectivo + A_H - D_A + C_H
         ln(lambda_A) = alpha + A_A - D_H + C_A

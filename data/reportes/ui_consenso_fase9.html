@@ -1,0 +1,2538 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Consenso de Mercado — Q-BE Observatory</title>
+  <link rel="stylesheet" href="/static/css/theme.css">
+  <style>
+    :root {
+      --consenso-bg: #070d18;
+      --consenso-panel: #0e1a2b;
+      --consenso-panel-2: #0b1626;
+      --consenso-line: rgba(148, 163, 184, 0.16);
+      --consenso-line-soft: rgba(148, 163, 184, 0.08);
+      --consenso-text: #e2e8f0;
+      --consenso-muted: #94a3b8;
+      --consenso-accent: #38bdf8;
+      --consenso-green: #34d399;
+      --consenso-red: #f87171;
+      --consenso-gold: #fbbf24;
+      --consenso-violet: #a78bfa;
+      --consenso-orange: #fb923c;
+      --consenso-font: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    body.consenso-page {
+      margin: 0;
+      background:
+        radial-gradient(1100px 520px at 8% -8%, rgba(56, 189, 248, 0.13), transparent 58%),
+        radial-gradient(900px 520px at 96% 2%, rgba(167, 139, 250, 0.10), transparent 55%),
+        var(--consenso-bg);
+      color: var(--consenso-text);
+      font-family: var(--consenso-font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .consenso-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      padding: 0.95rem 1.75rem;
+      border-bottom: 1px solid var(--consenso-line);
+      background: rgba(7, 13, 24, 0.88);
+      backdrop-filter: blur(14px);
+    }
+
+    .consenso-brand {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #f8fafc;
+      white-space: nowrap;
+    }
+
+    .consenso-brand span {
+      color: var(--consenso-accent);
+      font-weight: 500;
+    }
+
+    .consenso-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .consenso-nav a {
+      color: var(--consenso-muted);
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.015em;
+      padding: 0.5rem 0.72rem;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+    }
+
+    .consenso-nav a:hover {
+      color: #f1f5f9;
+      background: rgba(148, 163, 184, 0.08);
+    }
+
+    .consenso-nav a.active {
+      color: #e0f2fe;
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.28);
+      box-shadow: 0 0 24px -12px rgba(56, 189, 248, 0.65);
+    }
+
+    .consenso-main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    .consenso-hero {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-bottom: 1.35rem;
+    }
+
+    .consenso-kicker {
+      margin: 0 0 0.5rem;
+      color: var(--consenso-accent);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .consenso-hero h1 {
+      margin: 0;
+      font-size: clamp(1.9rem, 4vw, 3rem);
+      line-height: 1;
+      letter-spacing: -0.045em;
+      font-weight: 800;
+      color: #f8fafc;
+    }
+
+    .consenso-sub {
+      max-width: 720px;
+      margin: 0.75rem 0 0;
+      color: var(--consenso-muted);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .consenso-chip {
+      flex: 0 0 auto;
+      margin-top: 0.35rem;
+      color: #bae6fd;
+      background: rgba(56, 189, 248, 0.10);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 999px;
+      padding: 0.4rem 0.7rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .consenso-chips {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.45rem;
+    }
+
+    .consenso-chip-fuente {
+      color: #fde68a;
+      background: rgba(251, 191, 36, 0.10);
+      border-color: rgba(251, 191, 36, 0.32);
+    }
+
+    .consenso-aviso {
+      margin: 0.75rem 1.25rem 1rem;
+      padding: 0.7rem 0.85rem;
+      border: 1px solid rgba(251, 191, 36, 0.28);
+      border-radius: 10px;
+      background: rgba(251, 191, 36, 0.07);
+      color: #fde68a;
+      font-size: 0.76rem;
+      line-height: 1.45;
+    }
+
+    .consenso-aviso strong {
+      color: #fef3c7;
+    }
+
+    .consenso-filters {
+      display: grid;
+      gap: 0.9rem;
+      margin: 1.1rem 0 1.35rem;
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--consenso-line);
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(17, 31, 51, 0.92), rgba(11, 22, 38, 0.92));
+      box-shadow: 0 24px 48px -38px #000;
+    }
+
+    .consenso-filter-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .consenso-select {
+      display: grid;
+      gap: 0.32rem;
+      color: var(--consenso-muted);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .consenso-select select {
+      min-width: 11rem;
+      padding: 0.58rem 0.7rem;
+      color: var(--consenso-text);
+      background: #091322;
+      border: 1px solid var(--consenso-line);
+      border-radius: 9px;
+      font-family: var(--consenso-font);
+      font-size: 0.82rem;
+      outline: none;
+    }
+
+    .consenso-select select:focus {
+      border-color: rgba(56, 189, 248, 0.55);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+    }
+
+    .consenso-sin-jornada {
+      display: inline-flex;
+      align-items: center;
+      min-width: 11rem;
+      padding: 0.58rem 0.7rem;
+      color: var(--consenso-muted);
+      background: rgba(148, 163, 184, 0.06);
+      border: 1px dashed var(--consenso-line);
+      border-radius: 9px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .consenso-pills {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .consenso-pill {
+      position: relative;
+      display: inline-flex;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .consenso-pill input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .consenso-pill span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.52rem 0.82rem;
+      color: var(--consenso-muted);
+      background: #091322;
+      border: 1px solid var(--consenso-line);
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      transition: color 150ms ease, background 150ms ease, border-color 150ms ease, transform 150ms ease;
+    }
+
+    .consenso-pill:hover span {
+      color: #f1f5f9;
+      border-color: rgba(148, 163, 184, 0.36);
+      transform: translateY(-1px);
+    }
+
+    .consenso-pill input:focus-visible + span {
+      outline: 2px solid var(--consenso-accent);
+      outline-offset: 2px;
+    }
+
+    .consenso-pill input:checked + span {
+      color: #04121f;
+      border-color: transparent;
+      background: linear-gradient(135deg, #38bdf8, #22d3ee);
+      box-shadow: 0 10px 24px -14px rgba(56, 189, 248, 0.9);
+    }
+
+    .consenso-pill-todos input:checked + span {
+      color: #211302;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      box-shadow: 0 10px 24px -14px rgba(251, 191, 36, 0.9);
+    }
+
+    .consenso-pill-caliente input:checked + span {
+      color: #1b0b02;
+      background: linear-gradient(135deg, #fb923c, #f97316);
+      box-shadow: 0 10px 24px -14px rgba(251, 146, 60, 0.9);
+    }
+
+    .consenso-pill-novibet input:checked + span {
+      color: #031420;
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+    }
+
+    .consenso-pill-betway input:checked + span {
+      color: #03170d;
+      background: linear-gradient(135deg, #34d399, #10b981);
+    }
+
+    .consenso-pill-qbe input:checked + span {
+      color: #f5f3ff;
+      background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+      box-shadow: 0 10px 24px -14px rgba(167, 139, 250, 0.9);
+    }
+
+    .consenso-pill-todos span::before {
+      content: "◉";
+      font-size: 0.8em;
+    }
+
+    .consenso-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .consenso-kpi {
+      position: relative;
+      overflow: hidden;
+      padding: 1.2rem 1.25rem 1.05rem;
+      border: 1px solid var(--consenso-line);
+      border-radius: 16px;
+      background: linear-gradient(165deg, #111f33 0%, #0b1626 68%);
+      box-shadow: 0 22px 42px -34px #000;
+    }
+
+    .consenso-kpi::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 2px;
+      background: linear-gradient(90deg, var(--consenso-accent), transparent 72%);
+      opacity: 0.8;
+    }
+
+    .consenso-kpi.kpi-positivo::before { background: linear-gradient(90deg, var(--consenso-green), transparent 72%); }
+    .consenso-kpi.kpi-negativo::before { background: linear-gradient(90deg, var(--consenso-red), transparent 72%); }
+    .consenso-kpi.kpi-neutro::before { background: linear-gradient(90deg, var(--consenso-muted), transparent 72%); }
+
+    .consenso-kpi-label {
+      display: block;
+      color: var(--consenso-muted);
+      font-size: 0.67rem;
+      font-weight: 800;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .consenso-kpi-value {
+      display: block;
+      margin: 0.35rem 0 0.2rem;
+      color: #f8fafc;
+      font-size: clamp(1.8rem, 3.6vw, 2.55rem);
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+    }
+
+    .consenso-kpi.kpi-positivo .consenso-kpi-value {
+      color: var(--consenso-green);
+      text-shadow: 0 0 28px rgba(52, 211, 153, 0.22);
+    }
+
+    .consenso-kpi.kpi-negativo .consenso-kpi-value {
+      color: var(--consenso-red);
+      text-shadow: 0 0 28px rgba(248, 113, 113, 0.18);
+    }
+
+    .consenso-kpi.kpi-neutro .consenso-kpi-value { color: var(--consenso-text); }
+
+    .consenso-kpi-value.kpi-sin {
+      color: var(--consenso-red);
+      font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      line-height: 1.35;
+    }
+
+    .consenso-kpi-foot {
+      display: block;
+      color: var(--consenso-muted);
+      font-size: 0.69rem;
+      line-height: 1.4;
+    }
+
+    .consenso-panel {
+      margin: 1.2rem 0;
+      overflow: hidden;
+      border: 1px solid var(--consenso-line);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(14, 26, 43, 0.96), rgba(9, 19, 34, 0.96));
+      box-shadow: 0 28px 60px -46px #000;
+    }
+
+    .consenso-panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.1rem 1.25rem;
+      border-bottom: 1px solid var(--consenso-line);
+      background: linear-gradient(180deg, rgba(17, 31, 51, 0.68), rgba(9, 19, 34, 0.15));
+    }
+
+    .consenso-panel-title {
+      margin: 0;
+      color: #f1f5f9;
+      font-size: 1.02rem;
+      font-weight: 800;
+      letter-spacing: -0.012em;
+    }
+
+    .consenso-panel-sub {
+      margin: 0.3rem 0 0;
+      color: var(--consenso-muted);
+      font-size: 0.76rem;
+      line-height: 1.45;
+    }
+
+    .consenso-live-badge {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #86efac;
+      background: rgba(34, 197, 94, 0.10);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+      border-radius: 999px;
+      padding: 0.32rem 0.6rem;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .consenso-live-badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--consenso-green);
+      box-shadow: 0 0 10px var(--consenso-green);
+    }
+
+    .consenso-match-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .consenso-match {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--consenso-line);
+      border-radius: 14px;
+      background: var(--consenso-panel-2);
+      box-shadow: 0 18px 36px -30px #000;
+    }
+
+    .consenso-match-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.8rem 0.9rem;
+      border-bottom: 1px solid var(--consenso-line-soft);
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.07), transparent);
+    }
+
+    .consenso-match-teams {
+      color: #f1f5f9;
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .consenso-match-teams span {
+      color: var(--consenso-muted);
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0 0.2rem;
+    }
+
+    .consenso-match-meta {
+      flex: 0 0 auto;
+      color: var(--consenso-muted);
+      font-size: 0.68rem;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .consenso-table-scroll {
+      min-width: 0;
+      overflow-x: auto;
+      scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+    }
+
+    .consenso-table {
+      width: 100%;
+      border-collapse: collapse;
+      color: var(--consenso-text);
+      font-size: 0.78rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .consenso-table th {
+      padding: 0.62rem 0.65rem;
+      color: var(--consenso-muted);
+      background: rgba(2, 8, 18, 0.45);
+      font-size: 0.61rem;
+      font-weight: 800;
+      letter-spacing: 0.09em;
+      text-align: right;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .consenso-table th:first-child {
+      text-align: left;
+    }
+
+    .consenso-table td {
+      padding: 0.58rem 0.65rem;
+      border-top: 1px solid var(--consenso-line-soft);
+      vertical-align: middle;
+    }
+
+    .consenso-table tbody tr:nth-child(even) {
+      background: rgba(148, 163, 184, 0.035);
+    }
+
+    .consenso-table tbody tr:hover {
+      background: rgba(56, 189, 248, 0.055);
+    }
+
+    .consenso-table tbody tr.is-consenso {
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.14), rgba(56, 189, 248, 0.015));
+      box-shadow: inset 3px 0 0 var(--consenso-accent);
+    }
+
+    .consenso-table tbody tr.is-consenso td {
+      border-top-color: rgba(56, 189, 248, 0.22);
+    }
+
+    .consenso-table .num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .consenso-table-live {
+      table-layout: fixed;
+    }
+
+    .consenso-table-live th,
+    .consenso-table-live td {
+      padding-left: 0.38rem;
+      padding-right: 0.38rem;
+    }
+
+    .consenso-table-live th:first-child,
+    .consenso-table-live td:first-child {
+      width: 26%;
+    }
+
+    .consenso-table-live th {
+      font-size: 0.56rem;
+      letter-spacing: 0.06em;
+    }
+
+    .consenso-table-live td {
+      font-size: 0.72rem;
+    }
+
+    .consenso-table .jornada-cell {
+      color: var(--consenso-accent);
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .consenso-table .fuente-cell {
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .source-badge,
+    .sin-evidencia {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      font-weight: 800;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .source-badge {
+      padding: 0.24rem 0.5rem;
+      font-size: 0.64rem;
+      letter-spacing: 0.02em;
+      border: 1px solid transparent;
+    }
+
+    .source-consenso {
+      color: #bae6fd;
+      background: rgba(56, 189, 248, 0.13);
+      border-color: rgba(56, 189, 248, 0.30);
+    }
+
+    .source-caliente {
+      color: #fdba74;
+      background: rgba(251, 146, 60, 0.12);
+      border-color: rgba(251, 146, 60, 0.30);
+    }
+
+    .source-novibet {
+      color: #7dd3fc;
+      background: rgba(14, 165, 233, 0.12);
+      border-color: rgba(14, 165, 233, 0.30);
+    }
+
+    .source-betway {
+      color: #86efac;
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.30);
+    }
+
+    .source-q-be {
+      color: #c4b5fd;
+      background: rgba(139, 92, 246, 0.12);
+      border-color: rgba(139, 92, 246, 0.30);
+    }
+
+    .source-footystats {
+      color: #fcd34d;
+      background: rgba(251, 191, 36, 0.10);
+      border-color: rgba(251, 191, 36, 0.30);
+    }
+
+    .source-q-be-live-capture {
+      color: #a7f3d0;
+      background: rgba(16, 185, 129, 0.14);
+      border-color: rgba(52, 211, 153, 0.42);
+      box-shadow: 0 0 18px -10px rgba(52, 211, 153, 0.9);
+    }
+
+    .sin-evidencia {
+      padding: 0.24rem 0.45rem;
+      color: #fca5a5;
+      background: rgba(248, 113, 113, 0.08);
+      border: 1px solid rgba(248, 113, 113, 0.22);
+      font-size: 0.59rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .muted-dash {
+      color: rgba(148, 163, 184, 0.55);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .consenso-empty {
+      padding: 3rem 1.5rem;
+      text-align: center;
+    }
+
+    .consenso-empty h2 {
+      margin: 0.85rem 0 0.35rem;
+      color: #f1f5f9;
+      font-size: 1.1rem;
+    }
+
+    .consenso-empty p {
+      margin: 0;
+      color: var(--consenso-muted);
+      font-size: 0.82rem;
+    }
+
+    .consenso-empty-inline {
+      padding: 1.5rem 1.25rem;
+      text-align: center;
+    }
+
+    .consenso-empty-inline p {
+      margin: 0.55rem 0 0;
+      color: var(--consenso-muted);
+      font-size: 0.78rem;
+    }
+
+    .consenso-footnote {
+      margin: 1.5rem 0 0;
+      color: var(--consenso-muted);
+      font-size: 0.7rem;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .consenso-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.6rem;
+        padding: 0.8rem 1rem;
+      }
+
+      .consenso-main { padding: 1.35rem 1rem 3rem; }
+
+      .consenso-hero { flex-direction: column; gap: 0.6rem; }
+
+      .consenso-kpis { grid-template-columns: 1fr; }
+
+      .consenso-match-grid { grid-template-columns: 1fr; padding: 0.7rem; }
+
+      .consenso-filter-row { align-items: stretch; flex-direction: column; }
+
+      .consenso-select select { width: 100%; }
+    }
+  </style>
+</head>
+<body class="consenso-page">
+  
+  
+  
+  
+  
+  
+
+  <header class="consenso-header">
+    <div class="consenso-brand">Q-BE <span>Observatory</span></div>
+    <nav class="consenso-nav" aria-label="Navegación principal">
+      <a href="/">Inicio</a>
+      <a href="/visor">Auditoría de Calibración y Atribución</a>
+      <a class="active" href="/consenso">Consenso de Mercado</a>
+      <a href="/backtesting">Backtesting</a>
+    </nav>
+  </header>
+
+  <main class="consenso-main">
+    <section class="consenso-hero">
+      <div>
+        <p class="consenso-kicker">Mercado · Bóveda 3NF</p>
+        <h1>Consenso de Mercado</h1>
+        <p class="consenso-sub">
+          Cuotas reales de la próxima jornada, Consenso Ponderado y Brier histórico.
+          Filtra por temporada, jornada y fuentes; cada partido se agrega solo con
+          evidencia válida.
+        </p>
+      </div>
+      <div class="consenso-chips">
+        <span class="consenso-chip consenso-chip-fuente">Fuente: Snapshot Vivo (J16)</span>
+        <span class="consenso-chip">[DES-QBE-076]</span>
+      </div>
+    </section>
+
+    
+
+    <form id="filtros-consenso" method="get" action="/consenso" class="consenso-filters">
+      <input type="hidden" name="filtros" value="1">
+      <div class="consenso-filter-row">
+        <div class="consenso-filter-row" style="align-items:flex-end;">
+          <label class="consenso-select" for="filtro-temporada">Temporada
+            <select id="filtro-temporada" name="temporada" onchange="this.form.submit()">
+              <option value="Todas" >Todas</option>
+              
+                <option value="2015_2016" >2015_2016</option>
+              
+                <option value="2016_2017" >2016_2017</option>
+              
+                <option value="2017_2018" >2017_2018</option>
+              
+                <option value="2018_2019" >2018_2019</option>
+              
+                <option value="2019_2020" >2019_2020</option>
+              
+                <option value="2020_2021" >2020_2021</option>
+              
+                <option value="2021_2022" >2021_2022</option>
+              
+                <option value="2022_2023" >2022_2023</option>
+              
+                <option value="2023_2024" >2023_2024</option>
+              
+                <option value="2024_2025" >2024_2025</option>
+              
+                <option value="2025_2026" >2025_2026</option>
+              
+                <option value="2026_2027" selected>2026_2027 · Actual</option>
+              
+            </select>
+          </label>
+          
+            <label class="consenso-select" for="filtro-jornada">Jornada
+              <select id="filtro-jornada" name="jornada" onchange="this.form.submit()">
+                <option value="">Todas</option>
+                
+                  <option value="1" >J1</option>
+                
+                  <option value="2" >J2</option>
+                
+                  <option value="3" >J3</option>
+                
+                  <option value="4" >J4</option>
+                
+                  <option value="5" >J5</option>
+                
+                  <option value="6" >J6</option>
+                
+                  <option value="7" >J7</option>
+                
+                  <option value="8" >J8</option>
+                
+                  <option value="9" >J9</option>
+                
+                  <option value="10" >J10</option>
+                
+                  <option value="11" >J11</option>
+                
+                  <option value="12" >J12</option>
+                
+                  <option value="13" >J13</option>
+                
+                  <option value="14" >J14</option>
+                
+                  <option value="15" >J15</option>
+                
+              </select>
+            </label>
+          
+        </div>
+        <div class="consenso-pills" aria-label="Selección de fuentes">
+          <label class="consenso-pill consenso-pill-todos">
+            <input type="checkbox" id="todos" checked>
+            <span>Todos</span>
+          </label>
+          <label class="consenso-pill consenso-pill-caliente">
+            <input type="checkbox" name="fuente" value="caliente" data-casino="1" checked>
+            <span>Caliente</span>
+          </label>
+          <label class="consenso-pill consenso-pill-novibet">
+            <input type="checkbox" name="fuente" value="novibet" data-casino="1" checked>
+            <span>Novibet</span>
+          </label>
+          <label class="consenso-pill consenso-pill-betway">
+            <input type="checkbox" name="fuente" value="betway" data-casino="1" checked>
+            <span>Betway</span>
+          </label>
+          <label class="consenso-pill consenso-pill-qbe">
+            <input type="checkbox" name="fuente" value="qbe" checked>
+            <span>Q-BE</span>
+          </label>
+        </div>
+        <noscript><button type="submit">Aplicar filtros</button></noscript>
+      </div>
+    </form>
+
+    
+      <section class="consenso-kpis" aria-label="KPIs de Consenso de Mercado">
+        <article class="consenso-kpi">
+          <span class="consenso-kpi-label">Brier Mercado</span>
+          
+            <span class="consenso-kpi-value">0.2132</span>
+          
+          <span class="consenso-kpi-foot">
+            Consenso Ponderado: 2
+            Fuentes
+            (Q-BE Live Capture, Consenso)
+            · 123 partidos · [LN-QBE-148]
+          </span>
+        </article>
+        <article class="consenso-kpi">
+          <span class="consenso-kpi-label">Brier Q-BE</span>
+          
+            <span class="consenso-kpi-value">0.2169</span>
+          
+          <span class="consenso-kpi-foot">
+            123 partidos evaluados
+            · Actualizado: 2026-11-06 00:19 UTC
+          </span>
+        </article>
+        
+          
+          <article class="consenso-kpi kpi-negativo">
+            <span class="consenso-kpi-label">Alpha</span>
+            <span class="consenso-kpi-value">-1.74%</span>
+            <span class="consenso-kpi-foot">Q-BE está 1.74% arriba del mercado</span>
+          </article>
+        
+      </section>
+
+      <section class="consenso-panel" aria-labelledby="titulo-mercado-vivo">
+        <header class="consenso-panel-header">
+          <div>
+            <h2 class="consenso-panel-title" id="titulo-mercado-vivo">
+              Mercado en vivo · J16
+            </h2>
+            <p class="consenso-panel-sub">
+              <strong>Fuente: Snapshot Vivo (J16)</strong>.
+              Cuotas reales de los operadores seleccionados y Consenso Ponderado.
+              Actualizado: 2026-11-04 22:11:58.342629.
+            </p>
+          </div>
+          
+            <span class="consenso-live-badge">Live</span>
+          
+        </header>
+        
+          <div id="tabla-mercado-vivo" class="consenso-match-grid">
+            
+              <article class="consenso-match">
+                <header class="consenso-match-header">
+                  <div class="consenso-match-teams">
+                    Atletico San Luis <span>vs</span> FC Juárez
+                  </div>
+                  <div class="consenso-match-meta">2026-11-06T19:00:00</div>
+                </header>
+                <div class="consenso-table-scroll">
+                  <table class="consenso-table consenso-table-live">
+                    <caption class="visor-sr-only">Cuotas en vivo de Atletico San Luis vs FC Juárez</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Fuente</th>
+                        <th scope="col">1</th>
+                        <th scope="col">X</th>
+                        <th scope="col">2</th>
+                        <th scope="col">P(1)</th>
+                        <th scope="col">P(X)</th>
+                        <th scope="col">P(2)</th>
+                        <th scope="col">Peso</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      
+                        <tr class="is-consenso">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-consenso">Consenso</span>
+                          </td>
+                          <td class="num">1.86</td>
+                          <td class="num">3.99</td>
+                          <td class="num">4.69</td>
+                          <td class="num">0.536</td>
+                          <td class="num">0.250</td>
+                          <td class="num">0.213</td>
+                          <td class="num">1.000</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-q-be">Q-BE</span>
+                          </td>
+                          <td class="num">2.25</td>
+                          <td class="num">3.80</td>
+                          <td class="num">3.43</td>
+                          <td class="num">0.445</td>
+                          <td class="num">0.264</td>
+                          <td class="num">0.291</td>
+                          <td class="num"><span class="muted-dash">—</span></td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-caliente">Caliente</span>
+                          </td>
+                          <td class="num">1.75</td>
+                          <td class="num">3.80</td>
+                          <td class="num">4.45</td>
+                          <td class="num">0.539</td>
+                          <td class="num">0.248</td>
+                          <td class="num">0.212</td>
+                          <td class="num">0.500</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-novibet">Novibet</span>
+                          </td>
+                          <td class="num">1.75</td>
+                          <td class="num">3.70</td>
+                          <td class="num">4.35</td>
+                          <td class="num">0.533</td>
+                          <td class="num">0.252</td>
+                          <td class="num">0.215</td>
+                          <td class="num">0.500</td>
+                        </tr>
+                      
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+            
+              <article class="consenso-match">
+                <header class="consenso-match-header">
+                  <div class="consenso-match-teams">
+                    Necaxa <span>vs</span> Club Tijuana
+                  </div>
+                  <div class="consenso-match-meta">2026-11-06T19:00:00</div>
+                </header>
+                <div class="consenso-table-scroll">
+                  <table class="consenso-table consenso-table-live">
+                    <caption class="visor-sr-only">Cuotas en vivo de Necaxa vs Club Tijuana</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Fuente</th>
+                        <th scope="col">1</th>
+                        <th scope="col">X</th>
+                        <th scope="col">2</th>
+                        <th scope="col">P(1)</th>
+                        <th scope="col">P(X)</th>
+                        <th scope="col">P(2)</th>
+                        <th scope="col">Peso</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      
+                        <tr class="is-consenso">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-consenso">Consenso</span>
+                          </td>
+                          <td class="num">2.55</td>
+                          <td class="num">3.89</td>
+                          <td class="num">2.85</td>
+                          <td class="num">0.392</td>
+                          <td class="num">0.257</td>
+                          <td class="num">0.351</td>
+                          <td class="num">1.000</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-q-be">Q-BE</span>
+                          </td>
+                          <td class="num">3.42</td>
+                          <td class="num">4.21</td>
+                          <td class="num">2.13</td>
+                          <td class="num">0.292</td>
+                          <td class="num">0.237</td>
+                          <td class="num">0.470</td>
+                          <td class="num"><span class="muted-dash">—</span></td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-caliente">Caliente</span>
+                          </td>
+                          <td class="num">2.44</td>
+                          <td class="num">3.70</td>
+                          <td class="num">2.64</td>
+                          <td class="num">0.387</td>
+                          <td class="num">0.255</td>
+                          <td class="num">0.358</td>
+                          <td class="num">0.500</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-novibet">Novibet</span>
+                          </td>
+                          <td class="num">2.35</td>
+                          <td class="num">3.60</td>
+                          <td class="num">2.70</td>
+                          <td class="num">0.396</td>
+                          <td class="num">0.259</td>
+                          <td class="num">0.345</td>
+                          <td class="num">0.500</td>
+                        </tr>
+                      
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+            
+              <article class="consenso-match">
+                <header class="consenso-match-header">
+                  <div class="consenso-match-teams">
+                    Atlante <span>vs</span> Santos Laguna
+                  </div>
+                  <div class="consenso-match-meta">2026-11-06T21:00:00</div>
+                </header>
+                <div class="consenso-table-scroll">
+                  <table class="consenso-table consenso-table-live">
+                    <caption class="visor-sr-only">Cuotas en vivo de Atlante vs Santos Laguna</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Fuente</th>
+                        <th scope="col">1</th>
+                        <th scope="col">X</th>
+                        <th scope="col">2</th>
+                        <th scope="col">P(1)</th>
+                        <th scope="col">P(X)</th>
+                        <th scope="col">P(2)</th>
+                        <th scope="col">Peso</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      
+                        <tr class="is-consenso">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-consenso">Consenso</span>
+                          </td>
+                          <td class="num">2.39</td>
+                          <td class="num">3.92</td>
+                          <td class="num">3.06</td>
+                          <td class="num">0.419</td>
+                          <td class="num">0.255</td>
+                          <td class="num">0.326</td>
+                          <td class="num">1.000</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-q-be">Q-BE</span>
+                          </td>
+                          <td class="num">2.68</td>
+                          <td class="num">3.67</td>
+                          <td class="num">2.83</td>
+                          <td class="num">0.374</td>
+                          <td class="num">0.272</td>
+                          <td class="num">0.354</td>
+                          <td class="num"><span class="muted-dash">—</span></td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-caliente">Caliente</span>
+                          </td>
+                          <td class="num">2.18</td>
+                          <td class="num">3.70</td>
+                          <td class="num">3.00</td>
+                          <td class="num">0.432</td>
+                          <td class="num">0.254</td>
+                          <td class="num">0.314</td>
+                          <td class="num">0.500</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-novibet">Novibet</span>
+                          </td>
+                          <td class="num">2.30</td>
+                          <td class="num">3.65</td>
+                          <td class="num">2.75</td>
+                          <td class="num">0.405</td>
+                          <td class="num">0.255</td>
+                          <td class="num">0.339</td>
+                          <td class="num">0.500</td>
+                        </tr>
+                      
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+            
+              <article class="consenso-match">
+                <header class="consenso-match-header">
+                  <div class="consenso-match-teams">
+                    Atlas FC <span>vs</span> Club Pachuca
+                  </div>
+                  <div class="consenso-match-meta">2026-11-07T17:00:00</div>
+                </header>
+                <div class="consenso-table-scroll">
+                  <table class="consenso-table consenso-table-live">
+                    <caption class="visor-sr-only">Cuotas en vivo de Atlas FC vs Club Pachuca</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Fuente</th>
+                        <th scope="col">1</th>
+                        <th scope="col">X</th>
+                        <th scope="col">2</th>
+                        <th scope="col">P(1)</th>
+                        <th scope="col">P(X)</th>
+                        <th scope="col">P(2)</th>
+                        <th scope="col">Peso</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      
+                        <tr class="is-consenso">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-consenso">Consenso</span>
+                          </td>
+                          <td class="num">2.39</td>
+                          <td class="num">3.74</td>
+                          <td class="num">3.18</td>
+                          <td class="num">0.418</td>
+                          <td class="num">0.267</td>
+                          <td class="num">0.315</td>
+                          <td class="num">1.000</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-q-be">Q-BE</span>
+                          </td>
+                          <td class="num">4.28</td>
+                          <td class="num">4.10</td>
+                          <td class="num">1.91</td>
+                          <td class="num">0.233</td>
+                          <td class="num">0.244</td>
+                          <td class="num">0.523</td>
+                          <td class="num"><span class="muted-dash">—</span></td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-caliente">Caliente</span>
+                          </td>
+                          <td class="num">2.25</td>
+                          <td class="num">3.60</td>
+                          <td class="num">2.98</td>
+                          <td class="num">0.420</td>
+                          <td class="num">0.263</td>
+                          <td class="num">0.317</td>
+                          <td class="num">0.500</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-novibet">Novibet</span>
+                          </td>
+                          <td class="num">2.25</td>
+                          <td class="num">3.45</td>
+                          <td class="num">3.00</td>
+                          <td class="num">0.416</td>
+                          <td class="num">0.271</td>
+                          <td class="num">0.312</td>
+                          <td class="num">0.500</td>
+                        </tr>
+                      
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+            
+              <article class="consenso-match">
+                <header class="consenso-match-header">
+                  <div class="consenso-match-teams">
+                    Tigres UANL <span>vs</span> Cruz Azul
+                  </div>
+                  <div class="consenso-match-meta">2026-11-07T17:00:00</div>
+                </header>
+                <div class="consenso-table-scroll">
+                  <table class="consenso-table consenso-table-live">
+                    <caption class="visor-sr-only">Cuotas en vivo de Tigres UANL vs Cruz Azul</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Fuente</th>
+                        <th scope="col">1</th>
+                        <th scope="col">X</th>
+                        <th scope="col">2</th>
+                        <th scope="col">P(1)</th>
+                        <th scope="col">P(X)</th>
+                        <th scope="col">P(2)</th>
+                        <th scope="col">Peso</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      
+                        <tr class="is-consenso">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-consenso">Consenso</span>
+                          </td>
+                          <td class="num">3.08</td>
+                          <td class="num">3.79</td>
+                          <td class="num">2.43</td>
+                          <td class="num">0.325</td>
+                          <td class="num">0.264</td>
+                          <td class="num">0.411</td>
+                          <td class="num">1.000</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-q-be">Q-BE</span>
+                          </td>
+                          <td class="num">1.77</td>
+                          <td class="num">4.72</td>
+                          <td class="num">4.50</td>
+                          <td class="num">0.566</td>
+                          <td class="num">0.212</td>
+                          <td class="num">0.222</td>
+                          <td class="num"><span class="muted-dash">—</span></td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-caliente">Caliente</span>
+                          </td>
+                          <td class="num">2.90</td>
+                          <td class="num">3.65</td>
+                          <td class="num">2.28</td>
+                          <td class="num">0.326</td>
+                          <td class="num">0.259</td>
+                          <td class="num">0.415</td>
+                          <td class="num">0.500</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-novibet">Novibet</span>
+                          </td>
+                          <td class="num">2.90</td>
+                          <td class="num">3.50</td>
+                          <td class="num">2.30</td>
+                          <td class="num">0.324</td>
+                          <td class="num">0.268</td>
+                          <td class="num">0.408</td>
+                          <td class="num">0.500</td>
+                        </tr>
+                      
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+            
+              <article class="consenso-match">
+                <header class="consenso-match-header">
+                  <div class="consenso-match-teams">
+                    Deportivo Toluca <span>vs</span> Rayados de Monterrey
+                  </div>
+                  <div class="consenso-match-meta">2026-11-07T19:00:00</div>
+                </header>
+                <div class="consenso-table-scroll">
+                  <table class="consenso-table consenso-table-live">
+                    <caption class="visor-sr-only">Cuotas en vivo de Deportivo Toluca vs Rayados de Monterrey</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Fuente</th>
+                        <th scope="col">1</th>
+                        <th scope="col">X</th>
+                        <th scope="col">2</th>
+                        <th scope="col">P(1)</th>
+                        <th scope="col">P(X)</th>
+                        <th scope="col">P(2)</th>
+                        <th scope="col">Peso</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      
+                        <tr class="is-consenso">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-consenso">Consenso</span>
+                          </td>
+                          <td class="num">1.72</td>
+                          <td class="num">4.60</td>
+                          <td class="num">4.94</td>
+                          <td class="num">0.580</td>
+                          <td class="num">0.217</td>
+                          <td class="num">0.202</td>
+                          <td class="num">1.000</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-q-be">Q-BE</span>
+                          </td>
+                          <td class="num">2.25</td>
+                          <td class="num">4.62</td>
+                          <td class="num">2.95</td>
+                          <td class="num">0.445</td>
+                          <td class="num">0.216</td>
+                          <td class="num">0.339</td>
+                          <td class="num"><span class="muted-dash">—</span></td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-caliente">Caliente</span>
+                          </td>
+                          <td class="num">1.60</td>
+                          <td class="num">4.40</td>
+                          <td class="num">4.85</td>
+                          <td class="num">0.590</td>
+                          <td class="num">0.215</td>
+                          <td class="num">0.195</td>
+                          <td class="num">0.500</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-novibet">Novibet</span>
+                          </td>
+                          <td class="num">1.64</td>
+                          <td class="num">4.25</td>
+                          <td class="num">4.45</td>
+                          <td class="num">0.570</td>
+                          <td class="num">0.220</td>
+                          <td class="num">0.210</td>
+                          <td class="num">0.500</td>
+                        </tr>
+                      
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+            
+              <article class="consenso-match">
+                <header class="consenso-match-header">
+                  <div class="consenso-match-teams">
+                    Pumas UNAM <span>vs</span> Club América
+                  </div>
+                  <div class="consenso-match-meta">2026-11-07T21:10:00</div>
+                </header>
+                <div class="consenso-table-scroll">
+                  <table class="consenso-table consenso-table-live">
+                    <caption class="visor-sr-only">Cuotas en vivo de Pumas UNAM vs Club América</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Fuente</th>
+                        <th scope="col">1</th>
+                        <th scope="col">X</th>
+                        <th scope="col">2</th>
+                        <th scope="col">P(1)</th>
+                        <th scope="col">P(X)</th>
+                        <th scope="col">P(2)</th>
+                        <th scope="col">Peso</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      
+                        <tr class="is-consenso">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-consenso">Consenso</span>
+                          </td>
+                          <td class="num">3.23</td>
+                          <td class="num">3.87</td>
+                          <td class="num">2.31</td>
+                          <td class="num">0.309</td>
+                          <td class="num">0.258</td>
+                          <td class="num">0.432</td>
+                          <td class="num">1.000</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-q-be">Q-BE</span>
+                          </td>
+                          <td class="num">3.89</td>
+                          <td class="num">4.30</td>
+                          <td class="num">1.96</td>
+                          <td class="num">0.257</td>
+                          <td class="num">0.232</td>
+                          <td class="num">0.510</td>
+                          <td class="num"><span class="muted-dash">—</span></td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-caliente">Caliente</span>
+                          </td>
+                          <td class="num">3.00</td>
+                          <td class="num">3.70</td>
+                          <td class="num">2.18</td>
+                          <td class="num">0.314</td>
+                          <td class="num">0.254</td>
+                          <td class="num">0.432</td>
+                          <td class="num">0.500</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-novibet">Novibet</span>
+                          </td>
+                          <td class="num">3.05</td>
+                          <td class="num">3.55</td>
+                          <td class="num">2.15</td>
+                          <td class="num">0.305</td>
+                          <td class="num">0.262</td>
+                          <td class="num">0.433</td>
+                          <td class="num">0.500</td>
+                        </tr>
+                      
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+            
+              <article class="consenso-match">
+                <header class="consenso-match-header">
+                  <div class="consenso-match-teams">
+                    Querétaro FC <span>vs</span> Club Puebla
+                  </div>
+                  <div class="consenso-match-meta">2026-11-08T18:00:00</div>
+                </header>
+                <div class="consenso-table-scroll">
+                  <table class="consenso-table consenso-table-live">
+                    <caption class="visor-sr-only">Cuotas en vivo de Querétaro FC vs Club Puebla</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Fuente</th>
+                        <th scope="col">1</th>
+                        <th scope="col">X</th>
+                        <th scope="col">2</th>
+                        <th scope="col">P(1)</th>
+                        <th scope="col">P(X)</th>
+                        <th scope="col">P(2)</th>
+                        <th scope="col">Peso</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      
+                        <tr class="is-consenso">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-consenso">Consenso</span>
+                          </td>
+                          <td class="num">1.92</td>
+                          <td class="num">4.10</td>
+                          <td class="num">4.23</td>
+                          <td class="num">0.520</td>
+                          <td class="num">0.244</td>
+                          <td class="num">0.237</td>
+                          <td class="num">1.000</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-q-be">Q-BE</span>
+                          </td>
+                          <td class="num">2.68</td>
+                          <td class="num">3.51</td>
+                          <td class="num">2.92</td>
+                          <td class="num">0.373</td>
+                          <td class="num">0.284</td>
+                          <td class="num">0.342</td>
+                          <td class="num"><span class="muted-dash">—</span></td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-caliente">Caliente</span>
+                          </td>
+                          <td class="num">1.82</td>
+                          <td class="num">3.90</td>
+                          <td class="num">3.95</td>
+                          <td class="num">0.519</td>
+                          <td class="num">0.242</td>
+                          <td class="num">0.239</td>
+                          <td class="num">0.333</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-novibet">Novibet</span>
+                          </td>
+                          <td class="num">1.80</td>
+                          <td class="num">3.75</td>
+                          <td class="num">4.05</td>
+                          <td class="num">0.520</td>
+                          <td class="num">0.249</td>
+                          <td class="num">0.231</td>
+                          <td class="num">0.333</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-betway">Betway</span>
+                          </td>
+                          <td class="num">1.75</td>
+                          <td class="num">3.80</td>
+                          <td class="num">3.80</td>
+                          <td class="num">0.521</td>
+                          <td class="num">0.240</td>
+                          <td class="num">0.240</td>
+                          <td class="num">0.333</td>
+                        </tr>
+                      
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+            
+              <article class="consenso-match">
+                <header class="consenso-match-header">
+                  <div class="consenso-match-teams">
+                    Club León <span>vs</span> Chivas Guadalajara
+                  </div>
+                  <div class="consenso-match-meta">2026-11-08T20:10:00</div>
+                </header>
+                <div class="consenso-table-scroll">
+                  <table class="consenso-table consenso-table-live">
+                    <caption class="visor-sr-only">Cuotas en vivo de Club León vs Chivas Guadalajara</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Fuente</th>
+                        <th scope="col">1</th>
+                        <th scope="col">X</th>
+                        <th scope="col">2</th>
+                        <th scope="col">P(1)</th>
+                        <th scope="col">P(X)</th>
+                        <th scope="col">P(2)</th>
+                        <th scope="col">Peso</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      
+                        <tr class="is-consenso">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-consenso">Consenso</span>
+                          </td>
+                          <td class="num">3.32</td>
+                          <td class="num">3.84</td>
+                          <td class="num">2.28</td>
+                          <td class="num">0.301</td>
+                          <td class="num">0.261</td>
+                          <td class="num">0.438</td>
+                          <td class="num">1.000</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-q-be">Q-BE</span>
+                          </td>
+                          <td class="num">2.45</td>
+                          <td class="num">3.64</td>
+                          <td class="num">3.14</td>
+                          <td class="num">0.407</td>
+                          <td class="num">0.275</td>
+                          <td class="num">0.318</td>
+                          <td class="num"><span class="muted-dash">—</span></td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-caliente">Caliente</span>
+                          </td>
+                          <td class="num">3.20</td>
+                          <td class="num">3.60</td>
+                          <td class="num">2.14</td>
+                          <td class="num">0.295</td>
+                          <td class="num">0.263</td>
+                          <td class="num">0.442</td>
+                          <td class="num">0.333</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-novibet">Novibet</span>
+                          </td>
+                          <td class="num">3.10</td>
+                          <td class="num">3.55</td>
+                          <td class="num">2.15</td>
+                          <td class="num">0.302</td>
+                          <td class="num">0.263</td>
+                          <td class="num">0.435</td>
+                          <td class="num">0.333</td>
+                        </tr>
+                      
+                        <tr class="">
+                          <td class="fuente-cell">
+                            <span class="source-badge source-betway">Betway</span>
+                          </td>
+                          <td class="num">3.00</td>
+                          <td class="num">3.60</td>
+                          <td class="num">2.10</td>
+                          <td class="num">0.307</td>
+                          <td class="num">0.255</td>
+                          <td class="num">0.438</td>
+                          <td class="num">0.333</td>
+                        </tr>
+                      
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+            
+          </div>
+        
+      </section>
+
+      <section class="consenso-panel" aria-labelledby="titulo-historico-consenso">
+        <header class="consenso-panel-header">
+          <div>
+            <h2 class="consenso-panel-title" id="titulo-historico-consenso">Desglose histórico por jornada</h2>
+            
+              <span class="consenso-live-badge" title="Temporada con más de una fuente de mercado activa">Híbrida</span>
+            
+            <p class="consenso-panel-sub">
+              <strong>Fuente: Snapshot Vivo (2026_2027)</strong>.
+              Brier de bloque = media de los partidos con evidencia, normalizado 3N.
+              Los partidos sin datos se excluyen; no se imputan como cero.
+            </p>
+          </div>
+        </header>
+        
+        
+          <div class="consenso-table-scroll">
+            <table id="tabla-consenso-historico" class="consenso-table consenso-table-history">
+              
+              <caption class="visor-sr-only">Consenso histórico por jornada y fuente</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Jornada</th>
+                  <th scope="col">Fuente</th>
+                  <th scope="col">Brier Score</th>
+                  <th scope="col">Alpha (%)</th>
+                  <th scope="col">Peso en Consenso</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                  
+                  
+                    
+                    <tr class="is-consenso" data-jornada="1">
+                      <td class="jornada-cell">
+                        J1
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be-live-capture">Q-BE (Captura Propia) (9)</span>
+                      </td>
+                      <td class="num">
+                        0.1988
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-positivo" data-signo="positivo">
+                            +14.08%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        1.000
+                      </td>
+                    </tr>
+                  
+                    
+                    <tr class="" data-jornada="1">
+                      <td class="jornada-cell">
+                        <span class="visor-sr-only">J1</span>
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be">Q-BE</span>
+                      </td>
+                      <td class="num">
+                        0.1708
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-neutro" data-signo="neutro">
+                            0.00%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        <span class="muted-dash">—</span>
+                      </td>
+                    </tr>
+                  
+                
+                  
+                  
+                    
+                    <tr class="is-consenso" data-jornada="2">
+                      <td class="jornada-cell">
+                        J2
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be-live-capture">Q-BE (Captura Propia) (9)</span>
+                      </td>
+                      <td class="num">
+                        0.2312
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-positivo" data-signo="positivo">
+                            +2.81%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        1.000
+                      </td>
+                    </tr>
+                  
+                    
+                    <tr class="" data-jornada="2">
+                      <td class="jornada-cell">
+                        <span class="visor-sr-only">J2</span>
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be">Q-BE</span>
+                      </td>
+                      <td class="num">
+                        0.2247
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-neutro" data-signo="neutro">
+                            0.00%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        <span class="muted-dash">—</span>
+                      </td>
+                    </tr>
+                  
+                
+                  
+                  
+                    
+                    <tr class="is-consenso" data-jornada="3">
+                      <td class="jornada-cell">
+                        J3
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be-live-capture">Q-BE (Captura Propia) (9)</span>
+                      </td>
+                      <td class="num">
+                        0.2271
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-positivo" data-signo="positivo">
+                            +9.16%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        1.000
+                      </td>
+                    </tr>
+                  
+                    
+                    <tr class="" data-jornada="3">
+                      <td class="jornada-cell">
+                        <span class="visor-sr-only">J3</span>
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be">Q-BE</span>
+                      </td>
+                      <td class="num">
+                        0.2063
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-neutro" data-signo="neutro">
+                            0.00%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        <span class="muted-dash">—</span>
+                      </td>
+                    </tr>
+                  
+                
+                  
+                  
+                    
+                    <tr class="is-consenso" data-jornada="4">
+                      <td class="jornada-cell">
+                        J4
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be-live-capture">Q-BE (Captura Propia) (9)</span>
+                      </td>
+                      <td class="num">
+                        0.2116
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-positivo" data-signo="positivo">
+                            +9.31%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        1.000
+                      </td>
+                    </tr>
+                  
+                    
+                    <tr class="" data-jornada="4">
+                      <td class="jornada-cell">
+                        <span class="visor-sr-only">J4</span>
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be">Q-BE</span>
+                      </td>
+                      <td class="num">
+                        0.1919
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-neutro" data-signo="neutro">
+                            0.00%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        <span class="muted-dash">—</span>
+                      </td>
+                    </tr>
+                  
+                
+                  
+                  
+                    
+                    <tr class="is-consenso" data-jornada="5">
+                      <td class="jornada-cell">
+                        J5
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be-live-capture">Q-BE (Captura Propia) (9)</span>
+                      </td>
+                      <td class="num">
+                        0.1875
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-negativo" data-signo="negativo">
+                            -12.91%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        1.000
+                      </td>
+                    </tr>
+                  
+                    
+                    <tr class="" data-jornada="5">
+                      <td class="jornada-cell">
+                        <span class="visor-sr-only">J5</span>
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be">Q-BE</span>
+                      </td>
+                      <td class="num">
+                        0.2117
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-neutro" data-signo="neutro">
+                            0.00%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        <span class="muted-dash">—</span>
+                      </td>
+                    </tr>
+                  
+                
+                  
+                  
+                    
+                    <tr class="is-consenso" data-jornada="6">
+                      <td class="jornada-cell">
+                        J6
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be-live-capture">Q-BE (Captura Propia) (9)</span>
+                      </td>
+                      <td class="num">
+                        0.2046
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-negativo" data-signo="negativo">
+                            -8.21%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        1.000
+                      </td>
+                    </tr>
+                  
+                    
+                    <tr class="" data-jornada="6">
+                      <td class="jornada-cell">
+                        <span class="visor-sr-only">J6</span>
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be">Q-BE</span>
+                      </td>
+                      <td class="num">
+                        0.2214
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-neutro" data-signo="neutro">
+                            0.00%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        <span class="muted-dash">—</span>
+                      </td>
+                    </tr>
+                  
+                
+                  
+                  
+                    
+                    <tr class="is-consenso" data-jornada="7">
+                      <td class="jornada-cell">
+                        J7
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-consenso">Promedio Casinos (6)</span>
+                      </td>
+                      <td class="num">
+                        0.1697
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-negativo" data-signo="negativo">
+                            -5.72%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        1.000
+                      </td>
+                    </tr>
+                  
+                    
+                    <tr class="" data-jornada="7">
+                      <td class="jornada-cell">
+                        <span class="visor-sr-only">J7</span>
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be">Q-BE</span>
+                      </td>
+                      <td class="num">
+                        0.1794
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-neutro" data-signo="neutro">
+                            0.00%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        <span class="muted-dash">—</span>
+                      </td>
+                    </tr>
+                  
+                
+                  
+                  
+                    
+                    <tr class="is-consenso" data-jornada="8">
+                      <td class="jornada-cell">
+                        J8
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be-live-capture">Q-BE (Captura Propia) (9)</span>
+                      </td>
+                      <td class="num">
+                        0.1808
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-negativo" data-signo="negativo">
+                            -19.52%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        1.000
+                      </td>
+                    </tr>
+                  
+                    
+                    <tr class="" data-jornada="8">
+                      <td class="jornada-cell">
+                        <span class="visor-sr-only">J8</span>
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be">Q-BE</span>
+                      </td>
+                      <td class="num">
+                        0.2161
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-neutro" data-signo="neutro">
+                            0.00%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        <span class="muted-dash">—</span>
+                      </td>
+                    </tr>
+                  
+                
+                  
+                  
+                    
+                    <tr class="is-consenso" data-jornada="9">
+                      <td class="jornada-cell">
+                        J9
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be-live-capture">Q-BE (Captura Propia) (9)</span>
+                      </td>
+                      <td class="num">
+                        0.2777
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-positivo" data-signo="positivo">
+                            +2.09%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        1.000
+                      </td>
+                    </tr>
+                  
+                    
+                    <tr class="" data-jornada="9">
+                      <td class="jornada-cell">
+                        <span class="visor-sr-only">J9</span>
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be">Q-BE</span>
+                      </td>
+                      <td class="num">
+                        0.2719
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-neutro" data-signo="neutro">
+                            0.00%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        <span class="muted-dash">—</span>
+                      </td>
+                    </tr>
+                  
+                
+                  
+                  
+                    
+                    <tr class="is-consenso" data-jornada="10">
+                      <td class="jornada-cell">
+                        J10
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be-live-capture">Q-BE (Captura Propia) (9)</span>
+                      </td>
+                      <td class="num">
+                        0.2062
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-negativo" data-signo="negativo">
+                            -0.63%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        1.000
+                      </td>
+                    </tr>
+                  
+                    
+                    <tr class="" data-jornada="10">
+                      <td class="jornada-cell">
+                        <span class="visor-sr-only">J10</span>
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be">Q-BE</span>
+                      </td>
+                      <td class="num">
+                        0.2075
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-neutro" data-signo="neutro">
+                            0.00%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        <span class="muted-dash">—</span>
+                      </td>
+                    </tr>
+                  
+                
+                  
+                  
+                    
+                    <tr class="is-consenso" data-jornada="11">
+                      <td class="jornada-cell">
+                        J11
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be-live-capture">Q-BE (Captura Propia) (9)</span>
+                      </td>
+                      <td class="num">
+                        0.2607
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-negativo" data-signo="negativo">
+                            -2.38%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        1.000
+                      </td>
+                    </tr>
+                  
+                    
+                    <tr class="" data-jornada="11">
+                      <td class="jornada-cell">
+                        <span class="visor-sr-only">J11</span>
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be">Q-BE</span>
+                      </td>
+                      <td class="num">
+                        0.2669
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-neutro" data-signo="neutro">
+                            0.00%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        <span class="muted-dash">—</span>
+                      </td>
+                    </tr>
+                  
+                
+                  
+                  
+                    
+                    <tr class="is-consenso" data-jornada="12">
+                      <td class="jornada-cell">
+                        J12
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be-live-capture">Q-BE (Captura Propia) (9)</span>
+                      </td>
+                      <td class="num">
+                        0.1996
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-negativo" data-signo="negativo">
+                            -12.47%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        1.000
+                      </td>
+                    </tr>
+                  
+                    
+                    <tr class="" data-jornada="12">
+                      <td class="jornada-cell">
+                        <span class="visor-sr-only">J12</span>
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be">Q-BE</span>
+                      </td>
+                      <td class="num">
+                        0.2245
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-neutro" data-signo="neutro">
+                            0.00%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        <span class="muted-dash">—</span>
+                      </td>
+                    </tr>
+                  
+                
+                  
+                  
+                    
+                    <tr class="is-consenso" data-jornada="13">
+                      <td class="jornada-cell">
+                        J13
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be-live-capture">Q-BE (Captura Propia) (9)</span>
+                      </td>
+                      <td class="num">
+                        0.1832
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-negativo" data-signo="negativo">
+                            -5.90%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        1.000
+                      </td>
+                    </tr>
+                  
+                    
+                    <tr class="" data-jornada="13">
+                      <td class="jornada-cell">
+                        <span class="visor-sr-only">J13</span>
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be">Q-BE</span>
+                      </td>
+                      <td class="num">
+                        0.1940
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-neutro" data-signo="neutro">
+                            0.00%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        <span class="muted-dash">—</span>
+                      </td>
+                    </tr>
+                  
+                
+                  
+                  
+                    
+                    <tr class="is-consenso" data-jornada="14">
+                      <td class="jornada-cell">
+                        J14
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be-live-capture">Q-BE (Captura Propia) (9)</span>
+                      </td>
+                      <td class="num">
+                        0.2320
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-negativo" data-signo="negativo">
+                            -2.03%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        1.000
+                      </td>
+                    </tr>
+                  
+                    
+                    <tr class="" data-jornada="14">
+                      <td class="jornada-cell">
+                        <span class="visor-sr-only">J14</span>
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be">Q-BE</span>
+                      </td>
+                      <td class="num">
+                        0.2367
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-neutro" data-signo="neutro">
+                            0.00%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        <span class="muted-dash">—</span>
+                      </td>
+                    </tr>
+                  
+                
+                  
+                  
+                    
+                    <tr class="is-consenso" data-jornada="15">
+                      <td class="jornada-cell">
+                        J15
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-consenso">Promedio Casinos</span>
+                      </td>
+                      <td class="num">
+                        <span class="sin-evidencia">SIN EVIDENCIA</span>
+                      </td>
+                      <td class="num">
+                        
+                          <span class="sin-evidencia">SIN EVIDENCIA</span>
+                        
+                      </td>
+                      <td class="num">
+                        <span class="muted-dash">—</span>
+                      </td>
+                    </tr>
+                  
+                    
+                    <tr class="" data-jornada="15">
+                      <td class="jornada-cell">
+                        <span class="visor-sr-only">J15</span>
+                      </td>
+                      <td class="fuente-cell">
+                        <span class="source-badge source-q-be">Q-BE</span>
+                      </td>
+                      <td class="num">
+                        0.2255
+                      </td>
+                      <td class="num">
+                        
+                          
+                          <span class="visor-alpha visor-alpha-neutro" data-signo="neutro">
+                            0.00%
+                          </span>
+                        
+                      </td>
+                      <td class="num">
+                        <span class="muted-dash">—</span>
+                      </td>
+                    </tr>
+                  
+                
+              </tbody>
+            </table>
+          </div>
+        
+      </section>
+
+      <p class="consenso-footnote">
+        <strong>El Brier Score mostrado está normalizado (3N) para comparabilidad
+        directa. El KPI superior es la media ponderada por partidos de los bloques
+        que muestra la tabla: si un solo bloque tiene evidencia, ambos coinciden al
+        decimal. El Brier Q-BE histórico consume `historical_sovereign_distributions`
+        ([LN-QBE-150]) y su muestra de comparación son los partidos donde coexisten
+        momios de FootyStats y distribución P'; sin coexistencia el Alpha se declara
+        SIN EVIDENCIA en lugar de fabricarse.</strong>
+      </p>
+      <p class="consenso-footnote">
+        Fuente: Snapshot Vivo (2026_2027).
+        Brier calculado sobre <strong>123 partidos usados</strong> (de 134 auditados).
+        Alpha: diferencia porcentual del Brier de Q-BE frente al mercado.
+        Un Brier ausente produce Alpha ausente; la UI nunca muestra un porcentaje fabricado.
+      </p>
+      <p class="consenso-footnote">
+        Mercado en vivo: el Peso de cada operador es 1 / casinos seleccionados con
+        cuota en el partido (normalizado entre los presentes). Ningún peso proviene
+        del Brier histórico: no existe ponderación Brier-inversa en esta vista.
+      </p>
+    
+  </main>
+
+  <script>
+    (function () {
+      const formulario = document.getElementById('filtros-consenso');
+      if (!formulario) return;
+      const todos = document.getElementById('todos');
+      const casinos = Array.from(document.querySelectorAll('input[name="fuente"][data-casino="1"]'));
+      const qbe = document.querySelector('input[name="fuente"][value="qbe"]');
+      const sincronizarTodos = () => {
+        if (todos) todos.checked = casinos.every((casino) => casino.checked);
+      };
+      if (todos) {
+        todos.addEventListener('change', () => {
+          casinos.forEach((casino) => { casino.checked = todos.checked; });
+          formulario.submit();
+        });
+      }
+      casinos.forEach((casino) => {
+        casino.addEventListener('change', () => {
+          sincronizarTodos();
+          formulario.submit();
+        });
+      });
+      if (qbe) qbe.addEventListener('change', () => formulario.submit());
+      sincronizarTodos();
+    })();
+  </script>
+</body>
+</html>

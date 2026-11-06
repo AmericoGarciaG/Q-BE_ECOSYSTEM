@@ -7,7 +7,7 @@ Base de Gobierno: Kybern Framework v12.0 [ARCH-1.3.4] / Tratado Volumen I (Secci
 
 import math
 from dataclasses import dataclass
-from typing import List, Optional, Sequence, Tuple
+from typing import Dict, List, Optional, Sequence, Tuple
 
 # [LN-QBE-040-C] Ley de resolución dinámica de la correlación táctica y constantes selladas
 # (docs/CONSTANTS.md §2). El eje de resolución tiene un único dueño normativo: `src/core/poisson.py`.
@@ -32,7 +32,7 @@ _SIGMOIDE_K = 8.0            # pendiente de la sigmoide normalizada
 
 
 def _sigmoide_normalizada(t: float) -> float:
-    """Sigmoide reescalada a [0, 1] con s(0) = 0 y s(1) = 1 EXACTOS (C∞ en el interior)."""
+    """[LN-QBE-040-C] Sigmoide reescalada a [0, 1] con s(0) = 0 y s(1) = 1 EXACTOS (C∞ en el interior)."""
     k = _SIGMOIDE_K
     inferior = 1.0 / (1.0 + math.exp(k * 0.5))     # σ(−k/2)
     superior = 1.0 / (1.0 + math.exp(-k * 0.5))    # σ(+k/2)
@@ -188,6 +188,25 @@ class DerivativeMarketsProjection:
     cuota_over_25: float
     cuota_btts_si: float
     cuota_btts_no: float
+
+    @property
+    def p_btts_yes(self) -> float:
+        """[LN-QBE-152] Alias canónico de ``p_btts_si`` (nomenclatura de la Directiva Fase 9)."""
+        return self.p_btts_si
+
+    def as_dict(self) -> Dict[str, float]:
+        """[LN-QBE-152] Proyección plana con ambas nomenclaturas (`yes` ≡ `si`)."""
+        return {
+            "p_under_25": self.p_under_25,
+            "p_over_25": self.p_over_25,
+            "p_btts_no": self.p_btts_no,
+            "p_btts_yes": self.p_btts_yes,
+            "p_btts_si": self.p_btts_si,
+            "cuota_under_25": self.cuota_under_25,
+            "cuota_over_25": self.cuota_over_25,
+            "cuota_btts_si": self.cuota_btts_si,
+            "cuota_btts_no": self.cuota_btts_no,
+        }
 
 
 def _validar_matriz_derivados(matriz_2d: Sequence[Sequence[float]]) -> List[List[float]]:

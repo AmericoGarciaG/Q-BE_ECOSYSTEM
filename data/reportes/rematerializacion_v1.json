@@ -1,0 +1,1410 @@
+{
+  "temporada": null,
+  "candidatos": 3000,
+  "generadas": 2737,
+  "saltadas": 263,
+  "detalle_saltadas": [
+    {
+      "match_id": "fs_2015_2016_z84960",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84961",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84962",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84963",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84964",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84965",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84966",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84967",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84970",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84971",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84972",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84973",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84974",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84975",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84976",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84977",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84978",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84979",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84980",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84981",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84983",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84984",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84985",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84988",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=3)"
+    },
+    {
+      "match_id": "fs_2015_2016_z84990",
+      "temporada": "2015_2016",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=3)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440024",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440025",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440027",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440029",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440030",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440031",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440033",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440034",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440035",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440036",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440037",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440038",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440039",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440041",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440043",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440044",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440047",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440048",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2018_2019_z440049",
+      "temporada": "2018_2019",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617880",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617881",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617882",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617883",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617885",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617884",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617886",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617887",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617888",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617889",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617890",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617891",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617893",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617892",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617894",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617895",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617896",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617897",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617898",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617899",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617900",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617901",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617902",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617904",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617903",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617905",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617906",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617908",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=3)"
+    },
+    {
+      "match_id": "fs_2019_2020_z617915",
+      "temporada": "2019_2020",
+      "motivo": "SI_insuficiente(pj_local=3,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016638",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016640",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016641",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016642",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016643",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016637",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016645",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016639",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016644",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016646",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016647",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016649",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016648",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016651",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016652",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016653",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016650",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016654",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016655",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016656",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016657",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016658",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1041226",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016660",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016661",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016662",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2020_2021_z1016663",
+      "temporada": "2020_2021",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282211",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282212",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282213",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282214",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282215",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282216",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282217",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282218",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282219",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282220",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282221",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282226",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282222",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282223",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282224",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282225",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282227",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282228",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282229",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282230",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282231",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282232",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282236",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282233",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282234",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282235",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2021_2022_z1282237",
+      "temporada": "2021_2022",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280693",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280692",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280694",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280695",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280696",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280697",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280698",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280699",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280700",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280701",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280702",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280703",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280709",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280704",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280705",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280706",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280707",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280708",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280710",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280711",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280712",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280713",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280714",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280715",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280716",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280717",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2022_2023_z2280718",
+      "temporada": "2022_2023",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413400",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413402",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413401",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413403",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413404",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413405",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413406",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413407",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413408",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413409",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413415",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413413",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413411",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413410",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413414",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413412",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413417",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413418",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413419",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413420",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413421",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413422",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413423",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413424",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413425",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413426",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413435",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=3)"
+    },
+    {
+      "match_id": "fs_2023_2024_z6413432",
+      "temporada": "2023_2024",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=3)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453255",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453254",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453256",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453257",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453258",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453259",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453260",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453261",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453262",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453263",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453264",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453265",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453266",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453267",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453268",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453269",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453270",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453271",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453272",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453273",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453275",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453274",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453276",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453280",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453278",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2024_2025_z7453279",
+      "temporada": "2024_2025",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282837",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282820",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282901",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282864",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282898",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282816",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282880",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282870",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282934",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282835",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282839",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282911",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282932",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282874",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282909",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282841",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282889",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282834",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282933",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282962",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282916",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282905",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282824",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282907",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282908",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282904",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282818",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=3)"
+    },
+    {
+      "match_id": "fs_2025_2026_z8282918",
+      "temporada": "2025_2026",
+      "motivo": "SI_insuficiente(pj_local=3,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548258",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548387",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548382",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548383",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548386",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548263",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548381",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548267",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548261",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=0,pj_visita=0)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548266",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548264",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548384",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548385",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548371",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548260",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548265",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548262",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548369",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=1,pj_visita=1)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548372",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548259",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548388",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548370",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548257",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548380",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548374",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548377",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    },
+    {
+      "match_id": "fs_2026_2027_z8548379",
+      "temporada": "2026_2027",
+      "motivo": "SI_insuficiente(pj_local=2,pj_visita=2)"
+    }
+  ],
+  "motivos": {
+    "SI_insuficiente": 263
+  },
+  "motivos_por_temporada": {
+    "2015_2016": {
+      "SI_insuficiente": 25
+    },
+    "2018_2019": {
+      "SI_insuficiente": 19
+    },
+    "2019_2020": {
+      "SI_insuficiente": 29
+    },
+    "2020_2021": {
+      "SI_insuficiente": 27
+    },
+    "2021_2022": {
+      "SI_insuficiente": 27
+    },
+    "2022_2023": {
+      "SI_insuficiente": 27
+    },
+    "2023_2024": {
+      "SI_insuficiente": 28
+    },
+    "2024_2025": {
+      "SI_insuficiente": 26
+    },
+    "2025_2026": {
+      "SI_insuficiente": 28
+    },
+    "2026_2027": {
+      "SI_insuficiente": 27
+    }
+  },
+  "filas_tabla": 2737,
+  "integridad": "ok",
+  "respaldo_worm": "D:\\00 SW Projects\\Q-BE Casino Deportes\\Q_BE_ECOSYSTEM\\qbe_observatory\\data\\backups\\qbe_historico_pre_distribuciones_20261105T220247Z.db",
+  "dry_run": false,
+  "motor": "v1",
+  "tabla": "historical_sovereign_distributions",
+  "model_version": "v13.0-DIRGEN",
+  "brier": {
+    "n_qbe": 2728,
+    "n_mercado": 2690,
+    "brier_qbe": 0.6343710860421697,
+    "brier_mercado": 0.6121117395018466,
+    "brier_qbe_misma_muestra": 0.634302259559487,
+    "alpha_pct": -3.6252400706608956
+  },
+  "muestra": [
+    {
+      "match_id": "fs_2015_2016_z84986",
+      "p_local": 0.3908,
+      "p_empate": 0.275,
+      "p_visitante": 0.3342
+    },
+    {
+      "match_id": "fs_2015_2016_z84987",
+      "p_local": 0.6046,
+      "p_empate": 0.2502,
+      "p_visitante": 0.1452
+    },
+    {
+      "match_id": "fs_2015_2016_z84989",
+      "p_local": 0.3508,
+      "p_empate": 0.2609,
+      "p_visitante": 0.3883
+    },
+    {
+      "match_id": "fs_2015_2016_z84991",
+      "p_local": 0.571,
+      "p_empate": 0.2385,
+      "p_visitante": 0.1905
+    },
+    {
+      "match_id": "fs_2015_2016_z84992",
+      "p_local": 0.1782,
+      "p_empate": 0.2622,
+      "p_visitante": 0.5596
+    }
+  ],
+  "promedio_simplex": [
+    0.401,
+    0.2704,
+    0.3286
+  ]
+}

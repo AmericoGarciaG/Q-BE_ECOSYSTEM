@@ -555,7 +555,7 @@ def _salida_por_insuficiencia(
     motivo: str,
     gsl3d: Optional[Dict[str, Any]] = None,
 ) -> SovereignDistributionOutput:
-    """[E-50.1 §P-01] Prior fiduciario R-1 con motivo declarado y traza completa.
+    """[LN-QBE-035-B] Prior fiduciario R-1 con motivo declarado y traza completa (E-50.1 §P-01).
 
     No es un `except` que devuelve un número: es la rama legislada de ignorancia, idéntica en
     contrato a la de S(I)=0 y con el motivo publicado para que ningún consumidor confunda
@@ -641,7 +641,7 @@ def _extraer_bloque_forma_10p(raw_match_data: Dict[str, Any]) -> Optional[Tuple[
 def _campo_obligatorio(
     bloque: Dict[str, Any], clave: str, match_id: str = "", lado: str = ""
 ) -> float:
-    """[E-50.1 §P-01] Lectura de evidencia obligatoria: ausencia ⇒ `InsufficientDataException`.
+    """[LN-QBE-035-B] Lectura de evidencia obligatoria (E-50.1 §P-01): ausencia ⇒ `InsufficientDataException`.
 
     Sustituye a `dict.get(clave, <literal>)`. Un `None` explícito de la fuente es ausencia
     declarada, no un cero.
@@ -805,7 +805,7 @@ def derivar_factores_con_procedencia(
 def derivar_factores_estructurales_v2(
     matriz_causal: Dict[str, Any]
 ) -> Optional[Tuple[float, float, float, float, Dict[str, Any]]]:
-    """[E-50.7] Factor (A_home, D_away, A_away, D_home) desde el contrato IPO v2 (§7.6).
+    """[LN-QBE-039] Factor (A_home, D_away, A_away, D_home) desde el contrato IPO v2 (§7.6, E-50.7).
 
     Reúne en UNA sola llamada la proyección ortogonal de ambos clubes para consumidores de
     investigación: devuelve `(A_home, D_away, A_away, D_home, gsl3d_traza)` si ambos lados
@@ -854,7 +854,7 @@ GAMMA_FIJO_V6 = 0.15
 def derivar_factores_super_senal(
     raw_match_data: Dict[str, Any], match_id: str = ""
 ) -> Tuple[float, float, float, float]:
-    """[E-50.9] Factor log-diferencial desde V06/V07 (ataque) y V12 (defensa), sin ortogonalización.
+    """[LN-QBE-040] Factor log-diferencial desde V06/V07 (ataque) y V12 (defensa), sin ortogonalización (E-50.9).
 
     Normalización log-ratio contra la media de liga sellada (misma filosofía §7.6.3):
 
@@ -870,6 +870,7 @@ def derivar_factores_super_senal(
         raise InsufficientDataException(match_id, "medias_liga", "liga")
 
     def _factor(xg: float, sot: float, xga: float) -> Tuple[float, float]:
+        """[LN-QBE-040] Log-ratios de ataque (xG/SoT) y defensa (xGA) contra la media de liga sellada."""
         xg_n = (float(xg) + 1.0) / (float(medias["xg"]) + 1.0)
         sot_n = (float(sot) + 1.0) / (float(medias["sot"]) + 1.0)
         xga_n = (float(xga) + 1.0) / (float(medias["xga"]) + 1.0)
@@ -878,6 +879,7 @@ def derivar_factores_super_senal(
         return ataque, defensa
 
     def _tasas(bloque: Dict[str, Any], lado: str) -> Tuple[float, float, float]:
+        """[LN-QBE-040] Extrae (xG, SoT, xGA) del bloque; ausencia ⇒ `InsufficientDataException`."""
         for clave in ("xg", "sot", "xga"):
             if clave not in bloque or bloque[clave] is None:
                 raise InsufficientDataException(match_id, clave, lado)
@@ -897,7 +899,7 @@ def generar_distribucion_v6(
     kappa_net: float = KAPPA_NET,
     rho: float = -0.05,
 ) -> SovereignDistributionOutput:
-    """[E-50.9][FASE 6] Generador V6: súper-señal → α fija → λ → Dixon-Coles → André → símplex.
+    """[LN-QBE-040] Generador V6: súper-señal → α fija → λ → Dixon-Coles → André → símplex (E-50.9, Fase 6).
 
     Cero GSL-3D, cero plaza/altitud/descanso: `α = ln(2.65) − ln(1+e^0.15) = 0.203603` FIJO.
     """

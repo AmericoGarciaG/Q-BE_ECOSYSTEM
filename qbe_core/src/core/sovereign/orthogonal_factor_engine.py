@@ -196,12 +196,12 @@ PRIORIDAD_GS: Dict[str, int] = {
 
 
 def orden_gs(nombres: Any) -> Tuple[str, ...]:
-    """[E-50.4 §T1] Orden legislado de Gram-Schmidt (rank ascendente; desempate por ID)."""
+    """[LN-QBE-039] Orden legislado de Gram-Schmidt (rank ascendente; desempate por ID) — [E-50.4 §T1]."""
     return tuple(sorted(nombres, key=lambda nombre: (PRIORIDAD_GS.get(nombre, 999), nombre)))
 
 
 class ResultadoGSL3Dv2(BaseModel):
-    """[LN-QBE-039 §7.6] Contrato de salida del motor de proyección ortogonal."""
+    """[LN-QBE-039] Contrato de salida del motor de proyección ortogonal (§7.6)."""
     model_config = ConfigDict(frozen=True, extra="ignore")
 
     A_star: float
@@ -218,7 +218,7 @@ class ResultadoGSL3Dv2(BaseModel):
 
 
 def _normalizar_log(valor: float, media_liga: float) -> float:
-    """[LN-QBE-039 §7.6.3] z_i = ln((v_i + ε) / (μ_i + ε)) — log-diferencial contra la liga.
+    """[LN-QBE-039] z_i = ln((v_i + ε) / (μ_i + ε)) — log-diferencial contra la liga (§7.6.3).
 
     `μ_i` DEBE estar sellada por temporada: normalizar contra la media de la propia muestra
     sería fuga de información y queda prohibido por ley.
@@ -230,7 +230,7 @@ def _normalizar_log(valor: float, media_liga: float) -> float:
 def _columnas_utilizables(
     filas: Any, vector: Any, medias_liga: Any, espacio: str
 ) -> Tuple[Tuple[str, ...], Any]:
-    """Columnas con evidencia COMPLETA (matriz + vector del fixture) y media de liga sellada."""
+    """[LN-QBE-039] Columnas con evidencia COMPLETA (matriz + vector del fixture) y media de liga sellada."""
     nombres = []
     matriz = []
     for nombre in orden_gs(VARIABLES_POR_ESPACIO[espacio]):
@@ -262,7 +262,7 @@ def _columnas_utilizables(
 def _gram_schmidt_modificado(
     nombres: Tuple[str, ...], matriz: Any, eps_ort: float, pesos: Any = None
 ) -> Tuple[list, Dict[str, str], Dict[str, list]]:
-    """[LN-QBE-039 §7.6.4] MGS con jerarquía legislada ([E-50.4 §T1]) y peso β PRE-proyección.
+    """[LN-QBE-039] MGS con jerarquía legislada ([E-50.4 §T1]) y peso β PRE-proyección (§7.6.4).
 
     Cada variable es una COLUMNA de longitud n (la muestra histórica del club). Antes de
     ortogonalizar se aplica el peso β_i ([E-50.4 §T2]): el producto interno opera sobre el
@@ -323,7 +323,7 @@ def _sintetizar_espacio(
     techo_norma: float,
     pesos: Any = None,
 ) -> Tuple[float, Dict[str, str], Dict[str, float], int]:
-    """[LN-QBE-039 §7.6.5] Factor del espacio: RMS de la proyección sobre la base ortonormal.
+    """[LN-QBE-039] Factor del espacio: RMS de la proyección sobre la base ortonormal (§7.6.5).
 
     El partido nuevo se evalúa con LOS MISMOS coeficientes `c_ij` de la descomposición histórica
     y con el MISMO peso β_i:
@@ -360,7 +360,7 @@ def resolver_factores_latentes_gsl3d_v2(
     eps_ort: float = EPSILON_ORTOGONAL,
     pesos: Any = None,
 ) -> ResultadoGSL3Dv2:
-    """[LN-QBE-039 §7.6] GSL-3D v2 — factores (A*, D*, C*) desde la matriz causal del club.
+    """[LN-QBE-039] GSL-3D v2 — factores (A*, D*, C*) desde la matriz causal del club (§7.6).
 
     `matriz_causal` es una secuencia de registros `{V##: valor}` (n ≥ 1 filas pre-kickoff);
     `vector_fixture` es el registro del partido evaluado (mismo esquema); `medias_liga` es el

@@ -51,7 +51,7 @@ Tipografía: `Inter`/`Outfit`/system sans para lectura; `JetBrains Mono`/`Fira C
 ### 2.2 Observatorio — `qbe_observatory:8001`
 
 - Jinja2 server-side.
-- Vistas: visor de calibración, backtesting, snapshot, Manus.
+- Vistas: desempeño y coberturas (`/desempeno`), visor de calibración (`/visor`), consenso de mercado (`/consenso`) y backtesting (`/backtesting`).
 - Foco: auditoría y lectura.
 - No escribe carteras ni modifica la base viva.
 
@@ -167,6 +167,13 @@ El micro-HUD publica exactamente cuatro luces:
 | `data-valor-suprimido` | [DES-QBE-075] `cold_start` cuando `S = 0`: la comparación `P′ > q_mkt` existe pero **no** se declara valor. La celda publica `data-valor="false"` y el chip `COLD START`.
 | `.mc-card` / `.mc-celda` | [DES-QBE-075] Namespace exclusivo de la Match Card del Observatorio. No se reutiliza en la Mesa ni sustituye a `.match-card-clean`. |
 | `/visor/partido/<id_partido>/variables` | [DES-QBE-075] Fragmento HTML de solo lectura con el panel 32V (`vars44-*`). Se inyecta en `#vars44-cuerpo`; no calcula nada. |
+| `data-mando-rector` | [DES-QBE-078] `qbe` / `mercado`: conmutador de **Fuente Rectora**. Se declara una sola vez por página, en el contenedor de la parrilla; el estado viaja en `vista.mando` y jamás se recalcula en el cliente. |
+| `data-barra-sup` | [DES-QBE-078] `qbe` / `mercado`: fuente que ocupa la barra comparativa **superior** de 3 px en `--text`. Es blanca para la fuente rectora y se invierte con el mando (§7.4.4). |
+| `data-barra-inf` | [DES-QBE-078] `qbe` / `mercado`: fuente que ocupa la barra comparativa **inferior** de 3 px en `--muted`. Una misma celda puede portar ambas barras. |
+| `data-kpi` | [DES-QBE-078] Clave de la banda de macro KPIs: `partidos`, `brier-qbe`, `brier-mercado`, `alpha`, `rescate`. La cifra se transcribe del DTO; el pintor no la deriva. |
+| `data-jornada` | [DES-QBE-078] N.º de jornada en el contenedor desplegable (`<details>`) de la parrilla de desempeño. |
+| `data-cold-start` | [DES-QBE-078] `true` cuando `S = 0`: el veredicto fiduciario Q-BE se suprime; el balón y el consenso de mercado sobreviven. |
+| `data-shin-z` / `data-spread-cuotas` | [DES-QBE-078] Telemetría del pie en Modo Mercado: `z` de Shin del consenso y spread de cuotas inter-casinos, transcritos del DTO. En Modo Q-BE el pie publica la tetralogía fáctica y el botón 32V. |
 
 ### 7.1 `[DES-QBE-075]` Match Card Híbrido de Calibración
 
@@ -199,6 +206,70 @@ Reglas de composición:
 
 ### 7.3 `[DES-QBE-077]` Selector de Distribución en Visor de Backtesting
 *   **UI:** Controles (checkboxes/radios) para seleccionar la fuente de simulación: Q-BE, Consenso o Casino Individual.
+
+### 7.4 `[DES-QBE-078]` Vista Unificada de Desempeño y Coberturas Probabilísticas
+
+La lectura de desempeño de temporada deja de ser un template pasivo y se convierte en la vista rectora del Observatorio. Reutiliza la gramática de tarjeta de `[DES-QBE-075]` (`.mc-card` / `.mc-grid` / `.mc-celda`) y añade el **Mando Rector**: un conmutador de estado que decide qué fuente ordena el color del vértice y la jerarquía de las barras comparativas, sin que el pintor calcule nada.
+
+#### 7.4.1 Geometría y rutas
+
+1. `GET /desempeno` es la vista canónica de desempeño. `GET /` responde `HTTP 302` (admitido `301`) con `Location: /desempeno`; el template pasivo `index.html` deja de servirse como portada y queda derogado.
+2. Navbar superior único de cuatro pestañas, en este orden: `[ 📊 Desempeño y Coberturas → /desempeno ] [ 🔬 Auditoría de Calibración → /visor ] [ 🌐 Consenso de Mercado → /consenso ] [ 📈 Backtesting → /backtesting ]`. Las cuatro rutas se conservan; ninguna pestaña se retira.
+3. Composición vertical: (1) barra de comando y control; (2) banda de cinco macro KPIs unificados; (3) parrilla de jornadas desplegables con tarjetas de partido.
+
+#### 7.4.2 Barra de comando y control
+
+Temporada (`select`), rango de jornadas (desde / hasta), botón `Restablecer`, conmutador de Mando Rector, casillas de fuentes de mercado (`Caliente`, `Novibet`, `Betway`, `FootyStats`) y selector de de-vig (`Shin (1991)` / `Proporcional`). Los controles transcriben el estado servido en `vista.filtros`; no derivan, no normalizan y no sustituyen valores ausentes.
+
+#### 7.4.3 Mando Rector
+
+`data-mando-rector="qbe|mercado"` se declara **una sola vez** por página, en el contenedor de la parrilla, y toma su valor de `vista.mando` (defecto `qbe`). El servidor emite las dos clasificaciones del resultado consumado (`vertice_qbe`, `vertice_mercado`); la plantilla transcribe la del mando activo. **Cero ordenamiento en el pintor:** ni el vértice de mercado ni el de Q-BE se recalculan en Jinja.
+
+#### 7.4.4 Inversión de barras comparativas de casilla
+
+| Mando rector | Barra superior (3 px, `--text`) | Barra inferior (3 px, `--muted`) |
+|---|---|---|
+| `qbe` | `data-barra-sup="qbe"` en la celda de `r_max` (P<sub>max</sub> Q-BE) | `data-barra-inf="mercado"` en la celda del máximo de `q_mkt` |
+| `mercado` | `data-barra-sup="mercado"` en la celda del máximo de `q_mkt` | `data-barra-inf="qbe"` en la celda de `r_max` (P<sub>max</sub> Q-BE) |
+
+1. La barra blanca pertenece siempre a la **fuente rectora**; la gris, a la subordinada. El color no cambia con el mando: cambia la fuente que lo ocupa.
+2. El máximo de `q_mkt` es un argmax puro evaluado una vez por tarjeta sobre magnitudes ya servidas (empate técnico ⇒ todas las casillas que alcanzan el máximo). Es una comparación, no aritmética.
+3. Una misma celda puede portar ambas barras cuando `r_max` coincide con el argmax de mercado; se materializan como `box-shadow` inset y jamás como borde.
+4. Con `es_cold_start`, la barra **Q-BE** se suprime (no hay vértice fiduciario que ordenar); la barra de mercado sobrevive porque el consenso es un hecho observado.
+
+#### 7.4.5 Coloreado del marco del balón
+
+El balón (`⚽`, sprite único `#mc-balon`) marca siempre el resultado consumado y no cambia con el mando. El marco de esa celda se tiñe según la clasificación de la **fuente rectora activa**:
+
+| Mando rector | `data-vertice="max"` → `--success` | `data-vertice="mid"` → `--accent` | `data-vertice="low"` → `--danger` |
+|---|---|---|---|
+| `qbe` | P<sub>max</sub> Q-BE · *Acierto Primario* | P<sub>mid</sub> Q-BE · *Rescate de Cobertura* | P<sub>low</sub> Q-BE · *Ruptura Residual* |
+| `mercado` | max `q_mkt` · *Acierto Mercado* | second_max `q_mkt` · *Rescate Mercado* | min `q_mkt` · *Ruptura Mercado* |
+
+1. La clase de acierto primario es `.mc-celda-acierto[data-vertice="max"]` → `--success`; `mid` → `--accent`; `low` → `--danger`. El literal accesible nombra el vértice con el vocabulario del mando activo.
+2. **Independencia de fuente:** el color lo dicta el mando, no Q-BE. Si el resultado consumado fue el favorito del casino, la celda recibe `--success` en Modo Mercado aunque Q-BE lo hubiera clasificado P<sub>low</sub>.
+3. `cold_start` (`S = 0`): en Modo Q-BE la celda declara `data-vertice="cold_start"` y el marco queda en `--muted`, sin tinte; en Modo Mercado el consenso conserva su clasificación porque es un hecho observado.
+4. El rojo denota ruptura consumada, no error de sistema; viaja siempre con balón, `title` y literal accesible.
+
+#### 7.4.6 Asimetría informativa del pie
+
+| Mando rector | Pie de tarjeta |
+|---|---|
+| `qbe` | Tetralogía fáctica (`● OPTA ● SEDE ● H2H ● CTX`, `data-semaforo`) + botón `.btn-ver-44-vars` hacia `/visor/partido/<id_partido>/variables`. |
+| `mercado` | Conmuta el pie: `data-shin-z` (z de Shin del consenso) y `data-spread-cuotas` (spread de cuotas inter-casinos), transcritos del DTO en formato decimal de 4 cifras. Sin tetralogía ni botón 32V. |
+
+#### 7.4.7 Parrilla y tarjeta
+
+1. Cada jornada es un `<details class="dsp-jornada" data-jornada="N">` con `<summary>` literal `JORNADA N (M PARTIDOS)`; las tarjetas viven en su `.mc-grid`.
+2. La tarjeta es `article.mc-card` con `data-partido-id` y banda de Brier (`QBE · Mkt`); el Brier de mercado ausente se declara `SIN EVIDENCIA` — nunca `0.0000`.
+3. Las tres celdas son `div.mc-celda` con `data-clave` (`LOCAL` / `EMPATE` / `VISITANTE`) y **hijos exclusivamente `span`** (contrato heredado de §7.1; el Juez delimita la celda por su etiqueta de apertura).
+4. Cold Start se declara en la tarjeta con `data-cold-start="true"` y el sello `❄️ Cold Start · S = 0`.
+5. Toda celda declara `data-acierto="true"` / `false`; el acierto no depende del mando.
+6. Formato numérico heredado de §7.1: probabilidades `%.1f%%`, momios `%.2f`, Brier `%.4f`, KPIs `%.1f%%` / `%.4f`.
+
+#### 7.4.8 Contexto de plantilla
+
+`qbe_observatory/app/templates/desempeno.html` se renderiza con `TemplateResponse(request, "desempeno.html", {"titulo": str, "vista": dict})`. El Juez renderiza la plantilla con `titulo` + `vista` y juzga clases, atributos y literales del DOM — jamás estilos calculados. Contratos DTO: `[ARCH-1.4.78]`.
 
 ---
 
@@ -273,9 +344,10 @@ Reglas de composición:
 | `[DES-QBE-073]` | Apilamiento de Desglose en Tabla Meso [UX-MANDATE] | `observatorio` | VIGENTE |
 | `[DES-QBE-074]` | Saneamiento Visual de la Tabla de Calibración: Aire, Jerarquía Anidada y Píldora de Atribución [UX-MANDATE] | `observatorio` | VIGENTE |
 | `[DES-QBE-075]` | Match Card Híbrido de Calibración: Tres Zonas, Vértice Cromático del Resultado, Barras P′/Mercado y Modal 32V Bajo Demanda [UX-MANDATE] | `observatorio` | VIGENTE |
+| `[DES-QBE-078]` | Vista Unificada de Desempeño y Coberturas Probabilísticas (`/desempeno`): Mando Rector, Cobertura Bicolor e Inversión de Barras Comparativas [UX-MANDATE] | `observatorio` | VIGENTE |
 | `[UX-CFG-01]` | Orden Configurable de Boletos en Tarjeta [UX-MANDATE] [BACKLOG] | `compartida` | VIGENTE |
 
-_Total: 68 identificadores._
+_Total: 69 identificadores._
 
 
 ---

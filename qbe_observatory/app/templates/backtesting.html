@@ -7,15 +7,7 @@
   <link rel="stylesheet" href="/static/css/theme.css">
 </head>
 <body>
-  <header class="header-container">
-    <div class="header-brand">Q-BE <span>Observatory</span></div>
-    <nav class="header-nav">
-      <a class="tab-btn" href="/">Inicio</a>
-      <a class="tab-btn" href="/visor">Auditoría de Calibración</a>
-      <a class="tab-btn" href="/consenso">Consenso de Mercado</a>
-      <a class="tab-btn active" href="/backtesting">Backtesting</a>
-    </nav>
-  </header>
+  {% include "_navbar.html" %}
 
   <main style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem;">
     <h1 style="margin-top: 0;">Backtesting y Simulación</h1>

@@ -207,9 +207,22 @@ class Corpus:
 
 
 def _agregado(
-    corpus: Corpus, slug: str, momento: datetime, temporada: str, xg_total: float, xga_total: float
+    corpus: Corpus,
+    slug: str,
+    momento: datetime,
+    temporada: str,
+    xg_total: float,
+    xga_total: float,
+    partidos_con_xg: int = 0,
 ) -> Tuple[Dict[str, float], int]:
-    """Suma los marcadores previos legibles del club en la temporada."""
+    """Suma los marcadores previos legibles del club en la temporada.
+
+    [VAR-2026-F9-02] El acumulado de xG/xGA llega sumado **sólo** sobre los partidos con
+    vector causal (cobertura < 100 %). `_mezcla_opta` lo divide entre `pj`, así que aquí se
+    renormaliza al denominador completo: se preserva la TASA media de los partidos cubiertos
+    y se proyecta sobre `partidos`. Antes, un subconteo se dividía entre el total y el factor
+    de ataque se contraía con la cobertura (brecha de 0,225 goles/partido).
+    """
     gf = gc = 0.0
     partidos = 0
     for fila in corpus.previos(slug, momento, temporada):
@@ -224,6 +237,10 @@ def _agregado(
             gf += float(goles_visita)
             gc += float(goles_local)
         partidos += 1
+    if partidos_con_xg > 0 and partidos > 0:
+        factor = partidos / partidos_con_xg
+        xg_total = xg_total * factor
+        xga_total = xga_total * factor
     return (
         {"pj": float(partidos), "gf": gf, "gc": gc, "xg": xg_total, "xga": xga_total},
         partidos,
@@ -232,10 +249,19 @@ def _agregado(
 
 def _xg_previo(
     conexion: sqlite3.Connection, corpus: Corpus, slug: str, momento: datetime, temporada: str
-) -> Tuple[float, float]:
-    """Suma `V06` (xG) y `V12` (xGA) de los partidos previos, si el proveedor los publica."""
+) -> Tuple[float, float, int]:
+    """Suma `V06` (xG) y `V12` (xGA) de los partidos previos con marcador y vector.
+
+    [VAR-2026-F9-02] Devuelve además el número de partidos cubiertos para que `_agregado`
+    renormalice el acumulado al denominador `pj`. Sólo cuentan los partidos con marcador
+    legible (el mismo universo que `_agregado`); un partido sin marcador no aporta ni al
+    numerador ni al denominador.
+    """
     total_xg = total_xga = 0.0
+    cubiertos = 0
     for fila in corpus.previos(slug, momento, temporada):
+        if fila.get("home_goals") is None or fila.get("away_goals") is None:
+            continue
         vector = _vector_de(conexion, str(fila["match_id"]))
         if not vector:
             continue
@@ -246,7 +272,9 @@ def _xg_previo(
             total_xg += float(xg)
         if xga is not None:
             total_xga += float(xga)
-    return total_xg, total_xga
+        if xg is not None or xga is not None:
+            cubiertos += 1
+    return total_xg, total_xga, cubiertos
 
 
 def _duelos_h2h(corpus: Corpus, local: str, visita: str, momento: datetime) -> List[Dict[str, Any]]:
@@ -383,10 +411,10 @@ def construir_entrada(
     visita = str(fila.get("away_team_slug") or "")
     temporada = str(fila.get("temporada") or "")
 
-    xg_h, xga_h = _xg_previo(conexion, corpus, local, momento, temporada)
-    xg_a, xga_a = _xg_previo(conexion, corpus, visita, momento, temporada)
-    stats_local, pj_local = _agregado(corpus, local, momento, temporada, xg_h, xga_h)
-    stats_visita, pj_visita = _agregado(corpus, visita, momento, temporada, xg_a, xga_a)
+    xg_h, xga_h, n_xg_h = _xg_previo(conexion, corpus, local, momento, temporada)
+    xg_a, xga_a, n_xg_a = _xg_previo(conexion, corpus, visita, momento, temporada)
+    stats_local, pj_local = _agregado(corpus, local, momento, temporada, xg_h, xga_h, n_xg_h)
+    stats_visita, pj_visita = _agregado(corpus, visita, momento, temporada, xg_a, xga_a, n_xg_a)
 
     if pj_local < PARTIDOS_MINIMOS_SI or pj_visita < PARTIDOS_MINIMOS_SI:
         return None, f"SI_insuficiente(pj_local={pj_local},pj_visita={pj_visita})"

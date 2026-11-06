@@ -30,11 +30,14 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Dict, Iterable, Mapping, Sequence, Tuple
+from typing import Dict, Iterable, Mapping, Optional, Sequence, Tuple
 
 __all__ = [
     "ConsensoInvalidoError",
+    "ConsensoMulticasaResult",
     "calcular_consenso_ponderado",
+    "clasificar_origen_dato",
+    "consenso_shin_multicasa",
     "promediar_simplex",
     "InvalidOddsException",
     "ShinDevigResult",
@@ -296,4 +299,123 @@ def desmarginar_shin(cuotas: Sequence[float]) -> ShinDevigResult:
         p_visitante=probabilidades[2],
         z_insider=z_insider,
         overround_bruto=sobremargen,
+    )
+
+
+# ═══════════════════════════════════════════════════════════════════════════════════════
+# [LN-QBE-148] CONSENSO MULTICASA CON DE-VIG DE SHIN
+#
+# Cada casino se de-viga con `[LN-QBE-151]` ANTES de ponderar: el consenso nunca promedia
+# cuotas brutas ni márgenes. El resultado es `q_MKT_consenso` (símplex limpio del mercado)
+# con la procedencia normalizada en `origen_dato`.
+# ═══════════════════════════════════════════════════════════════════════════════════════
+
+ORIGEN_HISTORICO_FOOTYSTATS = "HISTORICO_FOOTYSTATS"
+ORIGENES_LIVE = {
+    "caliente": "LIVE_CALIENTE",
+    "novibet": "LIVE_NOVIBET",
+    "betway": "LIVE_BETWAY",
+}
+
+
+def clasificar_origen_dato(fuente: Optional[str], casino: Optional[str] = None) -> str:
+    """[LN-QBE-148] Normaliza la procedencia de una fila de momios a un `origen_dato` canónico.
+
+    * casino live conocido (`caliente`/`novibet`/`betway`) ⇒ `LIVE_<CASINO>`;
+    * fuente `FOOTYSTATS*` ⇒ `HISTORICO_FOOTYSTATS`;
+    * captura propia sin casino ⇒ `LIVE_CAPTURA_PROPIA`;
+    * cualquier otra fuente se devuelve en mayúsculas, declarada (nunca vacía).
+    """
+    nombre_casino = str(casino or "").strip().lower()
+    if nombre_casino in ORIGENES_LIVE:
+        return ORIGENES_LIVE[nombre_casino]
+    texto = str(fuente or "").strip().lower()
+    if "footystats" in texto:
+        return ORIGEN_HISTORICO_FOOTYSTATS
+    if "captura" in texto or "qbe" in texto or "q-be" in texto:
+        return "LIVE_CAPTURA_PROPIA"
+    if not texto:
+        raise ValueError("Procedencia vacía: una fila de momios sin origen_dato no es auditable.")
+    return texto.upper().replace(" ", "_")
+
+
+@dataclass(frozen=True)
+class ConsensoMulticasaResult:
+    """[LN-QBE-148] Consenso multicasa: `q_MKT_consenso` + detalle de-vigado por casino."""
+
+    q_mkt_consenso: Tuple[float, float, float]
+    por_casino: Mapping[str, ShinDevigResult]
+    pesos: Mapping[str, float]
+    n_casinos: int
+    casinos: Tuple[str, ...]
+    origen_dato: str
+
+
+def consenso_shin_multicasa(
+    momios_por_casino: Mapping[str, Sequence[float]],
+    pesos: Optional[Mapping[str, float]] = None,
+    *,
+    origen_dato: Optional[str] = None,
+) -> ConsensoMulticasaResult:
+    """[LN-QBE-148] `q_MKT_consenso = Σ_casino w_i · Shin(O_i)` con `Σ w_i = 1`.
+
+    Aduana: al menos un casino; cada terna se valida con `[LN-QBE-151]` (una cuota inválida
+    aborta el consenso, no se descarta en silencio). Pesos ausentes ⇒ equiponderación
+    (`1/N`), declarada. El vector resultante vive en el 2-símplex (Σ = 1 ± 1e-9).
+    """
+    if not momios_por_casino:
+        raise ConsensoInvalidoError("No hay casinos en la muestra de consenso.")
+
+    por_casino: Dict[str, ShinDevigResult] = {}
+    for casino, momios in momios_por_casino.items():
+        por_casino[str(casino)] = desmarginar_shin(momios)
+
+    nombres = tuple(por_casino)
+    if pesos is None:
+        pesos_norm = {nombre: 1.0 / len(nombres) for nombre in nombres}
+    else:
+        faltantes = [nombre for nombre in nombres if nombre not in pesos]
+        if faltantes:
+            raise ConsensoInvalidoError(
+                f"Faltan pesos para los casinos: {', '.join(faltantes)}."
+            )
+        crudos: Dict[str, float] = {}
+        for nombre in nombres:
+            valor = float(pesos[nombre])
+            if not math.isfinite(valor) or valor < 0.0:
+                raise ConsensoInvalidoError(f"Peso inválido para '{nombre}': {pesos[nombre]!r}.")
+            crudos[nombre] = valor
+        total_pesos = math.fsum(crudos.values())
+        if not math.isfinite(total_pesos) or total_pesos <= 0.0:
+            raise ConsensoInvalidoError("La suma de pesos debe ser finita y positiva.")
+        pesos_norm = {nombre: crudos[nombre] / total_pesos for nombre in nombres}
+
+    consenso = [0.0, 0.0, 0.0]
+    for nombre, resultado in por_casino.items():
+        peso = pesos_norm[nombre]
+        consenso[0] += peso * resultado.p_local
+        consenso[1] += peso * resultado.p_empate
+        consenso[2] += peso * resultado.p_visitante
+
+    total = math.fsum(consenso)
+    if not math.isfinite(total) or total <= 0.0:
+        raise ConsensoInvalidoError("El consenso calculado no es un símplex válido.")
+    q_mkt = (consenso[0] / total, consenso[1] / total, consenso[2] / total)
+    if abs(math.fsum(q_mkt) - 1.0) > 1e-9:
+        raise ConsensoInvalidoError("El consenso no conserva la masa del 2-símplex.")
+
+    if origen_dato is not None:
+        procedencia = str(origen_dato)
+    elif all(nombre.lower() in ORIGENES_LIVE for nombre in nombres):
+        procedencia = ORIGENES_LIVE[nombres[0].lower()] if len(nombres) == 1 else "LIVE_MULTICASA"
+    else:
+        procedencia = ORIGEN_HISTORICO_FOOTYSTATS
+
+    return ConsensoMulticasaResult(
+        q_mkt_consenso=q_mkt,
+        por_casino=por_casino,
+        pesos=pesos_norm,
+        n_casinos=len(nombres),
+        casinos=nombres,
+        origen_dato=procedencia,
     )

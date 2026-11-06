@@ -7,7 +7,7 @@
 **Marco:** Kybern Industrial Framework v13.5  
 **Expediente:** `SPRINT-FASE4-MIGRACION-REFLEXIVA-BG-04`  
 **Fecha:** 2026-10-28  
-**Filas canónicas:** 288
+**Filas canónicas:** 290
 
 > **Naturaleza.** Tablero canónico de control del registro legislativo. Fuente única de verdad para la asignación de nuevos identificadores (`max + 1` sobre el último ID libre). Un identificador sellado es inmutable y no reasignable. Las anclas apuntan a los libros de `docs/` del ecosistema; las rutas de tests legados se conservan solo como memoria histórica y no se presentan como evidencia vigente.
 
@@ -303,6 +303,8 @@
 | `[ARCH-1.5.1]` §15.5 | ARCH | `docs/ARCH.md` | Esquema de `historical_sovereign_distributions` (Símplex Soberano P') | SELLADO |
 | `[DES-QBE-076]` | DISEÑO | `docs/DESIGN.md` | Tabla Comparativa de Sabiduría de las Masas (Observatorio) | SELLADO |
 | `[DES-QBE-077]` | DISEÑO | `docs/DESIGN.md` | Selector de Distribución en Visor de Backtesting | SELLADO |
+| `[DES-QBE-078]` | DISEÑO | `docs/DESIGN.md` | Vista Unificada de Desempeño y Coberturas Probabilísticas (`/desempeno`) · Mando Rector y Cobertura Bicolor | SELLADO |
+| `[ARCH-1.4.78]` | ARCH | `docs/ARCH.md` | Enrutador y Fachada de Desempeño Híbrido (`qbe_observatory`) · `/desempeno`, Redirect 302 y DTOs de Desempeño | SELLADO |
 
 ## PROTOCOLO DE ASIGNACIÓN
 
@@ -311,4 +313,4 @@
 3. **Sellado:** al pasar a verde (`EXIT CODE 0`), la fila migra de `EN FORJA` a `SELLADO` con anclaje simbólico (`docs/LOGIC.md` / `docs/ARCH.md` + símbolo), jamás `archivo:línea`.
 4. **Cobertura:** la migración de Fase 4 no puede reducir el conjunto de IDs. Las filas con estado no canónico se conservan para auditoría y no se promueven sin Juez.
 
-_Total de filas: 288._
+_Total de filas: 290._

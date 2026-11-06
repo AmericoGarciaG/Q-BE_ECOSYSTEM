@@ -43,6 +43,7 @@ import json
 import logging
 import math
 import sqlite3
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
@@ -396,15 +397,26 @@ def _resumen(
         if brier_consenso is not None and brier_qbe is not None
         else None
     )
+    composicion = dict(fuentes_mercado or {})
+    activas = [nombre for nombre, cantidad in composicion.items() if int(cantidad) > 0]
+    casinos = [nombre for nombre in activas if nombre.lower() in FUENTES_CASINO]
+    # La unidad del KPI es «Casinos» sólo si todas las fuentes activas son operadores;
+    # una fuente histórica (FootyStats) se declara como «Fuentes», no se disfraza de casa.
+    unidad = "Casinos" if activas and len(casinos) == len(activas) else "Fuentes"
     return {
         "brier_consenso": brier_consenso,
         "brier_qbe": brier_qbe,
         "alpha_pct": alpha,
         "etiqueta_mercado": etiqueta_mercado,
         "composicion_mercado": composicion_mercado,
-        "fuentes_mercado": dict(fuentes_mercado or {}),
+        "fuentes_mercado": composicion,
         "n_partidos": int(n_partidos),
         "n_jornadas": int(n_jornadas),
+        "n_fuentes": len(activas),
+        "lista_fuentes": ", ".join(activas),
+        "unidad_fuentes": unidad,
+        "es_hibrida": len(activas) > 1,
+        "actualizado": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         "casinos_validos": 0,
         "casinos_totales": 0,
         "consenso_degenerado": False,
@@ -828,8 +840,8 @@ def construir_sabiduria_masas(
         "fuente_etiqueta": f"Snapshot Vivo ({temporada_actual or 'temporada no declarada'})",
         "nota": (
             "Brier de Mercado desde el reporte de Auditoría (universo de partidos "
-            "finalizados), normalizado 3N; Q-BE del mismo reporte. Alpha = "
-            "(1 - Brier_QBE/Brier_mercado) × 100. Consenso Ponderado [LN-QBE-148]."
+            "finalizados), normalizado 3N; Q-BE del mismo reporte. Alpha: diferencia "
+            "porcentual del Brier de Q-BE frente al mercado. Consenso Ponderado [LN-QBE-148]."
         ),
         "motivo_filtro": motivo_filtro,
     }

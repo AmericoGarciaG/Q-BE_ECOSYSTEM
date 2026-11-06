@@ -3,7 +3,7 @@
     "tarea": "50.4",
     "expediente": "SPRINT-50-REINGENIERIA-INDUSTRIAL-QBE-CORE",
     "fase": "9.4 — Auditoría empírica y backtesting",
-    "generado_utc": "2026-11-05T20:44:04+00:00",
+    "generado_utc": "2026-11-05T22:03:39+00:00",
     "regimen": "[DIRGEN-STRICT]",
     "nodos": [
       "[LN-QBE-151]",
@@ -15,8 +15,8 @@
   },
   "universo": {
     "db": "D:\\00 SW Projects\\Q-BE Casino Deportes\\Q_BE_ECOSYSTEM\\qbe_observatory\\data\\qbe_historico.db",
-    "db_sha256": "cf5367d4e9a2c2c12438004e0cf9ca85c4a550b5844410e9e9c8304a63c7a614",
-    "db_bytes": 77729792,
+    "db_sha256": "8a2db536672852a5652d52f9b1303a81359e12d0c94e9d6a12bfff9caa4237f9",
+    "db_bytes": 77733888,
     "modo": "SÓLO LECTURA (mode=ro + PRAGMA query_only=ON)",
     "partidos_total": 3870,
     "con_cuotas": 3726,
@@ -24,12 +24,12 @@
   },
   "resumen_ejecutivo": [
     "1X2 · Shin vs proporcional: Δ Brier = -6.955e-05 (t pareado -0.94). SHIN NO SUPERA (no significativo).",
-    "1X2 · ROI del vértice P_max a cuota de cierre: -6.73% sobre 1,793 partidos: el mercado absorbe el margen.",
-    "Derivados · Under 2.5: BSS = -4.70%; el modelo sobreestima el Under en +6.99%.",
-    "Derivados · BTTS Sí: BSS = -2.70%; el modelo subestima el BTTS en -5.89%.",
-    "Derivados · Intensidades: λ esperados 2.522 vs goles observados 2.747 (sesgo -0.225): el modelo subestima los goles; la brecha es de calibración de λ, no de la proyección analítica.",
+    "1X2 · ROI del vértice P_max a cuota de cierre: -5.21% sobre 1,793 partidos: el mercado absorbe el margen.",
+    "Derivados · Under 2.5: BSS = -0.73%; el modelo sobreestima el Under en +2.55%.",
+    "Derivados · BTTS Sí: BSS = -0.38%; el modelo subestima el BTTS en -2.57%.",
+    "Derivados · Intensidades: λ esperados 2.696 vs goles observados 2.747 (sesgo -0.052): el modelo subestima los goles; la brecha es de calibración de λ, no de la proyección analítica.",
     "Derivados · Alpha vs. mercado: SIN EVIDENCIA (la bóveda no publica cuotas de Totales ni de BTTS).",
-    "Sistema Inmune · veto en 12.10% de los partidos; ROI cohorte veto +0.63% vs -7.74% sin veto (Δ +8.36%, IC95 [-6.07%, +23.01%]): sin evidencia de habilidad."
+    "Sistema Inmune · veto en 12.10% de los partidos; ROI cohorte veto +2.71% vs -6.30% sin veto (Δ +9.02%, IC95 [-5.70%, +23.73%]): sin evidencia de habilidad."
   ],
   "shin": {
     "n": 3684,
@@ -244,8 +244,8 @@
   "derivados": {
     "n": 2728,
     "regimen_rho": {
-      "suave": 2334,
-      "escalon": 394,
+      "suave": 2728,
+      "escalon": 0,
       "sin_traza": 0,
       "no_reconstruible": 0
     },
@@ -256,95 +256,95 @@
       "no_reconstruible": 0
     },
     "goles": {
-      "esperados_modelo": 2.52213284457478,
+      "esperados_modelo": 2.6956050409038657,
       "observados": 2.747434017595308,
-      "sesgo": -0.2253011730205281
+      "sesgo": -0.051828976691442374
     },
     "under_25": {
       "n": 2728,
       "frecuencia_base": 0.4750733137829912,
-      "p_media_modelo": 0.5449395205616455,
-      "sesgo_calibracion": 0.0698662067786543,
-      "brier_2n": 0.13055514851553346,
+      "p_media_modelo": 0.5005598152144196,
+      "sesgo_calibracion": 0.025486501431428388,
+      "brier_2n": 0.1256042498747867,
       "brier_base_2n": 0.1246893301571194,
-      "brier_skill_score": -0.047043466758724284,
+      "brier_skill_score": -0.007337594295473426,
       "calibracion_por_decil": [
         {
           "deciles": "[0.2,0.3)",
-          "n": 34,
-          "p_media": 0.27693625093759394,
-          "frecuencia_observada": 0.35294117647058826
+          "n": 47,
+          "p_media": 0.27508996314387457,
+          "frecuencia_observada": 0.3617021276595745
         },
         {
           "deciles": "[0.3,0.4)",
-          "n": 277,
-          "p_media": 0.363833860481739,
-          "frecuencia_observada": 0.4223826714801444
+          "n": 348,
+          "p_media": 0.3632204160510302,
+          "frecuencia_observada": 0.4109195402298851
         },
         {
           "deciles": "[0.4,0.5)",
-          "n": 857,
-          "p_media": 0.45462467768895926,
-          "frecuencia_observada": 0.4457409568261377
+          "n": 1017,
+          "p_media": 0.4544206583468067,
+          "frecuencia_observada": 0.4582104228121927
         },
         {
           "deciles": "[0.5,0.6)",
-          "n": 713,
-          "p_media": 0.5473610212559096,
-          "frecuencia_observada": 0.4782608695652174
+          "n": 878,
+          "p_media": 0.5448159011802983,
+          "frecuencia_observada": 0.4908883826879271
         },
         {
           "deciles": "[0.6,0.7)",
-          "n": 415,
-          "p_media": 0.6432680498008218,
-          "frecuencia_observada": 0.5397590361445783
+          "n": 379,
+          "p_media": 0.6413711391275643,
+          "frecuencia_observada": 0.5488126649076517
         },
         {
           "deciles": "[0.7,0.8)",
-          "n": 432,
-          "p_media": 0.7628685245477002,
-          "frecuencia_observada": 0.5092592592592593
+          "n": 59,
+          "p_media": 0.7224306838485557,
+          "frecuencia_observada": 0.5254237288135594
         }
       ]
     },
     "btts_si": {
       "n": 2728,
       "frecuencia_base": 0.5597507331378299,
-      "p_media_modelo": 0.5008081515107682,
-      "sesgo_calibracion": -0.058942581627061674,
-      "brier_2n": 0.12654051962301635,
+      "p_media_modelo": 0.534065978690621,
+      "sesgo_calibracion": -0.025684754447208857,
+      "brier_2n": 0.12368062136515828,
       "brier_base_2n": 0.12321492494474591,
-      "brier_skill_score": -0.02699019359677224,
+      "brier_skill_score": -0.003779545543051821,
       "calibracion_por_decil": [
         {
           "deciles": "[0.3,0.4)",
-          "n": 466,
-          "p_media": 0.3390609270622007,
-          "frecuencia_observada": 0.5257510729613734
+          "n": 82,
+          "p_media": 0.3773051964531813,
+          "frecuencia_observada": 0.5487804878048781
         },
         {
           "deciles": "[0.4,0.5)",
-          "n": 723,
-          "p_media": 0.45825885459511434,
-          "frecuencia_observada": 0.5283540802213001
+          "n": 759,
+          "p_media": 0.46095808917749687,
+          "frecuencia_observada": 0.5217391304347826
         },
         {
           "deciles": "[0.5,0.6)",
-          "n": 1166,
-          "p_media": 0.5475085724702035,
-          "frecuencia_observada": 0.5737564322469982
+          "n": 1414,
+          "p_media": 0.5467107952259267,
+          "frecuencia_observada": 0.5601131541725601
         },
         {
           "deciles": "[0.6,0.7)",
-          "n": 344,
-          "p_media": 0.6326199176034362,
-          "frecuencia_observada": 0.6133720930232558
+          "n": 435,
+          "p_media": 0.6336935507878467,
+          "frecuencia_observada": 0.6160919540229886
         },
         {
           "deciles": "[0.7,0.8)",
-          "n": 29,
-          "p_media": 0.7194774580097607,
-          "frecuencia_observada": 0.6896551724137931
+          "n": 38,
+          "p_media": 0.7215793429199856,
+          "frecuencia_observada": 0.6842105263157895
         }
       ]
     },
@@ -352,85 +352,85 @@
       "under_25": {
         "2015_2016": {
           "n": 276,
-          "brier_2n": 0.12499647053424405
+          "brier_2n": 0.12499690454976849
         },
         "2018_2019": {
           "n": 253,
-          "brier_2n": 0.13734372717306584
+          "brier_2n": 0.1332952740063148
         },
         "2019_2020": {
           "n": 243,
-          "brier_2n": 0.15275422372524702
+          "brier_2n": 0.12398334888475487
         },
         "2020_2021": {
           "n": 314,
-          "brier_2n": 0.1405099927278997
+          "brier_2n": 0.12218543582350216
         },
         "2021_2022": {
           "n": 315,
-          "brier_2n": 0.12626418801424233
+          "brier_2n": 0.126420641274683
         },
         "2022_2023": {
           "n": 315,
-          "brier_2n": 0.12371817287343378
+          "brier_2n": 0.124625003500667
         },
         "2023_2024": {
           "n": 304,
-          "brier_2n": 0.1222642085390326
+          "brier_2n": 0.12269587001864908
         },
         "2024_2025": {
           "n": 305,
-          "brier_2n": 0.12550891344949647
+          "brier_2n": 0.12495495378490533
         },
         "2025_2026": {
           "n": 305,
-          "brier_2n": 0.126314934978689
+          "brier_2n": 0.12622248486359208
         },
         "2026_2027": {
           "n": 98,
-          "brier_2n": 0.1321327079618596
+          "brier_2n": 0.1320747109572745
         }
       },
       "btts_si": {
         "2015_2016": {
           "n": 276,
-          "brier_2n": 0.11941229658881038
+          "brier_2n": 0.11944823049726432
         },
         "2018_2019": {
           "n": 253,
-          "brier_2n": 0.12751967381860058
+          "brier_2n": 0.1260836474363035
         },
         "2019_2020": {
           "n": 243,
-          "brier_2n": 0.13785266410017832
+          "brier_2n": 0.11934476969836649
         },
         "2020_2021": {
           "n": 314,
-          "brier_2n": 0.13579257000053724
+          "brier_2n": 0.12549483950451484
         },
         "2021_2022": {
           "n": 315,
-          "brier_2n": 0.1270833491223113
+          "brier_2n": 0.12728112255734733
         },
         "2022_2023": {
           "n": 315,
-          "brier_2n": 0.12385461423386879
+          "brier_2n": 0.12439444583995965
         },
         "2023_2024": {
           "n": 304,
-          "brier_2n": 0.12420850109065729
+          "brier_2n": 0.12441511013438884
         },
         "2024_2025": {
           "n": 305,
-          "brier_2n": 0.12315718116198296
+          "brier_2n": 0.12292185733017447
         },
         "2025_2026": {
           "n": 305,
-          "brier_2n": 0.12415283459893782
+          "brier_2n": 0.12409936158464133
         },
         "2026_2027": {
           "n": 98,
-          "brier_2n": 0.11847759433287319
+          "brier_2n": 0.1192472727487412
         }
       }
     }
@@ -474,7 +474,7 @@
     "tasa_veto": {
       "por_lado": 0.0630228667038483,
       "por_partido_cualquier_lado": 0.12102621305075292,
-      "por_lado_dominante": 0.04517568321249303
+      "por_lado_dominante": 0.046291132180702736
     },
     "conteo_arquetipos": {
       "SOBREASEDIO_DEFENSIVO": 121,
@@ -482,36 +482,36 @@
     },
     "contrafactual_1x2": {
       "descripcion": "Apostar el vértice P_max a la cuota de cierre, stake unitario.",
-      "roi_global": -0.06725041829336308,
+      "roi_global": -0.05210262130507529,
       "cohorte_veto": {
         "n": 217,
-        "roi": 0.00626728110599078,
+        "roi": 0.027142857142857142,
         "ic95_bootstrap": [
-          -0.12788594470046086,
-          0.14364285714285713
+          -0.10788364055299539,
+          0.16483986175115203
         ],
-        "tasa_perdida": 0.47465437788018433,
-        "efectividad_del_veto": -0.0607611268604738
+        "tasa_perdida": 0.46543778801843316,
+        "efectividad_del_veto": -0.05993867600833758
       },
       "cohorte_sin_veto": {
         "n": 1576,
-        "roi": -0.07737309644670051,
-        "tasa_perdida": 0.5437817258883249
+        "roi": -0.06301395939086295,
+        "tasa_perdida": 0.5336294416243654
       },
       "delta_roi_veto_menos_sin_veto": {
-        "valor": 0.0836403775526913,
+        "valor": 0.0901568165337201,
         "ic95_bootstrap": [
-          -0.06074506786708463,
-          0.23011012903810613
+          -0.05700447232683804,
+          0.23726040960022443
         ],
         "significativo": false
       },
       "cohorte_lado_dominante": {
-        "n_veto": 81,
-        "roi_veto": -0.04666666666666667,
-        "n_sin_veto": 1712,
-        "roi_sin_veto": -0.06822429906542056,
-        "delta_roi": 0.02155763239875389
+        "n_veto": 83,
+        "roi_veto": -0.037590361445783135,
+        "n_sin_veto": 1710,
+        "roi_sin_veto": -0.052807017543859656,
+        "delta_roi": 0.015216656098076521
       }
     }
   },
@@ -552,7 +552,7 @@
     "Percentiles del Sistema Inmune calculados in-sample sobre la cohorte evaluable (declarado, no calibración fuera de muestra).",
     "Los 23 partidos con overround fuera de [0.85, 1.30] se excluyen por la aduana [LN-QBE-007-H]; no se renormalizan ni se imputan.",
     "El contrafactual 1X2 apuesta el vértice P_max a la cuota de cierre con stake unitario; no modela Kelly ni hard-caps.",
-    "La reconstrucción de M*_xy se valida contra audit_trace.simplex_poisson; 394 filas históricas exigen el ρ escalonado heredado [E-50.5].",
+    "La reconstrucción de M*_xy se valida contra audit_trace.simplex_poisson; 0 filas históricas exigen el ρ escalonado heredado [E-50.5].",
     "Cada exclusión se cuenta y se declara por motivo: cero imputación."
   ]
 }

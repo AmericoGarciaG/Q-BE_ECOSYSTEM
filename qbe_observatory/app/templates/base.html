@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}{{ titulo }}{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/theme.css?v=SPRINT50-QBE078-R2">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  {# [DES-QBE-078] Navbar único de cuatro pestañas — docs/DESIGN.md §7.4.1.
+     Las rutas de laboratorio (`/visor`, `/consenso`, `/backtesting`) se conservan:
+     ninguna pestaña se retira y `/` dejó de ser una vista. El marcado vive en un
+     único parcial (`_navbar.html`) que comparten las cuatro superficies. #}
+  {% include "_navbar.html" %}
+  {% block contenido %}{% endblock %}
+  {% block scripts %}{% endblock %}
+</body>
+</html>

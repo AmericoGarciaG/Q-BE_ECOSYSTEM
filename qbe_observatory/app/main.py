@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -15,6 +15,7 @@ from app.routes.calibration import router as calibration_router
 from app.routes.backtesting import router as backtesting_router
 from app.routes.backtesting_ui import router as backtesting_ui_router
 from app.routes.consenso_ui import router as consenso_ui_router
+from app.routes.desempeno_ui import router as desempeno_ui_router
 from app.routes.manus import router as manus_router
 from app.routes.snapshot import router as snapshot_router
 from app.services.calibration_view import cargar_panel_vars44, cargar_vista_calibracion
@@ -29,17 +30,19 @@ app.include_router(calibration_router)
 app.include_router(backtesting_router)
 app.include_router(backtesting_ui_router)
 app.include_router(consenso_ui_router)
+app.include_router(desempeno_ui_router)
 app.include_router(manus_router)
 app.include_router(snapshot_router)
 
 
-@app.get("/", response_class=HTMLResponse)
-def index(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse(
-        request,
-        "index.html",
-        {"titulo": "Q-BE Observatory"},
-    )
+@app.get("/")
+def index() -> RedirectResponse:
+    """[ARCH-1.4.78] La raíz es una redirección permanente a la ruta semántica.
+
+    La portada pasiva `index.html` quedó derogada: `/` responde `HTTP 302` con
+    `Location: /desempeno` (`docs/DESIGN.md` §7.4.1).
+    """
+    return RedirectResponse(url="/desempeno", status_code=302)
 
 
 @app.get("/visor", response_class=HTMLResponse)

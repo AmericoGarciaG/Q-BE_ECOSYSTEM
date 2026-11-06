@@ -1,7 +1,7 @@
 # Q-BE ECOSYSTEM — BASE DE CONOCIMIENTO DEL PROYECTO (KDB)
 
 **Documento:** `KDB.md` — Single Pane of Glass  
-**Versión:** 1.4.0<br>
+**Versión:** 1.5.0<br>
 **Estado:** `[ALGO-PROTECTED]` — Conocimiento Estable Certificado  
 **Proyecto:** `Q_BE_ECOSYSTEM`  
 **Autoridad Suprema:** Américo García Guerrero (Director Humano)  
@@ -9,9 +9,11 @@
 **Expediente:** `SPRINT-50-REINGENIERIA-INDUSTRIAL-QBE-CORE`<br>
 **Nodos:** `[LN-QBE-138]` / `[ARCH-1.4.74]`  
 **Juez:** `qbe_core/tests/test_shield_ktp_package_integrity.py`  
-**Última consolidación:** 2026-11-04<br>
-**Actualización KTP:** 2026-11-04<br>
-**Fuente de la consolidación:** `docs/KTP/history/AKT_2026-11-04_SPRINT-50-REINGENIERIA-INDUSTRIAL-QBE-CORE.md` (Sprint 50)
+**Última consolidación:** 2026-11-05<br>
+**Actualización KTP:** 2026-11-05<br>
+**Fuente de la consolidación:** `docs/KTP/AKT.md` (Sprint 50 — cierre de Fase 9)
+
+> **Nota de consolidación (2026-11-05) — cierre de Fase 9.** Se consolidan los nodos `[LN-QBE-151]` (des-margen de Shin) y `[LN-QBE-152]` (proyector de derivados), la doctrina de cobertura en dos niveles (§27) y la compuerta Paso 0 del Sistema Inmune. Se aplicó el parche **V-1** al denominador xG de la reconstrucción histórica y se re-materializó `P'` (2.737 filas): la brecha de λ cayó de **−8,20 % a −1,83 %** y el BSS de derivados de **−4,70 % a −0,73 %** (Under) y de **−2,70 % a −0,38 %** (BTTS). El **Censo de Paridad quedó en 0 hallazgos** (27 archivos, VÍA B sobre 23 ayudantes). El modelo sigue **sin resolución** sobre totales (`R² = 1,01 %`): `QBE-C2` permanece congelado. Bóveda: **3,870** partidos, 12 temporadas.
 
 > **Nota de consolidación (2026-11-04):** se consolida el delta del `SPRINT-50-REINGENIERIA-INDUSTRIAL-QBE-CORE`: ratificación del Decreto D1–D5 (`VAR-2026-SPRINT50-CORE`), materialización de la Fase 2A (clausura de masa, Invariante L-1) y 2B (GSL-3D v2), súper-señal V6 con su barrido de κ, Sistema Inmune Fiduciario (27.31 % de veto), motor anti-sesgo de 3 zonas (ROI negativo en las tres) y el cementerio del ML predictivo (`legacy_ml/`). El sprint **no se cierra**: la Fase 9 (De-vig Shin, consenso multicasa, derivados) queda como deuda viva en §10. Bóveda verificada en solo lectura: 3,870 partidos, 3,726 con cuotas completas, 12 temporadas.
 
@@ -343,6 +345,34 @@ El motor V6 (`generar_distribucion_v6`, `qbe_core/src/core/sovereign_pipeline.py
 
 ---
 
+### 5.7 Fase 9 — Shin, derivados y secuencia inmune (cierre `SPRINT-50`)
+
+La Fase 9 materializó tres contratos en `qbe_core` y los certificó con 35 aserciones:
+
+| Nodo | Materialización | Contrato |
+|---|---|---|
+| `[LN-QBE-151]` | `consensus.desmarginar_shin` | Inversión del modelo de Shin (1991, 1993): `Σ√(z²+4(1−z)π_k²/S) = 2+z`, `z ∈ [0, min π_k]`, DTO `ShinDevigResult`, `InvalidOddsException` |
+| `[LN-QBE-152]` | `distribution_dixon_coles.proyectar_mercados_derivados` | Proyección exacta de `M*_xy` 7×7 a Under/Over 2.5 y BTTS; `MatrixIntegrityError`; sin renormalización |
+| `[LN-QBE-060-B]` §27 | `triage.triaje_financiero_mundo2` | Paso 0 inmune **antes de leer cuotas**; veto ⇒ `QBE-00` con \$0.00 MXN y traza de ambas distribuciones; Pasos 1-2 delegados a la cascada sellada |
+
+**Hallazgo estructural (VAR-2026-F9-02).** El proyector y Shin cumplen sus Jueces; el fallo estaba en el insumo. La reconstrucción histórica sumaba xG sólo sobre los partidos con vector causal (cobertura 62,7 %) y lo dividía entre `pj` (todos), contrayendo el factor de ataque. El parche V-1 normaliza el acumulado al denominador completo.
+
+| Métrica | Antes | Después V-1 |
+|---|---:|---:|
+| λ_sum medio | 2,5221 | **2,6971** |
+| Brecha vs goles observados (2,7474) | −8,20 % | **−1,83 %** |
+| Under 2.5 — BSS | −4,70 % | **−0,73 %** |
+| BTTS Sí — BSS | −2,70 % | **−0,38 %** |
+| `corr(λ_sum, goles)` | +0,0884 | **+0,1006** (R² 1,01 %) |
+| 1X2 — ROI P_max | −6,73 % | **−5,21 %** |
+| Shin vs proporcional | Δ = −6,955×10⁻⁵ (t = −0,94) | sin cambio |
+
+> **Lectura honesta.** Corregir la calibración mejora el Brier pero **no cruza cero**: la `resolution` de λ sobre el total de goles es ~1 %. Un modelo de 1X2 no es un modelo de totales. `QBE-C2` queda congelado hasta demostrar `R² > 0,05` y BSS > 0 out-of-sample.
+
+**Convenciones de métrica.** Brier 3N = multiclase / 3 (`[LN-QBE-100]`); mercados binarios normalizados por 2. El Alpha de derivados se declara `SIN EVIDENCIA` porque la bóveda no publica cuotas de Totales ni de BTTS (sólo 1X2 de FootyStats y captura Q-BE Live).
+
+---
+
 ## 6. ESTADO FINANCIERO VIGENTE
 
 ### 6.1 Línea base declarada por la Dirección
@@ -455,14 +485,23 @@ El motor V6 (`generar_distribucion_v6`, `qbe_core/src/core/sovereign_pipeline.py
 
 ### 9.2 Compuerta de Censo de Paridad Canónica
 
-La Fase B exige el Censo de Paridad Canónica de `docs/GOVERNANCE.md` §3.5. **Alcance del cierre Sprint 45:** el Censo ordenado por la VÍA B se ejecutó sobre `qbe_core/src/core` (25 archivos) y quedó en **0 hallazgos**. El barrido ampliado de §3.5 sobre `qbe_business/src` reporta **72 hallazgos Clase IV** preexistentes; se registran como deuda separada y no se declaran en 0.
+La Fase B exige el Censo de Paridad Canónica de `docs/GOVERNANCE.md` §3.5. **Cierre `SPRINT-50` (2026-11-05):** el Censo se ejecutó sobre `qbe_core/src/core` (27 archivos) y quedó en **0 hallazgos** (Clases I, II, III y IV), tras la VÍA B de 23 ayudantes heredados. Bandeja `docs/KTP/GL_update.md` con SHA-256 `cb5c8cf9…`. El barrido ampliado de §3.5 sobre `qbe_business/src` reporta **72 hallazgos Clase IV** preexistentes; se registran como deuda separada y no se declaran en 0.
 
 ---
 
 ## 10. DEUDAS ABIERTAS DECLARADAS
 
-| Deuda | Impacto | Acción siguiente | Responsable |
-|---|---|---|---|
+**Cerradas en la consolidación v1.5.0 (2026-11-05):** `D-50.01` (denominador xG — parche V-1 aplicado y `P'` re-materializada), `D-50.05` (23 Clase IV — Censo en 0) y `D-50.10` (consolidación KDB). El detalle vive en `docs/VAR-2026-F9-02.md` y en el AKT.
+
+| ID | Deuda | Impacto | Acción siguiente | Responsable |
+|---|---|---|---|---|
+| **D-50.02** | λ no discrimina el total de goles (`corr = +0,1006`, `R² = 1,01 %`, pendiente OLS 0,41 vs 1,00) | `QBE-C2` congelado: ningún reanclaje convierte el BSS en positivo | Abrir la ruta C (modelo de totales dedicado) con criterio `R² > 0,05` out-of-sample y BSS > 0 | Arquitecto / Constructor |
+| **D-50.03** | Ancla `μ_liga = 2.65` bajo la media observada 2,7474 | Brecha residual de nivel 1,83 % (bajo el umbral del 2 %) | Diferida; sólo decreto si la brecha supera el 2 % | Director |
+| **D-50.04** | Proveedor histórico de momios único (FootyStats), sin Totales ni BTTS | El Alpha de derivados es `SIN EVIDENCIA`; el consenso multicasa no se reconstruye hacia atrás | Integrar OddsPortal o BetExplorer Pro; declarar cobertura | Arquitecto / Director |
+| **D-50.06** | 23 partidos con cuotas corruptas `(1.50, 3.00, 1.50)` (overround 1,667) | Contaminan cualquier métrica que no aplique la aduana `[LN-QBE-007-H]` | Purga o cuarentena declarada en `historical_matches` | Ingesta |
+| **D-50.07** | Percentiles del Sistema Inmune in-sample y no persistidos | La tasa de veto (12,10 %) no es comparable entre corridas | Persistir percentiles calibrados con split Train/Test | Arquitecto |
+| **D-50.08** | Shin no aporta valor económico medible en 1X2 (Δ = −6,955×10⁻⁵, t = −0,94) | Coste de complejidad sin retorno demostrado | Mantener (es correcto) y documentar que no es fuente de Alpha | Arquitecto |
+| **D-50.09** | `.pytest_tmp/` no versionado en la raíz | Ruido en `git status` | Añadir a `.gitignore` o limpiar | Constructor |
 | xG por partido no poblado en `historical_matches` | Limitación de modelos que requieren xG a nivel partido. | Cargar o declarar `SIN EVIDENCIA` por temporada. | Ingesta / Arquitecto |
 | Wrapper CLI `scripts/auditoria/auditar_coherencia_cartelera.py` ausente | El pre-vuelo se ejecuta por módulo, no por wrapper. | Crear wrapper o actualizar la referencia documental. | Arquitecto |
 | Cuerpo de `[ARCH-1.4.73]` ausente | Deuda documental; no afecta el ID. | Reconciliar en un sprint documental posterior. | Arquitecto |
@@ -474,9 +513,7 @@ La Fase B exige el Censo de Paridad Canónica de `docs/GOVERNANCE.md` §3.5. **A
 | Sin split Train/Test | El Brier `0.65546144 → 0.59896449` es in-sample; no hay evidencia fuera de muestra ni dictamen de overfitting. | Implementar partición temporal y ejecutar calibración cruzada; si no hay Test, declarar `SIN EVIDENCIA`. | Arquitecto |
 | Cobertura causal limitada a `2015_2016` | 0 temporadas con 32 variables; solo `2015_2016` con 9 variables y 301/334 partidos. Las otras 11 temporadas no tienen eventos. | Extraer eventos de las 11 temporadas restantes o declarar el alcance de la calibración. | Ingesta / Arquitecto |
 | Sonda `auditar_boveda_historica.py` ausente | No existe el instrumento canónico de auditoría de cobertura; la cobertura se midió con consulta SQL de solo lectura. | Materializar la sonda y su Juez; ejecutarla contra `qbe_historico.db`. | Constructor |
-| Censo ampliado de `qbe_business`: 72 hallazgos Clase IV | El Censo de Núcleo (`qbe_core`) está en 0; el barrido de §3.5 sobre `qbe_business/src` reporta 72 nodos sin etiqueta, fuera de la VÍA B del Sprint 45. | Abrir VÍA B específica para `qbe_business` o excepción formal del Director. | Arquitecto |
-| **Fase 9 no materializada** (De-vig Shin, consenso multicasa, \(P_{mid}\), derivados Under 2.5 / BTTS) | Bloquea la estrategia económica aprobada; el 1X2 puro no ha demostrado Alpha (§5.6). | Implementar en `qbe_core` (`consensus.py`, `distribution_dixon_coles.py`) con Jueces y backtest sobre los 3,726 partidos con cuotas completas. | Constructor / Arquitecto |
-| Proveedor histórico de momios único (FootyStats) | Sin derivados ni segunda casa histórica: el consenso multicasa no se puede reconstruir hacia atrás. | Integrar OddsPortal o BetExplorer Pro; declarar cobertura. | Arquitecto / Director |
+| Censo ampliado de `qbe_business`: 72 hallazgos Clase IV | El Censo de Núcleo (`qbe_core`) está en 0; el barrido de §3.5 sobre `qbe_business/src` reporta 72 nodos sin etiqueta, fuera de la VÍA B del Sprint 50. | Abrir VÍA B específica para `qbe_business` o excepción formal del Director. | Arquitecto |
 | Kelly y hard-caps no automatizados en `qbe_business` | El motor calcula probabilidades; la Mesa de Apuestas no dimensiona capital automáticamente. | Implementar Kelly atenuado con los hard-caps de §6. | Constructor |
 | UI de coberturas y derivados ausente | La UI solo muestra 1X2; no refleja \(P_{mid}\) ni derivados. | Rediseñar la vista de la Mesa de Apuestas. | Constructor |
 | `κ* = 0.35` no adoptado en producción | El óptimo empírico del barrido V6 no entró al motor (`KAPPA_NET = 0.25`); hay divergencia entre experimento y sello. | Ficha de Varianza para re-sellar; o declarar 0.25 como definitivo. | Director / Arquitecto |

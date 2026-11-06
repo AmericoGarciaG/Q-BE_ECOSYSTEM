@@ -32,6 +32,10 @@ logs/
 *.sqlite-wal
 *.sqlite3
 
+# Archivos y carpetas transitorias de pruebas
+.tmp_run/
+.pytest_tmp/
+
 # [P0 #4] Copias congeladas del corpus (se regeneran; jamás se versionan)
 data/snapshots/*.db
 data/snapshots/*.db-shm
