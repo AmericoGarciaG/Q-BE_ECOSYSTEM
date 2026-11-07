@@ -1,17 +1,19 @@
 # Q-BE ECOSYSTEM — BASE DE CONOCIMIENTO DEL PROYECTO (KDB)
 
 **Documento:** `KDB.md` — Single Pane of Glass  
-**Versión:** 1.6.0<br>
+**Versión:** 1.7.0<br>
 **Estado:** `[ALGO-PROTECTED]` — Conocimiento Estable Certificado  
 **Proyecto:** `Q_BE_ECOSYSTEM`  
 **Autoridad Suprema:** Américo García Guerrero (Director Humano)  
 **Marco:** Kybern Industrial Framework v13.5 (DirGen Operational Edition)  
-**Expediente:** `SPRINT-50-REINGENIERIA-INDUSTRIAL-QBE-CORE`<br>
+**Expediente:** `SPRINT-51-META-ROUTER-MACHINE-LEARNING`<br>
 **Nodos:** `[LN-QBE-138]` / `[ARCH-1.4.74]`  
 **Juez:** `qbe_core/tests/test_shield_ktp_package_integrity.py`  
 **Última consolidación:** 2026-11-06<br>
 **Actualización KTP:** 2026-11-06<br>
-**Fuente de la consolidación:** `docs/KTP/AKT.md` (Sprint 50 — cierre de Fase 9 y enrutador dual de bóvedas)
+**Fuente de la consolidación:** `docs/KTP/AKT.md` (Sprint 51 — Meta-Router, veto por entropía y dataset maestro 2,667)
+
+> **Nota de consolidación (2026-11-06) — v1.7.0, cierre `SPRINT-51`.** Se consolida el `SPRINT-51-META-ROUTER-MACHINE-LEARNING`. El dataset maestro queda materializado y verificado en solo lectura: **2,667 × 53**, SHA-256 `22633810…`, **cero NaN en columnas críticas** y **528 nulos declarados** (`delta_alt_metros` y `delta_descanso_dias` de `2015_2016`, sin imputar); Brier 3N reproducido **0.211572** (Q-BE) vs **0.203690** (Shin), Δ **−3.87 %**. Los resultados del **veto por entropía** (Brier `0.1882`, `p = 0.0012`) y del **Meta-Router** (`0.2005` vs `0.1998` en holdout `2025_2026`) provienen del Reporte Manus V2 y **no tienen artefacto reproducible en el repositorio**: se registran como **declarados**, no auditados. Decisiones: descarte del Meta-Router 1X2, adopción del veto selectivo por entropía y pausa del ML en 1X2. Deudas nuevas: **D-51.01** (exportación 32V), **D-51.02** (simulador financiero) y **D-51.03** (artefacto ML no reproducible). Bóveda sin cambios: **3,870** partidos, **3,726** con cuotas, **12** temporadas.
 
 > **Nota de consolidación (2026-11-06) — v1.6.0, vista `/desempeno` y enrutador dual.** Se consolida `[DES-QBE-078]` (vista unificada de desempeño, Dark Fintech, mando rector, barras invertidas y persistencia de acordeón) y `[ARCH-1.4.78]` (enrutador dual de bóvedas: snapshot vivo para `2026_2027` y `qbe_historico.db` para las temporadas históricas y `Todas`), con `GET /` → `302 /desempeno`. Verificado en solo lectura: `2025_2026` sirve **305** partidos en **34** bloques de jornada; `Todas` agrega **2,726** partidos (**2,679** con vector de mercado) en **305** bloques. `2016_2017` y `2017_2018` siguen en **0** distribuciones P′ y se declaran vacías. Se homologó el navbar de las cuatro superficies y se retiró la portada pasiva `index.html`. Deudas nuevas: **D-50.11** (sincronía `ARCH.md` §18.2) y **D-50.12** (colisión de puerto `:8002`).
 
@@ -391,6 +393,35 @@ La Fase 9 materializó tres contratos en `qbe_core` y los certificó con 35 aser
 * **Exclusiones declaradas:** 47 partidos de `Todas` sin vector de mercado quedan fuera del Brier de mercado y se marcan `SIN EVIDENCIA`; `2016_2017`/`2017_2018` no tienen P′ (0 filas) y se declaran vacías. La temporada en curso se excluye del corpus histórico para no duplicar fixtures.
 * **Jueces:** `qbe_observatory/tests/test_shield_desempeno_route.py` y `test_shield_desempeno_visual_semantics.py` (24 casos entre ambos).
 
+### 5.9 Meta-Router, veto por entropía y dataset maestro — `SPRINT-51`
+
+El `SPRINT-51` evaluó el Meta-Router Q-BE vs Shin y la taxonomía de Vetos Fiduciarios con validación temporal Rolling-Origin. El único artefacto reproducible en el repositorio es el dataset maestro y sus folds; los resultados numéricos del experimento ML provienen del Reporte Manus V2 y se consignan como **declarados**.
+
+**Dataset maestro (`data/investigacion/dataset_meta_router_2667.parquet`) — verificado 2026-11-06:**
+
+| Métrica | Valor | Evidencia |
+|---|---:|---|
+| Filas × columnas | **2,667 × 53** | lectura del Parquet |
+| SHA-256 | `22633810ff22220a1767e89a1622c9b7bbf6ca3a76828b0b71697b718657b613` | `Get-FileHash` |
+| Nulos en columnas críticas (`p_qbe_*`, `q_shin_*`, `brier_*`, `resultado_real`) | **0** | `isna().sum()` |
+| Nulos declarados (no imputados) | **528** = 264 `delta_alt_metros` + 264 `delta_descanso_dias` | `2015_2016` sin `V29`/`V30` |
+| Temporadas | **10** (`2016_2017` y `2017_2018` excluidas por falta de P′) | columna `temporada` |
+| Brier 3N Q-BE | **0.211572** | media de `brier_qbe_3n` |
+| Brier 3N Shin | **0.203690** | media de `brier_mkt_3n` |
+| Delta (Shin − Q-BE) | **−0.007882 (−3.87 %)** | cálculo |
+
+**Folds (`folds_rolling_origin.json`):** 5 folds Rolling-Origin (`2020_2021` … `2024_2025`), holdout final sellado `2025_2026` y `2026_2027` (98 partidos) como conjunto de estrés post-holdout. Las temporadas `2016_2017` y `2017_2018` quedan excluidas (0 filas P′).
+
+**Resultados declarados (Reporte Manus V2, sin artefacto en el repositorio):**
+
+| Resultado | Valor | Estatus |
+|---|---|---|
+| Veto fiduciario por entropía — Brier retenido | **0.1882** | Declarado; `p = 0.0012` declarado |
+| Meta-Router 1X2 — Brier árbol | **0.2005** | Declarado |
+| Meta-Router 1X2 — Brier Shin (holdout `2025_2026`) | **0.1998** | Declarado |
+
+> **Lectura honesta.** El ensamble ML no superó a Shin fuera de muestra; el 1X2 se declara hiper-eficiente y el valor residual inoperable por el vig. El veto por entropía se adopta como mitigación de varianza, no como fuente de Alpha. Ninguna de las tres cifras tiene script, log ni JSON en el repositorio: **no son auditables** (`D-51.03`).
+
 ---
 
 ## 6. ESTADO FINANCIERO VIGENTE
@@ -400,6 +431,7 @@ La Fase 9 materializó tres contratos en `qbe_core` y los certificó con 35 aser
 | Parámetro | Valor | Estatus |
 |---|---:|---|
 | ROI de referencia | **+5.85%** | **Declarado por la Dirección**; pendiente de acta reproducible. |
+| ROI de vetos fiduciarios (Flat Stake) | **−8.38%** | **Declarado en Reporte Manus V2**; no auditado; ignora Dutching `V=0`. |
 | Drawdown de referencia | **1.5%** | **Declarado por la Dirección**; pendiente de acta reproducible. |
 | Bankroll inicial | **$10,000** | **Declarado por la Dirección**. |
 | Hard-cap individual | **8%** | Invariante constitucional. |
@@ -524,6 +556,9 @@ La Fase B exige el Censo de Paridad Canónica de `docs/GOVERNANCE.md` §3.5. **C
 
 | ID | Deuda | Impacto | Acción siguiente | Responsable |
 |---|---|---|---|---|
+| **D-51.01** | Exportación 32V incompleta: el pipeline Parquet omitió las variables crudas `V01`–`V32` | Bloquea los Arquetipos 1, 3, 7 y 8 | Corregir `exportar_dataset_manus.py` para aplanar el JSON de causales | Constructor |
+| **D-51.02** | Simulador financiero: el ROI reportado (`−8.38 %`) es Naive Flat Stake e ignora el Dutching `V=0` | El ROI de los vetos no refleja la cartera Q-BE | Incorporar `portfolio_math.py` al script de evaluación de ROI | Quant / Arquitecto |
+| **D-51.03** | Resultados ML del Sprint 51 sin artefacto reproducible: Brier `0.1882` / `0.2005` / `0.1998` provienen del Reporte Manus V2 | Las decisiones de descarte y de veto no son auditables end-to-end | Publicar cuaderno, semilla y folds del experimento, o re-ejecutarlo con `folds_rolling_origin.json` | Arquitecto |
 | **D-50.02** | λ no discrimina el total de goles (`corr = +0,1006`, `R² = 1,01 %`, pendiente OLS 0,41 vs 1,00) | `QBE-C2` congelado: ningún reanclaje convierte el BSS en positivo | Abrir la ruta C (modelo de totales dedicado) con criterio `R² > 0,05` out-of-sample y BSS > 0 | Arquitecto / Constructor |
 | **D-50.03** | Ancla `μ_liga = 2.65` bajo la media observada 2,7474 | Brecha residual de nivel 1,83 % (bajo el umbral del 2 %) | Diferida; sólo decreto si la brecha supera el 2 % | Director |
 | **D-50.04** | Proveedor histórico de momios único (FootyStats), sin Totales ni BTTS | El Alpha de derivados es `SIN EVIDENCIA`; el consenso multicasa no se reconstruye hacia atrás | Integrar OddsPortal o BetExplorer Pro; declarar cobertura | Arquitecto / Director |
@@ -571,6 +606,7 @@ La Fase B exige el Censo de Paridad Canónica de `docs/GOVERNANCE.md` §3.5. **C
 | Acta histórica Sprint 48 | `docs/KTP/history/AKT_2026-11-03_SPRINT-48-LLENADO-HISTORICO-MASIVO.md` |
 | Acta histórica Sprint 50 | `docs/KTP/history/AKT_2026-11-04_SPRINT-50-REINGENIERIA-INDUSTRIAL-QBE-CORE.md` |
 | Acta histórica Sprint 50 (cierre Fase 9 + enrutador dual) | `docs/KTP/history/AKT_2026-11-06_SPRINT-50-REINGENIERIA-INDUSTRIAL-QBE-CORE.md` |
+| Acta histórica Sprint 51 | `docs/KTP/history/AKT_2026-11-06_SPRINT-51-META-ROUTER-MACHINE-LEARNING.md` |
 | Archivo histórico | `docs/KTP/history/` |
 
 > **Mantenimiento:** este documento se actualiza solo por consolidación formal. La versión, la fecha y el acta de origen se registran en cada cambio. No se edita para “hacer pasar” un test; si la ley cambia, se emite la Ficha de Varianza correspondiente.
