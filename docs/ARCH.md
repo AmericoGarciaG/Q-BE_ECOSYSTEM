@@ -646,7 +646,7 @@ CREATE TABLE IF NOT EXISTS historical_sovereign_distributions (
 
 ### [ARCH-1.4.78] Enrutador y Fachada de Desempeño Híbrido (`qbe_observatory`)
 
-*   **Ω (Resumen):** una sola ruta `GET /desempeno` sirve la lectura unificada de desempeño (Brier Q-BE vs. consenso de mercado) sobre el snapshot 3NF, con el conmutador de *Mando Rector* de `[DES-QBE-078]`. `GET /` deja de renderizar la portada pasiva y redirige a la ruta semántica.
+*   **Ω (Resumen):** una sola ruta `GET /desempeno` sirve la lectura unificada de desempeño (Brier Q-BE vs. consenso de mercado) sobre el snapshot 3NF, con la **Distribución Base** de `[DES-QBE-078]`: un conmutador `qbe` / `mercado` que decide la fuente rectora del coloreado, de la jerarquía de barras y del signo del Alpha bidireccional, más la banda de **siete macro KPIs** de cobertura (`pmax`, `pmid`, `cobertura`), el **chip de diagnóstico de vértice** y el Invariante C-50. `GET /` deja de renderizar la portada pasiva y redirige a la ruta semántica.
 *   **I (Input):** snapshot 3NF `data/snapshots/qbe_database_snapshot.db` en solo lectura, a través del builder canónico de calibración (`reporte_calibracion_canonico` / `cargar_vista_calibracion`), más los parámetros de consulta. No se abre la base viva y no se ejecuta lógica de `qbe_business`.
 *   **P (Process):**
     1. `GET /` → `HTTP 302` con `Location: /desempeno` (se admite `301`). La portada pasiva `qbe_observatory/app/templates/index.html` queda derogada; el redirect se declara en `qbe_observatory/app/main.py`.
@@ -660,7 +660,7 @@ CREATE TABLE IF NOT EXISTS historical_sovereign_distributions (
 
 | Parámetro | Tipo | Dominio / defecto | Semántica |
 |---|---|---|---|
-| `mando` | texto | `qbe` \| `mercado` — defecto `qbe` | Fuente rectora del coloreado y de la jerarquía de barras. |
+| `mando` | texto | `qbe` \| `mercado` — defecto `qbe` | **Distribución Base**: fuente rectora del coloreado, de la jerarquía de barras y del signo del Alpha. |
 | `temporada` | texto | `YYYY_YYYY` — defecto: la última disponible | Universo histórico servido por la fachada. |
 | `jornada_desde` | entero | `>= 1` — defecto: mínimo del universo | Extremo inferior del rango declarado. |
 | `jornada_hasta` | entero | `>= jornada_desde` — defecto: máximo del universo | Extremo superior del rango declarado. |
@@ -669,25 +669,71 @@ CREATE TABLE IF NOT EXISTS historical_sovereign_distributions (
 
 #### 18.2 Contratos DTO
 
-`DesempenoKPIsOut` — banda de cinco macro KPIs del universo filtrado.
+`DesempenoKPIsOut` — banda de siete macro KPIs del universo filtrado. Esquema canónico `[ARCH-1.4.78 · REV.2]`:
 
-| Campo | Tipo | Semántica |
+```python
+class DesempenoKPIsOut(BaseModel):
+    pmax_success_rate: float            # Tasa de éxito de P_max (%)
+    pmid_success_rate: float            # Tasa de rescate de P_mid (%)
+    cobertura_resultado_rate: float     # Invariante: pmax + pmid (%)
+    brier_qbe: float
+    brier_mercado: float
+    alpha_desempeno: float
+    total_partidos: int
+    total_jornadas: int
+    metodo_devig: str
+    mando_rector: str
+    temporadas_disponibles: List[str]
+```
+
+| Campo | Tipo efectivo | Semántica |
 |---|---|---|
-| `total_partidos` | `int` | Denominador fáctico de la muestra. |
-| `n_jornadas` | `int` | Jornadas con al menos un partido auditable. |
+| `pmax_success_rate` | `float \| None` | Porcentaje de partidos evaluables donde el resultado consumado coincide con el primer vértice de la base activa (`r_max` en `qbe`; `max q_mkt` en `mercado`). |
+| `pmid_success_rate` | `float \| None` | Porcentaje donde coincide con el segundo vértice (`r_mid` en `qbe`; `second_max q_mkt` en `mercado`). Mide la eficacia del rescate. |
+| `cobertura_resultado_rate` | `float \| None` | **Invariante C-50**: suma exacta `pmax_success_rate + pmid_success_rate` (± 1e-5). Prohibido calcularla con una fórmula independiente. |
 | `brier_qbe` | `float \| None` | Brier multicategórico 1X2 (3N) del símplex Q-BE. |
 | `brier_mercado` | `float \| None` | Brier del consenso des-marginado con el método declarado. |
-| `alpha_desempeno_pct` | `float \| None` | Alpha Q-BE vs. mercado, transcrito del reporte canónico. |
-| `tasa_rescate_pct` | `float \| None` | Éxito Primario + Segundo (cobertura). |
+| `alpha_desempeno` | `float \| None` | **Alpha bidireccional de la Distribución Base activa**: `(1 − BS_base / BS_oponente) × 100`. Positivo ⇒ la base activa supera al oponente. `None` sin muestra coincidente o con denominador `≤ 0`. |
+| `total_partidos` | `int` | Universo total de partidos auditados. |
+| `total_jornadas` | `int` | Jornadas con al menos un partido auditable. |
+| `metodo_devig` | `str` | `shin` \| `proporcional` efectivamente aplicado. |
+| `mando_rector` | `str` | `qbe` \| `mercado` de la petición. |
+| `temporadas_disponibles` | `List[str]` | Catálogo canónico de temporadas. |
 
-`DesempenoJornadaOut` — contenedor desplegable de la parrilla.
+> **Ausencias declaradas.** Sin muestra evaluable, las tasas y los Briers son `None` y la UI publica `—` + `SIN EVIDENCIA`; nunca un `0.0` fabricado. La anotación `float` del esquema denota el dominio medido, no una autorización para imputar ceros.
 
-| Campo | Tipo | Semántica |
+`DesempenoJornadaOut` — contenedor desplegable de la parrilla. Esquema canónico `[ARCH-1.4.78 · REV.2]`:
+
+```python
+class DesempenoJornadaOut(BaseModel):
+    numero: int
+    etiqueta: str
+    total_partidos: int
+    pmax_success_rate: float
+    pmid_success_rate: float
+    cobertura_resultado_rate: float
+    alpha: float
+    brier_qbe: float
+    brier_mkt: float
+    partidos: List[DesempenoPartidoOut]
+```
+
+| Campo | Tipo efectivo | Semántica |
 |---|---|---|
-| `jornada` | `int` | Número de jornada (`data-jornada`). |
+| `numero` | `int` | N.º de jornada (`data-jornada`). |
+| `etiqueta` | `str \| None` | Rótulo de presentación (`2025_2026 · J12` en el modo «Todas»); `None` ⇒ `JORNADA n`. |
 | `total_partidos` | `int` | Partidos listados en la jornada. |
-| `brier_qbe` / `brier_mercado` | `float \| None` | Media de la jornada; `None` sin evidencia. |
+| `pmax_success_rate` / `pmid_success_rate` | `float \| None` | Tasa de éxito del primer / segundo vértice de la base activa en la jornada. |
+| `cobertura_resultado_rate` | `float \| None` | Invariante C-50 a nivel jornada: suma exacta de las dos tasas anteriores. |
+| `alpha` | `float \| None` | Alpha bidireccional de la jornada. |
+| `brier_qbe` / `brier_mkt` | `float \| None` | Media de la jornada; `None` sin evidencia. |
 | `partidos` | `List[DesempenoPartidoOut]` | Tarjetas de la jornada, en orden de cartelera. |
+
+#### 18.2.1 Invariante Constitucional C-50
+
+$$\text{cobertura\_resultado\_rate} \equiv \text{pmax\_success\_rate} + \text{pmid\_success\_rate} \quad (\pm 10^{-5})$$
+
+Tanto a nivel global (`DesempenoKPIsOut`) como en cada jornada individual (`DesempenoJornadaOut`), la cobertura es la suma estricta de sus dos componentes ortogonales. La fachada calcula `cobertura_resultado_rate` **sumando** las dos tasas ya derivadas; no existe una fórmula independiente que pueda discrepar. Las tasas se publican redondeadas a dos decimales (`round(..., 2)`) y la cobertura se obtiene sumando esas tasas ya redondeadas, de modo que la identidad se conserva en la representación decimal. El Juez `test_shield_desempeno_visual_semantics.py` certifica la igualdad con tolerancia `1e-5` en el DTO y `0.05` en el DOM formateado a un decimal.
 
 `DesempenoPartidoOut` — tarjeta de partido (coexistencia de fuentes sin CQRS).
 
@@ -702,6 +748,8 @@ CREATE TABLE IF NOT EXISTS historical_sovereign_distributions (
 | `r_max`, `r_mid`, `r_low` | `str` | Orden fiduciario Q-BE emitido por el núcleo (rol por vértice). |
 | `vertice_qbe` | `str \| None` | `max` / `mid` / `low` / `cold_start` del resultado consumado en la lectura Q-BE. |
 | `vertice_mercado` | `str \| None` | `max` / `mid` / `low` del resultado consumado en el orden del consenso. |
+| `alpha_partido_pct` | `float \| None` | Alpha bidireccional del partido bajo la Distribución Base activa: la misma ley de `alpha_desempeno` aplicada a los Briers individuales (`brier_qbe` / `brier_mercado` de la tarjeta). Positivo ⇒ la base supera al oponente. `None` si falta cualquiera de los dos Briers o el denominador es `≤ 0`. |
+| `rescate_partido` | `bool` | Booleano de compatibilidad derivado del par de cobertura de la base activa (`{r_max, r_mid}` en `qbe`; `{max q_mkt, second_max q_mkt}` en `mercado`). **No se pinta como chip binario**: el pie usa el Chip de Diagnóstico de Vértice (§7.4.13) transcrito de `vertice_qbe` / `vertice_mercado`. |
 | `shin_z` | `float \| None` | Parámetro `z` de Shin del consenso. |
 | `spread_cuotas` | `float \| None` | Spread de cuotas inter-casinos. |
 | `semaforos` | `Dict[str, str]` | Tetralogía `OPTA/SEDE/H2H/CTX`. |
@@ -712,4 +760,4 @@ CREATE TABLE IF NOT EXISTS historical_sovereign_distributions (
 
 El redirect de `/` y la ruta `/desempeno` no introducen un quinto pilar ni una base nueva: son la fachada de lectura del Observatorio sobre el mismo snapshot y el mismo builder canónico que alimentan `/visor` y `/consenso`. La fachada no reimplementa Brier, Alpha, Poisson ni Shin: los transcribe.
 
-*   **[SHIELD]:** `qbe_observatory/tests/test_shield_desempeno_route.py` (ruta, redirect 302 y navbar de cuatro pestañas) y `qbe_observatory/tests/test_shield_desempeno_visual_semantics.py` (inversión de barras, coloreado por mando y Fail-Loud de dominio).
+*   **[SHIELD]:** `qbe_observatory/tests/test_shield_desempeno_route.py` (ruta, redirect 302, navbar de cuatro pestañas, banda de 7 KPIs y contrato DTO del Invariante C-50) y `qbe_observatory/tests/test_shield_desempeno_visual_semantics.py` (cuadrícula de 7 KPIs, etiquetas mnemónicas de jornada, aditividad C-50, chip de diagnóstico de vértice, sensibilidad a mando, inversión de barras, coloreado por mando y Fail-Loud de dominio).

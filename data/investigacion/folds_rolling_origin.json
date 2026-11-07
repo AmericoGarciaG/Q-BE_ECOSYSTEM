@@ -1,0 +1,72 @@
+{
+  "protocolo": "Rolling-Origin Temporal Cross-Validation",
+  "holdout_final_sellado": "2025_2026",
+  "folds": [
+    {
+      "fold_id": 1,
+      "train_temporadas": [
+        "2015_2016",
+        "2018_2019",
+        "2019_2020"
+      ],
+      "val_temporada": "2020_2021"
+    },
+    {
+      "fold_id": 2,
+      "train_temporadas": [
+        "2015_2016",
+        "2018_2019",
+        "2019_2020",
+        "2020_2021"
+      ],
+      "val_temporada": "2021_2022"
+    },
+    {
+      "fold_id": 3,
+      "train_temporadas": [
+        "2015_2016",
+        "2018_2019",
+        "2019_2020",
+        "2020_2021",
+        "2021_2022"
+      ],
+      "val_temporada": "2022_2023"
+    },
+    {
+      "fold_id": 4,
+      "train_temporadas": [
+        "2015_2016",
+        "2018_2019",
+        "2019_2020",
+        "2020_2021",
+        "2021_2022",
+        "2022_2023"
+      ],
+      "val_temporada": "2023_2024"
+    },
+    {
+      "fold_id": 5,
+      "train_temporadas": [
+        "2015_2016",
+        "2018_2019",
+        "2019_2020",
+        "2020_2021",
+        "2021_2022",
+        "2022_2023",
+        "2023_2024"
+      ],
+      "val_temporada": "2024_2025"
+    }
+  ],
+  "temporadas_excluidas": [
+    "2016_2017",
+    "2017_2018"
+  ],
+  "conjunto_estres_post_holdout": {
+    "temporada": "2026_2027",
+    "n_partidos": 98,
+    "rol": "Out-of-Distribution Test",
+    "nota": "Partidos concluidos de 2026_2027. No entran en ningún train/val; se reservan como estrés post-holdout, sin contaminar el holdout sellado."
+  },
+  "nota": "2016_2017 y 2017_2018 se excluyen por carecer de vector causal FotMob (KDB.md §5.5). El holdout 2025_2026 no entra en ningún train."
+}

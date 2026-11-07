@@ -137,6 +137,48 @@
   </div>
 
   <footer class="mc-foot">
+    {#- [REV.4] Chip de Diagnóstico de Vértice de Cobertura + Alpha (§7.4.13). #}
+    {%- set diag = partido.diagnostico_cobertura | default(none) -%}
+    {%- if diag not in ['PRIMARIO', 'RESCATE', 'RUPTURA', 'COLD_START'] -%}
+      {%- if partido.es_cold_start -%}
+        {%- set diag = 'COLD_START' -%}
+      {%- elif mando == 'qbe' -%}
+        {%- set vertice_activo = partido.vertice_qbe -%}
+        {%- set diag = 'PRIMARIO' if vertice_activo == 'max' else ('RESCATE' if vertice_activo == 'mid' else ('RUPTURA' if vertice_activo == 'low' else none)) -%}
+      {%- else -%}
+        {%- set vertice_activo = partido.vertice_mercado -%}
+        {%- set diag = 'PRIMARIO' if vertice_activo == 'max' else ('RESCATE' if vertice_activo == 'mid' else ('RUPTURA' if vertice_activo == 'low' else none)) -%}
+      {%- endif -%}
+    {%- endif -%}
+    <div class="mc-foot-lectura" aria-label="Lectura individual del partido">
+      {%- if diag == 'PRIMARIO' %}
+      <span class="dsp-chip mc-chip-cobertura badge badge-success" data-cobertura-vertice="primario"
+            title="Cobertura primaria: el resultado consumado cayó en el favorito principal de la base activa">
+        COB: PRIMARIO (P_max)
+      </span>
+      {%- elif diag == 'RESCATE' %}
+      <span class="dsp-chip mc-chip-cobertura badge badge-accent" data-cobertura-vertice="rescate"
+            title="Cobertura de rescate: el resultado consumado cayó en el segundo favorito de la base activa">
+        COB: RESCATE (P_mid)
+      </span>
+      {%- elif diag == 'RUPTURA' %}
+      <span class="dsp-chip mc-chip-cobertura badge badge-danger" data-cobertura-vertice="ruptura"
+            title="Ruptura de cobertura: el resultado consumado quedó fuera del par protegido por la base activa">
+        COB: RUPTURA (P_low)
+      </span>
+      {%- elif diag == 'COLD_START' %}
+      <span class="dsp-chip mc-chip-cobertura badge badge-neutral" data-cobertura-vertice="cold_start"
+            title="Cold Start: S = 0, sin vértice fiduciario que diagnosticar">
+        COB: COLD START
+      </span>
+      {%- endif %}
+      <span class="dsp-chip mc-chip-alpha{% if partido.alpha_partido_pct is number %} {{ 'text-success' if partido.alpha_partido_pct > 0 else ('text-danger' if partido.alpha_partido_pct < 0 else '') }}{% endif %}"
+            data-alpha-partido="{% if partido.alpha_partido_pct is number %}{{ '%+.2f'|format(partido.alpha_partido_pct) }}{% else %}SIN EVIDENCIA{% endif %}"
+            title="Alpha bidireccional del partido a favor de la Distribución Base activa">
+        <span class="dsp-chip-kicker">Alpha</span>
+        {%- if partido.alpha_partido_pct is number %}{{ '%+.2f%%'|format(partido.alpha_partido_pct) }}{% else %}—{% endif %}
+      </span>
+    </div>
     {%- if mando == 'qbe' %}
       <div class="mc-foot-atribucion">
         {%- if partido.atribucion_disponible and partido.atribucion_driver -%}
@@ -222,7 +264,10 @@
         <div class="filter-group">
           <span class="filter-label">RANGO DE JORNADAS</span>
           <div class="flex-align-center gap-8">
-            <select name="jornada_desde" class="select-dark" aria-label="Jornada inicial">
+            {#- [Fast-Track S50] Sin jornadas aplicables (p. ej. «Todas») el control
+                queda `disabled`: un control deshabilitado no se envía, de modo que
+                el formulario jamás emite `?jornada_desde=` (422 de FastAPI). #}
+            <select name="jornada_desde" class="select-dark" aria-label="Jornada inicial"{% if not jornadas_disponibles %} disabled aria-disabled="true" title="El universo seleccionado no expone rango de jornadas"{% endif %}>
               {%- for numero in jornadas_disponibles %}
               <option value="{{ numero }}"{% if numero == filtros.jornada_min %} selected{% endif %}>J{{ numero }}</option>
               {%- else %}
@@ -230,7 +275,7 @@
               {%- endfor %}
             </select>
             <span class="text-muted">a</span>
-            <select name="jornada_hasta" class="select-dark" aria-label="Jornada final">
+            <select name="jornada_hasta" class="select-dark" aria-label="Jornada final"{% if not jornadas_disponibles %} disabled aria-disabled="true" title="El universo seleccionado no expone rango de jornadas"{% endif %}>
               {%- for numero in jornadas_disponibles %}
               <option value="{{ numero }}"{% if numero == filtros.jornada_max %} selected{% endif %}>J{{ numero }}</option>
               {%- else %}
@@ -241,8 +286,8 @@
         </div>
       </div>
 
-      <div class="mando-rector-selector mb-16 p-12 bg-base border-rounded" role="group" aria-label="Mando Rector">
-        <span class="text-caption font-bold text-muted mr-16">MANDO RECTOR:</span>
+      <div class="mando-rector-selector mb-16 p-12 bg-base border-rounded" role="group" aria-label="Distribución Base">
+        <span class="text-caption font-bold text-muted mr-16">DISTRIBUCIÓN BASE:</span>
         <label class="radio-custom mr-16">
           <input type="radio" name="mando" value="qbe"{% if mando == 'qbe' %} checked{% endif %}>
           <span>Q-BE Soberano (P′)</span>
@@ -270,50 +315,65 @@
             <option value="proporcional"{% if filtros.devig == 'proporcional' %} selected{% endif %}>Proporcional</option>
           </select>
           <button type="submit" class="btn btn-primary btn-sm">Aplicar</button>
-          <a href="/desempeno" class="btn btn-secondary btn-sm">Restablecer</a>
+          <a href="/desempeno" class="btn btn-secondary btn-sm" data-acordeones-reset="1"
+             title="Limpia los filtros y el estado de los acordeones: la parrilla vuelve a nacer contraída">Restablecer</a>
         </div>
       </div>
     </form>
   </section>
 
-  {# ── Banda de macro KPIs · [DES-QBE-078 · REV.3] ──────────────────────────
+  {# ── Banda de macro KPIs · [DES-QBE-078 · REV.4] ──────────────────────────
+     Siete tarjetas: terna de cobertura (Pmax, Pmid, Cobertura Resultado) +
+     dos Briers bicolor + Alpha + Partidos Auditados. En Modo Mercado la terna
+     evalúa el consenso des-marginado y el Brier Mercado pasa a la 4.ª posición.
      Bicolor: el Brier de MENOR error se pinta en `text-accent`; el mayor en
-     `text-muted`; empate exacto ⇒ ambos en acento. El Mando Rector lidera la
-     posición: en `mercado`, la tarjeta del consenso antecede a la de Q-BE. #}
+     `text-muted`; empate exacto ⇒ ambos en acento. #}
   {%- set qbe_brier = kpis.brier_qbe -%}
   {%- set mkt_brier = kpis.brier_mercado -%}
   {%- set qbe_clase = 'text-accent' if (qbe_brier is number and mkt_brier is number and qbe_brier <= mkt_brier) else ('text-muted' if qbe_brier is number else '') -%}
   {%- set mkt_clase = 'text-accent' if (qbe_brier is number and mkt_brier is number and mkt_brier <= qbe_brier) else ('text-muted' if mkt_brier is number else '') -%}
-  {%- set n_muestra = kpis.n_mercado | default(0) -%}
-  {%- set tarjetas_brier = [
-        {'kpi': 'brier-qbe', 'label': 'BRIER Q-BE (3N)', 'valor': qbe_brier, 'clase': qbe_clase,
-         'nota': 'Símplex Soberano P′ · N=' ~ n_muestra},
-        {'kpi': 'brier-mercado', 'label': 'BRIER MERCADO', 'valor': mkt_brier, 'clase': mkt_clase,
-         'nota': 'Consenso ' ~ ('Shin (1991)' if filtros.devig == 'shin' else 'Proporcional') ~ ' (N=' ~ n_muestra ~ ')'}
-      ] -%}
-  {%- if mando == 'mercado' -%}{%- set tarjetas_brier = [tarjetas_brier[1], tarjetas_brier[0]] -%}{%- endif -%}
-  <section class="grid-5-kpis mb-24" aria-label="Macro KPIs unificados">
-    <div class="kpi-card card card-clean" data-kpi="partidos">
-      <div class="kpi-label">PARTIDOS AUDITADOS</div>
-      <div class="kpi-value">{{ kpis.total_partidos if kpis.total_partidos is number else '—' }}</div>
-      <div class="kpi-sub">{{ kpis.n_jornadas|default(0) }} Jornadas auditadas</div>
+  {%- set pmax_label = 'ÉXITO MKT_MAX' if mando == 'mercado' else 'ÉXITO PMAX' -%}
+  {%- set pmid_label = 'ÉXITO MKT_MID' if mando == 'mercado' else 'ÉXITO PMID' -%}
+  {%- set cob_label = 'COBERTURA MERCADO' if mando == 'mercado' else 'COBERTURA RESULTADO' -%}
+  {%- if mando == 'mercado' -%}
+    {%- set brier_primera = {'kpi': 'brier-mercado', 'label': 'BRIER MERCADO', 'valor': mkt_brier, 'clase': mkt_clase, 'nota': 'Consenso des-marginado'} -%}
+    {%- set brier_segunda = {'kpi': 'brier-qbe', 'label': 'BRIER Q-BE (3N)', 'valor': qbe_brier, 'clase': qbe_clase, 'nota': 'Símplex Soberano P′'} -%}
+  {%- else -%}
+    {%- set brier_primera = {'kpi': 'brier-qbe', 'label': 'BRIER Q-BE (3N)', 'valor': qbe_brier, 'clase': qbe_clase, 'nota': 'Símplex Soberano P′'} -%}
+    {%- set brier_segunda = {'kpi': 'brier-mercado', 'label': 'BRIER MERCADO', 'valor': mkt_brier, 'clase': mkt_clase, 'nota': 'Consenso des-marginado'} -%}
+  {%- endif -%}
+  <section class="grid-7-kpis mb-24" aria-label="Macro KPIs unificados">
+    <div class="kpi-card card card-clean" data-kpi="pmax">
+      <div class="kpi-label">{{ pmax_label }}</div>
+      <div class="kpi-value{% if kpis.pmax_success_rate is number %} text-success{% endif %}">{% if kpis.pmax_success_rate is number %}{{ "%.1f%%"|format(kpis.pmax_success_rate) }}{% else %}{{ vacio('Sin partidos evaluables para P_max') }}{% endif %}</div>
+      <div class="kpi-sub">Acierto del favorito principal</div>
     </div>
-    {%- for tarjeta in tarjetas_brier %}
+    <div class="kpi-card card card-clean" data-kpi="pmid">
+      <div class="kpi-label">{{ pmid_label }}</div>
+      <div class="kpi-value{% if kpis.pmid_success_rate is number %} text-accent{% endif %}">{% if kpis.pmid_success_rate is number %}{{ "%.1f%%"|format(kpis.pmid_success_rate) }}{% else %}{{ vacio('Sin partidos evaluables para P_mid') }}{% endif %}</div>
+      <div class="kpi-sub">Rescate del segundo favorito</div>
+    </div>
+    <div class="kpi-card card card-clean" data-kpi="cobertura">
+      <div class="kpi-label">{{ cob_label }}</div>
+      <div class="kpi-value">{% if kpis.cobertura_resultado_rate is number %}{{ "%.1f%%"|format(kpis.cobertura_resultado_rate) }}{% else %}{{ vacio('Sin partidos evaluables') }}{% endif %}</div>
+      <div class="kpi-sub">P_max + P_mid · Invariante C-50</div>
+    </div>
+    {%- for tarjeta in [brier_primera, brier_segunda] %}
     <div class="kpi-card card card-clean" data-kpi="{{ tarjeta.kpi }}">
       <div class="kpi-label">{{ tarjeta.label }}</div>
       <div class="kpi-value{% if tarjeta.clase %} {{ tarjeta.clase }}{% endif %}">{% if tarjeta.valor is number %}{{ "%.4f"|format(tarjeta.valor) }}{% else %}{{ vacio('Brier no disponible en la muestra coincidente del universo filtrado') }}{% endif %}</div>
-      <div class="kpi-sub">{{ tarjeta.nota }}</div>
+      <div class="kpi-sub">{{ tarjeta.nota }} · N={{ kpis.total_partidos|default(0) }}</div>
     </div>
     {%- endfor %}
     <div class="kpi-card card card-clean" data-kpi="alpha">
       <div class="kpi-label">ALPHA DE DESEMPEÑO</div>
-      <div class="kpi-value{% if kpis.alpha_desempeno_pct is number %} {{ 'text-success' if kpis.alpha_desempeno_pct >= 0 else 'text-danger' }}{% endif %}">{% if kpis.alpha_desempeno_pct is number %}{{ "%+.2f%%"|format(kpis.alpha_desempeno_pct) }}{% else %}{{ vacio('Alpha no medible: falta el Brier del consenso') }}{% endif %}</div>
-      <div class="kpi-sub">Q-BE vs. Mercado</div>
+      <div class="kpi-value{% if kpis.alpha_desempeno is number %} {{ 'text-success' if kpis.alpha_desempeno > 0 else ('text-danger' if kpis.alpha_desempeno < 0 else '') }}{% endif %}">{% if kpis.alpha_desempeno is number %}{{ "%+.2f%%"|format(kpis.alpha_desempeno) }}{% else %}{{ vacio('Alpha no medible: falta el Brier del consenso') }}{% endif %}</div>
+      <div class="kpi-sub">Base activa vs. oponente</div>
     </div>
-    <div class="kpi-card card card-clean" data-kpi="rescate">
-      <div class="kpi-label">TASA DE RESCATE</div>
-      <div class="kpi-value text-success">{% if kpis.tasa_rescate_pct is number %}{{ "%.1f%%"|format(kpis.tasa_rescate_pct) }}{% else %}{{ vacio('Sin partidos evaluables') }}{% endif %}</div>
-      <div class="kpi-sub">Éxito Cobertura (Prim + Seg)</div>
+    <div class="kpi-card card card-clean" data-kpi="partidos">
+      <div class="kpi-label">PARTIDOS AUDITADOS</div>
+      <div class="kpi-value">{{ kpis.total_partidos if kpis.total_partidos is number else '—' }}</div>
+      <div class="kpi-sub">{{ kpis.total_jornadas|default(0) }} Jornadas auditadas</div>
     </div>
   </section>
 
@@ -324,20 +384,22 @@
   <section class="dsp-parrilla" aria-label="Parrilla de desempeño por partido">
     {%- for jornada in vista.jornadas | default([]) %}
     {%- set jq = jornada.brier_qbe -%}
-    {%- set jm = jornada.brier_mercado -%}
+    {%- set jm = jornada.brier_mkt -%}
     {%- set jq_clase = 'text-accent' if (jq is number and jm is number and jq <= jm) else ('text-muted' if jq is number else '') -%}
     {%- set jm_clase = 'text-accent' if (jq is number and jm is number and jm <= jq) else ('text-muted' if jm is number else '') -%}
-    {%- set alpha_j = jornada.alpha_pct -%}
-    <details class="dsp-jornada jornada-accordion" data-jornada="{{ jornada.jornada }}"{% if loop.first %} open{% endif %}>
+    {%- set alpha_j = jornada.alpha -%}
+    <details class="dsp-jornada jornada-accordion" data-jornada="{{ jornada.numero }}">
       <summary class="jornada-header-bar">
         <span class="jornada-bar-left">
           <span class="chevron-icon" aria-hidden="true">▾</span>
-          <span class="jornada-titulo">{% if jornada.etiqueta %}{{ jornada.etiqueta }}{% else %}JORNADA {{ jornada.jornada }}{% endif %}</span>
+          <span class="jornada-titulo">{% if jornada.etiqueta %}{{ jornada.etiqueta }}{% else %}JORNADA {{ jornada.numero }}{% endif %}</span>
           <span class="badge badge-neutral">{{ jornada.total_partidos }} PARTIDOS</span>
         </span>
         <span class="jornada-bar-right">
-          <span class="jornada-metric">Rescate: <strong>{% if jornada.tasa_rescate_pct is number %}{{ "%.1f%%"|format(jornada.tasa_rescate_pct) }}{% else %}—{% endif %}</strong></span>
-          <span class="jornada-metric">Alpha: <strong class="{{ 'text-success' if (alpha_j is number and alpha_j >= 0) else ('text-danger' if alpha_j is number else '') }}">{% if alpha_j is number %}{{ "%+.2f%%"|format(alpha_j) }}{% else %}—{% endif %}</strong></span>
+          <span class="jornada-metric">Exto_Pmax: <strong>{% if jornada.pmax_success_rate is number %}{{ "%.1f%%"|format(jornada.pmax_success_rate) }}{% else %}—{% endif %}</strong></span>
+          <span class="jornada-metric">Exto_Pmid: <strong>{% if jornada.pmid_success_rate is number %}{{ "%.1f%%"|format(jornada.pmid_success_rate) }}{% else %}—{% endif %}</strong></span>
+          <span class="jornada-metric">Cobertura_Rltdo: <strong>{% if jornada.cobertura_resultado_rate is number %}{{ "%.1f%%"|format(jornada.cobertura_resultado_rate) }}{% else %}—{% endif %}</strong></span>
+          <span class="jornada-metric">Alpha: <strong class="{{ 'text-success' if (alpha_j is number and alpha_j > 0) else ('text-danger' if (alpha_j is number and alpha_j < 0) else '') }}">{% if alpha_j is number %}{{ "%+.2f%%"|format(alpha_j) }}{% else %}—{% endif %}</strong></span>
           {%- if mando == 'qbe' %}
           <span class="jornada-metric">Brier QBE: <strong data-brier="qbe" class="{{ jq_clase }}">{% if jq is number %}{{ "%.4f"|format(jq) }}{% else %}—{% endif %}</strong></span>
           <span class="jornada-metric">Mkt: <strong data-brier="mercado" class="{{ jm_clase }}">{% if jm is number %}{{ "%.4f"|format(jm) }}{% else %}—{% endif %}</strong></span>
@@ -367,36 +429,98 @@
 
 {% block scripts %}
 <script src="/static/js/visor-vars44.js?v=2026QBE_V1" defer></script>
-{# [DES-QBE-078 · REV.3] Persistencia del estado del acordeón por jornada.
-   Al aplicar filtros la página se recarga: el foco de auditoría debe sobrevivir.
-   `data-jornada` es la llave estable; sin `localStorage` la vista abre la J1. #}
+{# [DES-QBE-078 · REV.4] Estado del acordeón por jornada (docs/DESIGN.md §7.4.10).
+   El servidor NO emite `open`: la parrilla nace contraída. El estado vive en la
+   memoria de la SESIÓN (no del navegador) y se rehidrata al cargar la página,
+   de modo que aplicar filtros conserva el foco de auditoría. #}
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-      const STORAGE_KEY = "qbe_desempeno_acordeones_abiertos";
-      let abiertos = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  (function () {
+      "use strict";
 
-      const detalles = document.querySelectorAll("details.jornada-accordion");
-      if (detalles.length > 0) {
-          if (abiertos.length === 0) {
-              detalles[0].open = true;
-              localStorage.setItem(STORAGE_KEY, JSON.stringify([detalles[0].getAttribute("data-jornada")]));
-          } else {
-              detalles.forEach(d => {
-                  const jId = d.getAttribute("data-jornada");
-                  d.open = abiertos.includes(jId);
-              });
+      var CLAVE = "qbe_desempeno_acordeones_abiertos";
+
+      function leerAbiertos() {
+          try {
+              var crudo = window.sessionStorage.getItem(CLAVE);
+              var ids = crudo ? JSON.parse(crudo) : [];
+              return Array.isArray(ids) ? ids : [];
+          } catch (error) {
+              return [];
           }
+      }
 
-          detalles.forEach(d => {
-              d.addEventListener("toggle", function() {
-                  let estado = [];
-                  document.querySelectorAll("details.jornada-accordion").forEach(el => {
-                      if (el.open) estado.push(el.getAttribute("data-jornada"));
-                  });
-                  localStorage.setItem(STORAGE_KEY, JSON.stringify(estado));
-              });
+      function escribirAbiertos(ids) {
+          try {
+              window.sessionStorage.setItem(CLAVE, JSON.stringify(ids));
+          } catch (error) {
+              /* Sesión sin almacenamiento: la vista degrada a "todo cerrado". */
+          }
+      }
+
+      function jornadas() {
+          return document.querySelectorAll("details.jornada-accordion");
+      }
+
+      function rehidratar() {
+          var abiertos = leerAbiertos();
+          jornadas().forEach(function (detalle) {
+              var id = detalle.getAttribute("data-jornada");
+              detalle.open = abiertos.indexOf(id) !== -1;
           });
       }
-  });
+
+      function recordar() {
+          var abiertos = [];
+          document.querySelectorAll("details.jornada-accordion[open]").forEach(function (detalle) {
+              abiertos.push(detalle.getAttribute("data-jornada"));
+          });
+          escribirAbiertos(abiertos);
+      }
+
+      function limpiar() {
+          try {
+              window.sessionStorage.removeItem(CLAVE);
+          } catch (error) {
+              /* Sin almacenamiento no hay estado que limpiar. */
+          }
+      }
+
+      /* [Fast-Track S50] Blindaje del contrato de consulta: un control vacío no
+         viaja en la URL. El `submit` se dispara antes de construir el query
+         string, así que deshabilitar aquí equivale a no enviar `?clave=`.
+         Ataca la raíz del 422 («Input should be a valid integer», input ""). */
+      function limpiarParametrosVacios() {
+          var formulario = document.getElementById("form-filtros-desempeno");
+          if (!formulario) {
+              return;
+          }
+          Array.prototype.forEach.call(formulario.elements, function (campo) {
+              if (!campo.name || campo.disabled) {
+                  return;
+              }
+              if (String(campo.value).trim() === "") {
+                  campo.disabled = true;
+              }
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+          rehidratar();
+
+          jornadas().forEach(function (detalle) {
+              detalle.addEventListener("toggle", recordar);
+          });
+
+          var restablecer = document.querySelector("[data-acordeones-reset]");
+          if (restablecer) {
+              restablecer.addEventListener("click", limpiar);
+          }
+
+          var formulario = document.getElementById("form-filtros-desempeno");
+          if (formulario) {
+              formulario.addEventListener("submit", limpiarParametrosVacios);
+          }
+      });
+  })();
 </script>
 {% endblock %}

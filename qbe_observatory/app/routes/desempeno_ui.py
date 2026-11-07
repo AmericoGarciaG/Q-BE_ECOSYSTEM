@@ -38,7 +38,7 @@ def desempeno_ui(
     casino: List[str] = Query(default=[]),
     devig: str = "shin",
 ) -> HTMLResponse:
-    """Vista rectora de desempeño: Brier Q-BE vs. consenso bajo Mando Rector."""
+    """Vista rectora de desempeño: Brier Q-BE vs. consenso bajo Distribución Base."""
     vista = cargar_vista_desempeno(
         mando=mando,
         temporada=temporada,

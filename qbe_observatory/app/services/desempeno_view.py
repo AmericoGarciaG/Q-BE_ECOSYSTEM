@@ -112,6 +112,12 @@ class DesempenoPartidoOut(BaseModel):
     r_low: Optional[str] = None
     vertice_qbe: Optional[str] = None
     vertice_mercado: Optional[str] = None
+    #: `[REV.4]` Alpha bidireccional del partido a favor de la base activa (§7.4.9).
+    alpha_partido_pct: Optional[float] = None
+    #: `[REV.4]` ¿El resultado cayó en el par de cobertura de la base activa?
+    rescate_partido: bool = False
+    #: `[REV.4]` Diagnóstico de vértice: PRIMARIO / RESCATE / RUPTURA / COLD_START.
+    diagnostico_cobertura: Optional[str] = None
     shin_z: Optional[float] = None
     spread_cuotas: Optional[float] = None
     semaforos: Dict[str, str] = Field(default_factory=dict)
@@ -122,30 +128,44 @@ class DesempenoPartidoOut(BaseModel):
 
 
 class DesempenoJornadaOut(BaseModel):
-    """Contenedor desplegable de la parrilla de desempeño."""
+    """Contenedor desplegable de la parrilla de desempeño.
 
-    jornada: int
+    `[DES-QBE-078 · REV.4]` Publica la terna de cobertura por jornada con el
+    Invariante C-50 (`cobertura = pmax + pmid`) y el Alpha bidireccional.
+    """
+
+    numero: int
     #: Rótulo de presentación (`2025_2026 · J12` en el modo «Todas»); `None` ⇒ `JORNADA n`.
     etiqueta: Optional[str] = None
     total_partidos: int
+    pmax_success_rate: Optional[float] = None
+    pmid_success_rate: Optional[float] = None
+    cobertura_resultado_rate: Optional[float] = None
+    alpha: Optional[float] = None
     brier_qbe: Optional[float] = None
-    brier_mercado: Optional[float] = None
-    alpha_pct: Optional[float] = None
-    tasa_rescate_pct: Optional[float] = None
+    brier_mkt: Optional[float] = None
     partidos: List[DesempenoPartidoOut] = Field(default_factory=list)
 
 
 class DesempenoKPIsOut(BaseModel):
-    """Banda superior de cinco macro KPIs unificados."""
+    """Banda superior de siete macro KPIs unificados.
 
-    total_partidos: int = 0
-    n_jornadas: int = 0
-    #: Muestra COINCIDENTE (P′ ∩ q_mkt ∩ resultado) sobre la que se agregan Briers y Alpha.
-    n_mercado: int = 0
+    `[DES-QBE-078 · REV.4]` La terna de cobertura cumple el Invariante C-50:
+    `cobertura_resultado_rate` es la suma estricta de `pmax_success_rate` y
+    `pmid_success_rate`.
+    """
+
+    pmax_success_rate: Optional[float] = None
+    pmid_success_rate: Optional[float] = None
+    cobertura_resultado_rate: Optional[float] = None
     brier_qbe: Optional[float] = None
     brier_mercado: Optional[float] = None
-    alpha_desempeno_pct: Optional[float] = None
-    tasa_rescate_pct: Optional[float] = None
+    alpha_desempeno: Optional[float] = None
+    total_partidos: int = 0
+    total_jornadas: int = 0
+    metodo_devig: str = "shin"
+    mando_rector: str = "qbe"
+    temporadas_disponibles: List[str] = Field(default_factory=list)
 
 
 # ── Aduana Fail-Loud (`docs/ARCH.md` §18.1) ─────────────────────────────────
@@ -172,7 +192,7 @@ def validar_dominio(*, casinos: Sequence[str], devig: str, mando: str) -> None:
         )
     if mando not in MANDOS_RECTORES:
         raise ValueError(
-            f"Mando rector no reconocido: {mando!r}. Dominio canónico: "
+            f"Distribución Base no reconocida: {mando!r}. Dominio canónico: "
             f"{MANDOS_RECTORES} [DES-QBE-078]."
         )
 
@@ -309,31 +329,86 @@ def _brier(partidos: Sequence[Dict[str, Any]], fuente: str) -> Optional[float]:
     return calcular_brier_multicategorico(registros)
 
 
-def _tasa_rescate(
-    partidos: Sequence[Dict[str, Any]], mando: str
-) -> Optional[float]:
-    """Tasa de Rescate del par de cobertura de la FUENTE RECTORA activa.
+def _par_cobertura(
+    partido: Dict[str, Any], mando: str
+) -> Optional[frozenset]:
+    """Par de cobertura de la base activa, o `None` si el partido no es evaluable.
 
-    `[DES-QBE-078 · REV.3]` Mide, sobre los partidos evaluables, cuántos cayó en
-    el par cubierto por el mando:
+    `[DES-QBE-078 · REV.4]` Una sola definición para las tres superficies:
 
     * `qbe`      → `{r_max, r_mid}` (vértices fiduciarios del núcleo).
     * `mercado`  → `{max q_mkt, second_max q_mkt}` (orden del consenso).
 
-    El denominador son los partidos con resultado que la fuente puede cubrir: en
-    Modo Mercado, un partido sin cuotas no se cuenta como fallo (no hay par que
-    evaluar). Sin evaluables la tasa es `None`, jamás un cero fabricado.
+    `None` cuando el resultado consumado no existe o la fuente no puede formar
+    el par (cold start sin vértices, partido sin cuotas): no hay cobertura que
+    medir, jamás una cobertura imputada.
+    """
+    resultado = partido.get("resultado_real")
+    if resultado not in DESENLACES:
+        return None
+    if mando == "qbe":
+        r_max = partido.get("r_max")
+        r_mid = partido.get("r_mid")
+        if r_max is None or r_mid is None:
+            return None
+        return frozenset({r_max, r_mid})
+    orden = _orden_mercado(
+        (
+            partido.get("q_local"),
+            partido.get("q_empate"),
+            partido.get("q_visitante"),
+        )
+    )
+    if orden is None:
+        return None
+    return frozenset({orden[0], orden[1]})
+
+
+def _rescate_partido(partido: Dict[str, Any], mando: str) -> bool:
+    """`rescate_partido` de la tarjeta: ¿el resultado cayó en el par de la base?
+
+    `False` si cayó fuera del par o si el partido no es evaluable. Se deriva de
+    `_par_cobertura`, la MISMA ley que agrega la Tasa de Rescate: la tarjeta y
+    el KPI no pueden discrepar.
+    """
+    par = _par_cobertura(partido, mando)
+    return bool(par is not None and partido.get("resultado_real") in par)
+
+
+def _tasa_cobertura(
+    partidos: Sequence[Dict[str, Any]], mando: str
+) -> Tuple[Optional[float], Optional[float], Optional[float]]:
+    """Terna de cobertura de la base activa: `(pmax, pmid, cobertura)`.
+
+    `[DES-QBE-078 · REV.4]` Sobre los partidos evaluables (resultado consumado,
+    fuera de Cold Start y con la fuente capaz de formar su par de vértices):
+
+    * `pmax_success_rate` → porcentaje donde el resultado es el primer vértice.
+    * `pmid_success_rate` → porcentaje donde el resultado es el segundo vértice.
+    * `cobertura_resultado_rate` → suma estricta de las dos anteriores (C-50).
+
+    El denominador es el número de partidos evaluables, no el universo total.
+    Sin evaluables la terna es `(None, None, None)`, jamás ceros fabricados.
     """
     evaluados = 0
-    cubiertos = 0
+    aciertos_pmax = 0
+    aciertos_pmid = 0
     for partido in partidos:
+        if partido.get("es_cold_start"):
+            continue
         resultado = partido.get("resultado_real")
         if resultado not in DESENLACES:
             continue
         if mando == "qbe":
-            if partido.get("r_max") is None or partido.get("r_mid") is None:
+            r_max = partido.get("r_max")
+            r_mid = partido.get("r_mid")
+            if r_max is None or r_mid is None:
                 continue
-            par = {partido.get("r_max"), partido.get("r_mid")}
+            evaluados += 1
+            if resultado == r_max:
+                aciertos_pmax += 1
+            elif resultado == r_mid:
+                aciertos_pmid += 1
         else:
             orden = _orden_mercado(
                 (
@@ -344,20 +419,76 @@ def _tasa_rescate(
             )
             if orden is None:
                 continue
-            par = {orden[0], orden[1]}
-        evaluados += 1
-        if resultado in par:
-            cubiertos += 1
+            evaluados += 1
+            if resultado == orden[0]:
+                aciertos_pmax += 1
+            elif resultado == orden[1]:
+                aciertos_pmid += 1
+
     if not evaluados:
-        return None
-    return round((cubiertos / evaluados) * 100.0, 2)
+        return (None, None, None)
+
+    pmax = round((aciertos_pmax / evaluados) * 100.0, 2)
+    pmid = round((aciertos_pmid / evaluados) * 100.0, 2)
+    # Invariante C-50: la cobertura se SUMA, nunca se recalcula por separado.
+    cobertura = round(pmax + pmid, 2)
+    return (pmax, pmid, cobertura)
 
 
-def _coeficiente_alpha(brier_qbe: Optional[float], brier_mercado: Optional[float]) -> Optional[float]:
-    """Alpha de desempeño = (1 − BS_QBE / BS_MKT) × 100. Sin mercado no hay medición."""
-    if brier_qbe is None or brier_mercado is None or brier_mercado <= 0.0:
+def _diagnostico_cobertura(
+    partido: Dict[str, Any], mando: str
+) -> Optional[str]:
+    """Vértice de cobertura del resultado consumado bajo la base activa.
+
+    `PRIMARIO` / `RESCATE` / `RUPTURA` / `COLD_START`, o `None` si el partido
+    no es evaluable. Es una clasificación por igualdad de roles, no aritmética.
+    """
+    if partido.get("es_cold_start"):
+        return "COLD_START"
+    resultado = partido.get("resultado_real")
+    if resultado not in DESENLACES:
         return None
-    return round((1.0 - (brier_qbe / brier_mercado)) * 100.0, 2)
+    if mando == "qbe":
+        if resultado == partido.get("r_max"):
+            return "PRIMARIO"
+        if resultado == partido.get("r_mid"):
+            return "RESCATE"
+        if resultado == partido.get("r_low"):
+            return "RUPTURA"
+        return None
+    vertice = _vertice_mercado(
+        resultado,
+        (
+            partido.get("q_local"),
+            partido.get("q_empate"),
+            partido.get("q_visitante"),
+        ),
+    )
+    return {"max": "PRIMARIO", "mid": "RESCATE", "low": "RUPTURA"}.get(vertice)
+
+
+def _coeficiente_alpha(
+    brier_qbe: Optional[float],
+    brier_mercado: Optional[float],
+    mando: str = "qbe",
+) -> Optional[float]:
+    """Alpha bidireccional a favor de la base activa (`docs/DESIGN.md` §7.4.9).
+
+    * base `qbe`      → `(1 − BS_QBE / BS_MKT) × 100` (positivo ⇒ Q-BE mejor).
+    * base `mercado`  → `(1 − BS_MKT / BS_QBE) × 100` (positivo ⇒ mercado mejor).
+
+    Sin par de Briers o con denominador `≤ 0` no hay medición: `None`, jamás un
+    cero fabricado.
+    """
+    if brier_qbe is None or brier_mercado is None:
+        return None
+    if mando == "mercado":
+        base, oponente = brier_mercado, brier_qbe
+    else:
+        base, oponente = brier_qbe, brier_mercado
+    if oponente <= 0.0:
+        return None
+    return round((1.0 - (base / oponente)) * 100.0, 2)
 
 
 def _brier_vector(
@@ -397,8 +528,14 @@ def _momios_normalizados(momios: Any) -> Dict[str, float]:
     return limpio
 
 
-def _partido_out(src: Dict[str, Any], devig: str) -> DesempenoPartidoOut:
-    """Proyecta un partido (snapshot o bóveda histórica) al contrato de la tarjeta."""
+def _partido_out(src: Dict[str, Any], devig: str, mando: str = "qbe") -> DesempenoPartidoOut:
+    """Proyecta un partido (snapshot o bóveda histórica) al contrato de la tarjeta.
+
+    `[DES-QBE-078 · REV.4]` Además de las dos clasificaciones del resultado,
+    emite la lectura individual de la base activa: `alpha_partido_pct` (misma ley
+    bidireccional del KPI, §7.4.9) y `rescate_partido` (¿cayó en el par de
+    cobertura?, §7.1 · §18.2).
+    """
     q, shin_z = _desmargen(src, devig)
     resultado = src.get("resultado_real")
     es_cold_start = bool(src.get("es_cold_start"))
@@ -435,6 +572,31 @@ def _partido_out(src: Dict[str, Any], devig: str) -> DesempenoPartidoOut:
         r_low=src.get("r_low"),
         vertice_qbe=vertice_qbe,
         vertice_mercado=_vertice_mercado(resultado, q),
+        alpha_partido_pct=_coeficiente_alpha(brier_qbe, brier_mercado, mando),
+        rescate_partido=_rescate_partido(
+            {
+                "resultado_real": resultado,
+                "r_max": src.get("r_max"),
+                "r_mid": src.get("r_mid"),
+                "q_local": q[0],
+                "q_empate": q[1],
+                "q_visitante": q[2],
+            },
+            mando,
+        ),
+        diagnostico_cobertura=_diagnostico_cobertura(
+            {
+                "es_cold_start": es_cold_start,
+                "resultado_real": resultado,
+                "r_max": src.get("r_max"),
+                "r_mid": src.get("r_mid"),
+                "r_low": src.get("r_low"),
+                "q_local": q[0],
+                "q_empate": q[1],
+                "q_visitante": q[2],
+            },
+            mando,
+        ),
         shin_z=shin_z,
         spread_cuotas=None,
         semaforos=(
@@ -688,23 +850,32 @@ def _universo_todas() -> Dict[str, Any]:
     }
 
 
-def _kpis(jornadas: Sequence[DesempenoJornadaOut], mando: str) -> DesempenoKPIsOut:
-    """Ensambla la banda de cinco macro KPIs del universo filtrado.
+def _kpis(
+    jornadas: Sequence[DesempenoJornadaOut], mando: str, devig: str = "shin"
+) -> DesempenoKPIsOut:
+    """Ensambla la banda de siete macro KPIs del universo filtrado.
 
-    La muestra de Briers/Alpha es la COINCIDENTE (P′ ∩ q_mkt ∩ resultado); la
-    Tasa de Rescate usa el par de cobertura del mando activo.
+    `[DES-QBE-078 · REV.4]` La muestra de Briers/Alpha es la COINCIDENTE
+    (P′ ∩ q_mkt ∩ resultado). La terna de cobertura se deriva de
+    `_tasa_cobertura`, la MISMA ley que alimenta cada jornada: la cobertura es
+    la suma estricta de sus dos componentes (Invariante C-50).
     """
     partidos = [partido.model_dump() for jornada in jornadas for partido in jornada.partidos]
     brier_qbe = _brier(partidos, "qbe")
     brier_mercado = _brier(partidos, "mercado")
+    pmax, pmid, cobertura = _tasa_cobertura(partidos, mando)
     return DesempenoKPIsOut(
-        total_partidos=len(partidos),
-        n_jornadas=len(jornadas),
-        n_mercado=len(_registros_comunes(partidos)),
+        pmax_success_rate=pmax,
+        pmid_success_rate=pmid,
+        cobertura_resultado_rate=cobertura,
         brier_qbe=brier_qbe,
         brier_mercado=brier_mercado,
-        alpha_desempeno_pct=_coeficiente_alpha(brier_qbe, brier_mercado),
-        tasa_rescate_pct=_tasa_rescate(partidos, mando),
+        alpha_desempeno=_coeficiente_alpha(brier_qbe, brier_mercado, mando),
+        total_partidos=len(partidos),
+        total_jornadas=len(jornadas),
+        metodo_devig=devig,
+        mando_rector=mando,
+        temporadas_disponibles=list(TEMPORADAS_CANONICAS),
     )
 
 
@@ -763,24 +934,30 @@ def cargar_vista_desempeno(
         if hasta is not None and numero > hasta:
             continue
         crudos = list(fila.get("partidos") or [])
-        partidos = [_partido_out(partido, devig_norm) for partido in crudos]
+        partidos = [_partido_out(partido, devig_norm, mando_norm) for partido in crudos]
         planos = [partido.model_dump() for partido in partidos]
         brier_qbe_jornada = _brier(planos, "qbe")
         brier_mercado_jornada = _brier(planos, "mercado")
+        pmax_j, pmid_j, cobertura_j = _tasa_cobertura(planos, mando_norm)
+        alpha_j = _coeficiente_alpha(
+            brier_qbe_jornada, brier_mercado_jornada, mando_norm
+        )
         jornadas.append(
             DesempenoJornadaOut(
-                jornada=numero,
+                numero=numero,
                 etiqueta=fila.get("etiqueta"),
                 total_partidos=len(partidos),
+                pmax_success_rate=pmax_j,
+                pmid_success_rate=pmid_j,
+                cobertura_resultado_rate=cobertura_j,
+                alpha=alpha_j,
                 brier_qbe=brier_qbe_jornada,
-                brier_mercado=brier_mercado_jornada,
-                alpha_pct=_coeficiente_alpha(brier_qbe_jornada, brier_mercado_jornada),
-                tasa_rescate_pct=_tasa_rescate(planos, mando_norm),
+                brier_mkt=brier_mercado_jornada,
                 partidos=partidos,
             )
         )
 
-    kpis = _kpis(jornadas, mando_norm)
+    kpis = _kpis(jornadas, mando_norm, devig_norm)
 
     return {
         "mando": mando_norm,

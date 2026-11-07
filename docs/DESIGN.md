@@ -170,7 +170,8 @@ El micro-HUD publica exactamente cuatro luces:
 | `data-mando-rector` | [DES-QBE-078] `qbe` / `mercado`: conmutador de **Fuente Rectora**. Se declara una sola vez por página, en el contenedor de la parrilla; el estado viaja en `vista.mando` y jamás se recalcula en el cliente. |
 | `data-barra-sup` | [DES-QBE-078] `qbe` / `mercado`: fuente que ocupa la barra comparativa **superior** de 3 px en `--text`. Es blanca para la fuente rectora y se invierte con el mando (§7.4.4). |
 | `data-barra-inf` | [DES-QBE-078] `qbe` / `mercado`: fuente que ocupa la barra comparativa **inferior** de 3 px en `--muted`. Una misma celda puede portar ambas barras. |
-| `data-kpi` | [DES-QBE-078] Clave de la banda de macro KPIs: `partidos`, `brier-qbe`, `brier-mercado`, `alpha`, `rescate`. La cifra se transcribe del DTO; el pintor no la deriva. |
+| `data-kpi` | [DES-QBE-078 · REV.4] Clave estable de la banda de siete macro KPIs: `pmax`, `pmid`, `cobertura`, `brier-qbe`, `brier-mercado`, `alpha`, `partidos`. El rótulo visible conmuta con el mando (`ÉXITO PMAX` / `ÉXITO MKT_MAX`, etc.), pero la clave no. La cifra se transcribe del DTO; el pintor no la deriva. |
+| `data-cobertura-vertice` | [DES-QBE-078 · REV.4] `primario` / `rescate` / `ruptura` / `cold_start`: vértice de cobertura del resultado consumado bajo la Distribución Base activa. Sustituye al booleano `data-rescate-partido`, derogado del DOM (§7.4.13). |
 | `data-jornada` | [DES-QBE-078] N.º de jornada en el contenedor desplegable (`<details>`) de la parrilla de desempeño. |
 | `data-cold-start` | [DES-QBE-078] `true` cuando `S = 0`: el veredicto fiduciario Q-BE se suprime; el balón y el consenso de mercado sobreviven. |
 | `data-shin-z` / `data-spread-cuotas` | [DES-QBE-078] Telemetría del pie en Modo Mercado: `z` de Shin del consenso y spread de cuotas inter-casinos, transcritos del DTO. En Modo Q-BE el pie publica la tetralogía fáctica y el botón 32V. |
@@ -183,7 +184,7 @@ El detalle de jornada del Visor deja de ser una tabla plana y pasa a una tarjeta
 |---|---|---|
 | Cabecera | `grid` `1fr · auto · 1fr`, `gap` 0.5–1rem | Escudo + equipo local · marcador monoespaciado centrado · visita espejada. Banda de Brier en fila propia, alineada a la derecha. |
 | Cuerpo | `grid` `repeat(3, minmax(0, 1fr))`, `gap` 0.5rem | Celdas `1` · `X` · `2` sobre `--bg-base`; cada una transcribe `P′` (Q-BE), `Mkt` (q_mkt desmarcado) y `@` (momio decimal), con etiquetas en columna fija para que las tres celdas compartan línea base. |
-| Pie | `flex` con `space-between`, `gap` 0.5–0.75rem | Píldora de atribución (`visor-pildora`, `data-favorece`) · tetralogía `● OPTA ● SEDE ● H2H ● CTX` (`hud-semaforo`, `data-estado`) · botón `.btn-ver-44-vars`. |
+| Pie | `flex` con `space-between`, `gap` 0.5–0.75rem | Píldora de atribución (`visor-pildora`, `data-favorece`) · **Chip de Diagnóstico de Vértice de Cobertura** (`mc-chip-cobertura`, `data-cobertura-vertice`, §7.4.13) · **`Alpha`** (`data-alpha-partido`, porcentaje bidireccional teñido) · tetralogía `● OPTA ● SEDE ● H2H ● CTX` (`hud-semaforo`, `data-estado`) · botón `.btn-ver-44-vars`. |
 
 Reglas de composición:
 
@@ -196,6 +197,7 @@ Reglas de composición:
 6. **Brier Vars en la banda de Brier**, como tercera ranura fija (`QBE · Mkt · Vars`). Sin dato ⇒ `—` con `title` explicativo y `SIN EVIDENCIA` en `.visor-sr-only`; el estado `PENDIENTE MOTOR` se declara una vez por sección, jamás por tarjeta.
 7. **Densidad.** `--bg-surface` para la tarjeta, `--bg-base` para las tres celdas, `--border` para hairlines, tres niveles tipográficos y `tabular-nums` en toda cifra. Sin sombras externas ni degradados; las barras son sombras internas de 3 px.
 8. **Modal 32V bajo demanda.** El cascarón único `#modal-44-variables` hospeda el fragmento de `/visor/partido/<id_partido>/variables`, que transcribe `atribucion_factorial` con las clases `vars44-*`. Abrir y cerrar conserva su contrato.
+9. **Diagnóstico de cobertura y Alpha.** El pie publica el **Chip de Diagnóstico de Vértice de Cobertura** (§7.4.13) —`COB: PRIMARIO (P_max)` en `badge-success`, `COB: RESCATE (P_mid)` en `badge-accent`, `COB: RUPTURA (P_low)` en `badge-danger` o `COB: COLD START` en `badge-neutral`— y el indicador `Alpha` (`data-alpha-partido`, `%+.2f%%`) con `text-success` si es positivo y `text-danger` si es negativo. Ambos campos llegan servidos (`rescate_partido`, `alpha_partido_pct`); sin medición se declara `—` + `SIN EVIDENCIA`, jamás `0.00 %` ni `NO` fabricados, y el Alpha ausente se publica como `data-alpha-partido="SIN EVIDENCIA"`. El binario `Rescate SÍ / NO` y su atributo `data-rescate-partido` quedan derogados del DOM.
 
 ### 7.2 `[DES-QBE-076]` Tabla Comparativa de Sabiduría de las Masas (Observatorio)
 *   **UI:** Tabla dinámica (ordenable) con columnas: `Fuente` (Q-BE, Consenso, Casino A...), `Brier Score`, `Alpha (%)`, `Peso en Consenso`.
@@ -209,25 +211,27 @@ Reglas de composición:
 
 ### 7.4 `[DES-QBE-078]` Vista Unificada de Desempeño y Coberturas Probabilísticas
 
-La lectura de desempeño de temporada deja de ser un template pasivo y se convierte en la vista rectora del Observatorio. Reutiliza la gramática de tarjeta de `[DES-QBE-075]` (`.mc-card` / `.mc-grid` / `.mc-celda`) y añade el **Mando Rector**: un conmutador de estado que decide qué fuente ordena el color del vértice y la jerarquía de las barras comparativas, sin que el pintor calcule nada.
+La lectura de desempeño de temporada deja de ser un template pasivo y se convierte en la vista rectora del Observatorio. Reutiliza la gramática de tarjeta de `[DES-QBE-075]` (`.mc-card` / `.mc-grid` / `.mc-celda`) y añade la **Distribución Base**: un conmutador de estado que decide qué fuente ordena el color del vértice, la jerarquía de las barras comparativas y el signo del Alpha (§7.4.9), sin que el pintor calcule nada.
 
 #### 7.4.1 Geometría y rutas
 
 1. `GET /desempeno` es la vista canónica de desempeño. `GET /` responde `HTTP 302` (admitido `301`) con `Location: /desempeno`; el template pasivo `index.html` deja de servirse como portada y queda derogado.
 2. Navbar superior único de cuatro pestañas, en este orden: `[ 📊 Desempeño y Coberturas → /desempeno ] [ 🔬 Auditoría de Calibración → /visor ] [ 🌐 Consenso de Mercado → /consenso ] [ 📈 Backtesting → /backtesting ]`. Las cuatro rutas se conservan; ninguna pestaña se retira.
-3. Composición vertical: (1) barra de comando y control; (2) banda de cinco macro KPIs unificados; (3) parrilla de jornadas desplegables con tarjetas de partido.
+3. Composición vertical: (1) barra de comando y control; (2) banda de **siete** macro KPIs unificados (§7.4.11); (3) parrilla de jornadas desplegables con tarjetas de partido.
 
 #### 7.4.2 Barra de comando y control
 
-Temporada (`select`), rango de jornadas (desde / hasta), botón `Restablecer`, conmutador de Mando Rector, casillas de fuentes de mercado (`Caliente`, `Novibet`, `Betway`, `FootyStats`) y selector de de-vig (`Shin (1991)` / `Proporcional`). Los controles transcriben el estado servido en `vista.filtros`; no derivan, no normalizan y no sustituyen valores ausentes.
+Temporada (`select`), rango de jornadas (desde / hasta), botón `Restablecer`, conmutador de **Distribución Base**, casillas de fuentes de mercado (`Caliente`, `Novibet`, `Betway`, `FootyStats`) y selector de de-vig (`Shin (1991)` / `Proporcional`). Los controles transcriben el estado servido en `vista.filtros`; no derivan, no normalizan y no sustituyen valores ausentes.
 
-#### 7.4.3 Mando Rector
+#### 7.4.3 Distribución Base
 
-`data-mando-rector="qbe|mercado"` se declara **una sola vez** por página, en el contenedor de la parrilla, y toma su valor de `vista.mando` (defecto `qbe`). El servidor emite las dos clasificaciones del resultado consumado (`vertice_qbe`, `vertice_mercado`); la plantilla transcribe la del mando activo. **Cero ordenamiento en el pintor:** ni el vértice de mercado ni el de Q-BE se recalculan en Jinja.
+`data-mando-rector="qbe|mercado"` se declara **una sola vez** por página, en el contenedor de la parrilla, y toma su valor de `vista.mando` (defecto `qbe`). El atributo conserva su nombre histórico como ancla de pruebas y de red; el **rótulo visible** de la UI es **«Distribución Base»**.
+
+La Distribución Base conmuta la fuente rectora entre `qbe` y `mercado`: decide qué fuente ordena el color del vértice (§7.4.5), cuál ocupa la barra comparativa superior (§7.4.4) y cuál es el numerador del Alpha (§7.4.9). El servidor emite las dos clasificaciones del resultado consumado (`vertice_qbe`, `vertice_mercado`) y el Alpha ya calculado; la plantilla transcribe la lectura del mando activo. **Cero ordenamiento y cero aritmética en el pintor:** ni el vértice de mercado, ni el de Q-BE, ni el Alpha se recalculan en Jinja.
 
 #### 7.4.4 Inversión de barras comparativas de casilla
 
-| Mando rector | Barra superior (3 px, `--text`) | Barra inferior (3 px, `--muted`) |
+| Distribución Base | Barra superior (3 px, `--text`) | Barra inferior (3 px, `--muted`) |
 |---|---|---|
 | `qbe` | `data-barra-sup="qbe"` en la celda de `r_max` (P<sub>max</sub> Q-BE) | `data-barra-inf="mercado"` en la celda del máximo de `q_mkt` |
 | `mercado` | `data-barra-sup="mercado"` en la celda del máximo de `q_mkt` | `data-barra-inf="qbe"` en la celda de `r_max` (P<sub>max</sub> Q-BE) |
@@ -241,7 +245,7 @@ Temporada (`select`), rango de jornadas (desde / hasta), botón `Restablecer`, c
 
 El balón (`⚽`, sprite único `#mc-balon`) marca siempre el resultado consumado y no cambia con el mando. El marco de esa celda se tiñe según la clasificación de la **fuente rectora activa**:
 
-| Mando rector | `data-vertice="max"` → `--success` | `data-vertice="mid"` → `--accent` | `data-vertice="low"` → `--danger` |
+| Distribución Base | `data-vertice="max"` → `--success` | `data-vertice="mid"` → `--accent` | `data-vertice="low"` → `--danger` |
 |---|---|---|---|
 | `qbe` | P<sub>max</sub> Q-BE · *Acierto Primario* | P<sub>mid</sub> Q-BE · *Rescate de Cobertura* | P<sub>low</sub> Q-BE · *Ruptura Residual* |
 | `mercado` | max `q_mkt` · *Acierto Mercado* | second_max `q_mkt` · *Rescate Mercado* | min `q_mkt` · *Ruptura Mercado* |
@@ -253,7 +257,7 @@ El balón (`⚽`, sprite único `#mc-balon`) marca siempre el resultado consumad
 
 #### 7.4.6 Asimetría informativa del pie
 
-| Mando rector | Pie de tarjeta |
+| Distribución Base | Pie de tarjeta |
 |---|---|
 | `qbe` | Tetralogía fáctica (`● OPTA ● SEDE ● H2H ● CTX`, `data-semaforo`) + botón `.btn-ver-44-vars` hacia `/visor/partido/<id_partido>/variables`. |
 | `mercado` | Conmuta el pie: `data-shin-z` (z de Shin del consenso) y `data-spread-cuotas` (spread de cuotas inter-casinos), transcritos del DTO en formato decimal de 4 cifras. Sin tetralogía ni botón 32V. |
@@ -270,6 +274,79 @@ El balón (`⚽`, sprite único `#mc-balon`) marca siempre el resultado consumad
 #### 7.4.8 Contexto de plantilla
 
 `qbe_observatory/app/templates/desempeno.html` se renderiza con `TemplateResponse(request, "desempeno.html", {"titulo": str, "vista": dict})`. El Juez renderiza la plantilla con `titulo` + `vista` y juzga clases, atributos y literales del DOM — jamás estilos calculados. Contratos DTO: `[ARCH-1.4.78]`.
+
+#### 7.4.9 Cálculo Dinámico del Alpha
+
+El Alpha deja de medirse siempre contra Q-BE y pasa a ser **bidireccional**: se calcula siempre a favor de la **Distribución Base activa** (`vista.mando`), de modo que un valor positivo significa que la base supera a su oponente y uno negativo que el oponente la supera.
+
+| Distribución Base | Fórmula canónica | Oponente | Lectura del signo |
+|---|---|---|---|
+| `qbe` | `Alpha = (1 − Brier_QBE / Brier_Mercado) × 100` | Consenso de mercado | `> 0` ⇒ Q-BE mejor (`--success`); `< 0` ⇒ mercado mejor (`--danger`) |
+| `mercado` | `Alpha = (1 − Brier_Mercado / Brier_QBE) × 100` | Q-BE | `> 0` ⇒ mercado mejor (`--success`); `< 0` ⇒ Q-BE mejor (`--danger`) |
+
+1. **Dominio.** El cálculo usa la muestra COINCIDENTE (P′ ∩ q_mkt ∩ resultado). Sin par de Briers medible, o con denominador `≤ 0`, el Alpha es `None`: se declara `—` + `SIN EVIDENCIA`, jamás un `0.00 %` fabricado.
+2. **Redondeo y formato.** Dos decimales con signo explícito (`%+.2f%%`), de modo que `+4.76 %` y `−5.00 %` se distinguen a simple vista.
+3. **Cromática.** El verde `--success` (`text-success`) queda reservado al Alpha estrictamente positivo y el rojo `--danger` (`text-danger`) al estrictamente negativo; el cero exacto y la ausencia de medición no se tiñen.
+4. **Superficies afectadas.** La misma fórmula rige los tres niveles de lectura: el macro KPI `alpha` de la banda superior, el `Alpha:` del encabezado de cada jornada y el indicador `Alpha` del pie de la tarjeta de partido (§7.1). Una sola ley, tres transcripciones: la plantilla no recalcula nada.
+
+#### 7.4.10 Gestión de Estado de Acordeones (Jornadas)
+
+1. **Estado inicial contraído.** Toda jornada se sirve como `<details class="jornada-accordion" data-jornada="N">` **sin** el atributo `open`. El servidor no elige jornada de foco: la página nace con la parrilla cerrada, sea cual sea el filtro aplicado.
+2. **Persistencia en memoria de sesión.** El estado expandido/contraído se persiste en `sessionStorage` bajo la clave `qbe_desempeno_acordeones_abiertos` (arreglo JSON de `data-jornada`). Se prohíbe `localStorage`: el foco de auditoría pertenece a la sesión, no al navegador.
+3. **Supervivencia al filtrado.** Aplicar filtros recarga la página; el script reabre exactamente las jornadas registradas y deja cerradas las demás.
+4. **Restablecer.** El ancla `Restablecer` declara `data-acordeones-reset="1"`; al activarse limpia la clave de `sessionStorage` y navega a `GET /desempeno` sin parámetros, de modo que la parrilla vuelve a nacer contraída.
+5. **Cero estado espejo.** El atributo `open` no se emite desde el servidor ni se usa como fuente de verdad: la única autoridad del estado es `sessionStorage`.
+
+#### 7.4.11 Banda de Macro KPIs (Cuadrícula de 7 Tarjetas)
+
+1. **Geometría.** La banda es `<section class="grid-7-kpis">` y publica **exactamente siete** tarjetas `div.kpi-card` en el orden canónico de izquierda a derecha:
+   1. `data-kpi="pmax"` — **ÉXITO PMAX** (`pmax_success_rate`): porcentaje de partidos evaluables donde el favorito principal ($P_{\max}$) acertó el resultado. Es la tasa base de las selecciones sencillas («fijos» de quiniela).
+   2. `data-kpi="pmid"` — **ÉXITO PMID** (`pmid_success_rate`): porcentaje donde el segundo resultado ($P_{\text{mid}}$) rescató la posición. Mide la eficacia del paracaídas de cobertura.
+   3. `data-kpi="cobertura"` — **COBERTURA RESULTADO** (`cobertura_resultado_rate`): suma exacta de los dos componentes ortogonales anteriores. Sustituye formalmente al término «Tasa de Rescate».
+   4. `data-kpi="brier-qbe"` — **BRIER Q-BE (3N)**: error cuadrático medio de la distribución soberana.
+   5. `data-kpi="brier-mercado"` — **BRIER MERCADO**: error cuadrático medio del consenso des-marginado.
+   6. `data-kpi="alpha"` — **ALPHA DE DESEMPEÑO**: ventaja relativa de la base activa frente a su oponente.
+   7. `data-kpi="partidos"` — **PARTIDOS AUDITADOS**: universo total de partidos y jornadas evaluadas, desplazado a la extrema derecha.
+2. **Regla cromática de Brier.** El Brier de menor valor (ganador) se pinta en `text-accent` (cian) y el de mayor en `text-muted` (gris). Empate exacto ⇒ ambos en acento. La regla se aplica al `.kpi-value` de las tarjetas 4.ª y 5.ª.
+3. **Sensibilidad a mando.** Si `mando == 'mercado'`, la terna inicial conmuta a evaluar el éxito del mercado: **ÉXITO MKT_MAX** (`pmax_success_rate`), **ÉXITO MKT_MID** (`pmid_success_rate`) y **COBERTURA MERCADO** (`cobertura_resultado_rate`), y la tarjeta **BRIER MERCADO** pasa a la posición 4 (Brier Q-BE a la 5.ª). El orden restante (Alpha, Partidos Auditados) no cambia.
+4. **Formato.** Tasas `%.1f%%`; Briers `%.4f`; Alpha `%+.2f%%`; partidos entero. La cifra se transcribe del DTO; el pintor no la deriva. Sin muestra evaluable: `—` + `SIN EVIDENCIA`, jamás `0.0 %` fabricado.
+5. **Invariante Constitucional C-50 (aditividad de cobertura).**
+
+$$\text{cobertura\_resultado\_rate} \equiv \text{pmax\_success\_rate} + \text{pmid\_success\_rate} \quad (\pm 10^{-5})$$
+
+Tanto a nivel global como en cada jornada individual, la cobertura es la suma estricta de sus dos componentes ortogonales. Prohibido calcular la cobertura con fórmulas independientes que discrepen de la suma de sus partes. El Juez tolera `1e-5` en el DTO y `0.05` en el DOM formateado a un decimal.
+
+#### 7.4.12 Etiquetas Canónicas de la Barra de Jornada
+
+Toda `<summary class="jornada-header-bar">` publica, a la derecha, las siguientes etiquetas mnemónicas **literales** (el subrayado y los dos puntos forman parte del contrato):
+
+| Etiqueta | Valor | Regla |
+|---|---|---|
+| `Exto_Pmax:` | `pmax_success_rate` de la jornada | `%.1f%%`; `—` sin muestra |
+| `Exto_Pmid:` | `pmid_success_rate` de la jornada | `%.1f%%`; `—` sin muestra |
+| `Cobertura_Rltdo:` | `cobertura_resultado_rate` de la jornada | `%.1f%%`; `—` sin muestra |
+| `Alpha:` | `alpha` de la jornada | `%+.2f%%` teñido (`text-success` > 0, `text-danger` < 0) |
+| Briers | `data-brier="qbe"` / `data-brier="mercado"` | bicolor: `text-accent` al menor, `text-muted` al mayor |
+
+1. Las tres etiquetas mnemónicas sustituyen al rótulo ambiguo `Rescate:`.
+2. `Cobertura_Rltdo:` debe ser numéricamente igual a `Exto_Pmax + Exto_Pmid` (Invariante C-50); el Juez tolera `0.05` sobre el valor formateado a un decimal.
+3. El orden de los Briers sigue al mando activo (Q-BE primero en Modo Q-BE; Mercado primero en Modo Mercado), pero el color siempre distingue al menor.
+
+#### 7.4.13 Chip de Diagnóstico de Vértice de Cobertura
+
+Se deroga el chip binario `RESCATE SÍ / NO` y su atributo `data-rescate-partido`. El pie de cada `article.mc-card` publica un único **chip de diagnóstico de vértice**:
+
+| Vértice del resultado bajo la base activa | Literal canónico | Clase cromática |
+|---|---|---|
+| Primario (`r_max` en `qbe`; `max q_mkt` en `mercado`) | `COB: PRIMARIO (P_max)` | `badge-success` |
+| Rescate (`r_mid` en `qbe`; `second_max q_mkt` en `mercado`) | `COB: RESCATE (P_mid)` | `badge-accent` |
+| Ruptura (`r_low` en `qbe`; `min q_mkt` en `mercado`) | `COB: RUPTURA (P_low)` | `badge-danger` |
+| Cold Start (`S = 0`) | `COB: COLD START` | `badge-neutral` |
+
+1. El chip se materializa como `<span class="dsp-chip mc-chip-cobertura badge-…" data-cobertura-vertice="primario|rescate|ruptura|cold_start">`.
+2. El literal es una **transcripción** del vértice ya clasificado por el servidor (`vertice_qbe` / `vertice_mercado`); el pintor no ordena ni recalcula.
+3. Cold Start exhibe el chip neutral y queda excluido de la terna de cobertura (no es evaluable).
+4. El chip convive con el indicador `Alpha` del pie; el booleano `data-rescate-partido` desaparece del DOM.
 
 ---
 
@@ -344,7 +421,7 @@ El balón (`⚽`, sprite único `#mc-balon`) marca siempre el resultado consumad
 | `[DES-QBE-073]` | Apilamiento de Desglose en Tabla Meso [UX-MANDATE] | `observatorio` | VIGENTE |
 | `[DES-QBE-074]` | Saneamiento Visual de la Tabla de Calibración: Aire, Jerarquía Anidada y Píldora de Atribución [UX-MANDATE] | `observatorio` | VIGENTE |
 | `[DES-QBE-075]` | Match Card Híbrido de Calibración: Tres Zonas, Vértice Cromático del Resultado, Barras P′/Mercado y Modal 32V Bajo Demanda [UX-MANDATE] | `observatorio` | VIGENTE |
-| `[DES-QBE-078]` | Vista Unificada de Desempeño y Coberturas Probabilísticas (`/desempeno`): Mando Rector, Cobertura Bicolor e Inversión de Barras Comparativas [UX-MANDATE] | `observatorio` | VIGENTE |
+| `[DES-QBE-078 · REV.4]` | Vista Unificada de Desempeño y Coberturas Probabilísticas (`/desempeno`): Distribución Base, Banda de 7 Macro KPIs, Etiquetas Mnemónicas de Jornada, Chip de Diagnóstico de Vértice, Alpha Bidireccional e Inversión de Barras Comparativas [UX-MANDATE] | `observatorio` | VIGENTE |
 | `[UX-CFG-01]` | Orden Configurable de Boletos en Tarjeta [UX-MANDATE] [BACKLOG] | `compartida` | VIGENTE |
 
 _Total: 69 identificadores._

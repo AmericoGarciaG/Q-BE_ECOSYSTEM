@@ -1,0 +1,597 @@
+{
+  "dataset": "dataset_meta_router_2667",
+  "expediente": "SPRINT-51-META-ROUTER-MACHINE-LEARNING",
+  "version": "1.0.0",
+  "filas": 2667,
+  "columnas_total": 53,
+  "fuente": {
+    "ruta": "qbe_observatory/data/qbe_historico.db",
+    "tablas": [
+      "historical_matches",
+      "historical_sovereign_distributions",
+      "historical_match_causal_vars"
+    ],
+    "modo": "solo_lectura_estricta"
+  },
+  "filtros": {
+    "marcador_confirmado": true,
+    "cuotas_1x2_completas": true,
+    "overround_S": [
+      0.85,
+      1.3
+    ],
+    "shin_resoluble": true
+  },
+  "universo_ratificado": {
+    "decreto": "VAR-2026-SPRINT51-MANUS",
+    "opcion": "1 — histórico íntegro",
+    "filas": 2667,
+    "temporadas": [
+      "2015_2016",
+      "2018_2019",
+      "2019_2020",
+      "2020_2021",
+      "2021_2022",
+      "2022_2023",
+      "2023_2024",
+      "2024_2025",
+      "2025_2026",
+      "2026_2027"
+    ],
+    "conjunto_estres_post_holdout": "2026_2027"
+  },
+  "calidad": {
+    "temporadas": [
+      "2015_2016",
+      "2018_2019",
+      "2019_2020",
+      "2020_2021",
+      "2021_2022",
+      "2022_2023",
+      "2023_2024",
+      "2024_2025",
+      "2025_2026",
+      "2026_2027"
+    ],
+    "nulos_por_columna": {
+      "delta_alt_metros": 264,
+      "delta_descanso_dias": 264
+    },
+    "nota": "delta_alt_metros y delta_descanso_dias no existen en la temporada 2015_2016 (historical_match_causal_vars sin V29/V30): se declaran nulos, no se imputan. El resto de columnas críticas no presenta nulos."
+  },
+  "columnas": {
+    "match_id": {
+      "descripcion": "Clave primaria del partido en la bóveda histórica.",
+      "tipo": "string",
+      "dominio": "identificador estable (fs_<temporada>_z<id>)",
+      "origen_tabla": "historical_matches.match_id",
+      "disponible_prepartido": true
+    },
+    "temporada": {
+      "descripcion": "Temporada liguera en formato año_inicio_año_fin.",
+      "tipo": "string",
+      "dominio": [
+        "2015_2016",
+        "2018_2019",
+        "2019_2020",
+        "2020_2021",
+        "2021_2022",
+        "2022_2023",
+        "2023_2024",
+        "2024_2025",
+        "2025_2026",
+        "2026_2027"
+      ],
+      "origen_tabla": "historical_matches.temporada",
+      "disponible_prepartido": true
+    },
+    "fecha_utc": {
+      "descripcion": "Instante de kickoff en ISO-8601 UTC.",
+      "tipo": "string",
+      "dominio": "ISO-8601 (YYYY-MM-DDTHH:MM:SSZ)",
+      "origen_tabla": "historical_matches.fecha_utc",
+      "disponible_prepartido": true
+    },
+    "home_team": {
+      "descripcion": "Nombre del club local.",
+      "tipo": "string",
+      "dominio": "nombre canónico de club",
+      "origen_tabla": "historical_matches.home_team",
+      "disponible_prepartido": true
+    },
+    "away_team": {
+      "descripcion": "Nombre del club visitante.",
+      "tipo": "string",
+      "dominio": "nombre canónico de club",
+      "origen_tabla": "historical_matches.away_team",
+      "disponible_prepartido": true
+    },
+    "jornada_bloque": {
+      "descripcion": "Bloque cronológico declarado de 9 partidos dentro de la temporada.",
+      "tipo": "int",
+      "dominio": [
+        1,
+        40
+      ],
+      "origen_tabla": "derivado: índice_orden(fecha_utc, match_id) // 9 + 1 por temporada",
+      "disponible_prepartido": true
+    },
+    "home_goals": {
+      "descripcion": "Goles del local (ground truth).",
+      "tipo": "int",
+      "dominio": [
+        0,
+        20
+      ],
+      "origen_tabla": "historical_matches.home_goals",
+      "disponible_prepartido": false
+    },
+    "away_goals": {
+      "descripcion": "Goles del visitante (ground truth).",
+      "tipo": "int",
+      "dominio": [
+        0,
+        20
+      ],
+      "origen_tabla": "historical_matches.away_goals",
+      "disponible_prepartido": false
+    },
+    "resultado_real": {
+      "descripcion": "Desenlace 1X2 observado.",
+      "tipo": "string",
+      "dominio": [
+        "1",
+        "X",
+        "2"
+      ],
+      "origen_tabla": "derivado de home_goals vs away_goals",
+      "disponible_prepartido": false
+    },
+    "p_qbe_1": {
+      "descripcion": "Probabilidad soberana Q-BE de victoria local (P′ del motor).",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "historical_sovereign_distributions.p_local",
+      "disponible_prepartido": true
+    },
+    "p_qbe_X": {
+      "descripcion": "Probabilidad soberana Q-BE de empate.",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "historical_sovereign_distributions.p_empate",
+      "disponible_prepartido": true
+    },
+    "p_qbe_2": {
+      "descripcion": "Probabilidad soberana Q-BE de victoria visitante.",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "historical_sovereign_distributions.p_visitante",
+      "disponible_prepartido": true
+    },
+    "p_max_val": {
+      "descripcion": "Mayor probabilidad del vector Q-BE.",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "derivado: orden fiduciario LN-QBE-124 sobre p_qbe_*",
+      "disponible_prepartido": true
+    },
+    "p_mid_val": {
+      "descripcion": "Segunda probabilidad del vector Q-BE.",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "derivado: orden fiduciario LN-QBE-124 sobre p_qbe_*",
+      "disponible_prepartido": true
+    },
+    "p_low_val": {
+      "descripcion": "Menor probabilidad del vector Q-BE.",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "derivado: orden fiduciario LN-QBE-124 sobre p_qbe_*",
+      "disponible_prepartido": true
+    },
+    "vertice_qbe_max": {
+      "descripcion": "Desenlace que ocupa P_max en el vector Q-BE.",
+      "tipo": "string",
+      "dominio": [
+        "1",
+        "X",
+        "2"
+      ],
+      "origen_tabla": "derivado: vértice de p_max_val",
+      "disponible_prepartido": true
+    },
+    "vertice_qbe_mid": {
+      "descripcion": "Desenlace que ocupa P_mid en el vector Q-BE.",
+      "tipo": "string",
+      "dominio": [
+        "1",
+        "X",
+        "2"
+      ],
+      "origen_tabla": "derivado: vértice de p_mid_val",
+      "disponible_prepartido": true
+    },
+    "vertice_qbe_low": {
+      "descripcion": "Desenlace que ocupa P_low en el vector Q-BE.",
+      "tipo": "string",
+      "dominio": [
+        "1",
+        "X",
+        "2"
+      ],
+      "origen_tabla": "derivado: vértice de p_low_val",
+      "disponible_prepartido": true
+    },
+    "lambda_home": {
+      "descripcion": "Intensidad Dixon-Coles del local usada por el motor.",
+      "tipo": "float",
+      "dominio": [
+        0.05,
+        6.0
+      ],
+      "origen_tabla": "historical_sovereign_distributions.lambda_home",
+      "disponible_prepartido": true
+    },
+    "lambda_away": {
+      "descripcion": "Intensidad Dixon-Coles del visitante usada por el motor.",
+      "tipo": "float",
+      "dominio": [
+        0.05,
+        6.0
+      ],
+      "origen_tabla": "historical_sovereign_distributions.lambda_away",
+      "disponible_prepartido": true
+    },
+    "delta_epist": {
+      "descripcion": "Incertidumbre epistémica declarada de la distribución.",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "historical_sovereign_distributions.delta_epist",
+      "disponible_prepartido": true
+    },
+    "odd_home": {
+      "descripcion": "Cuota decimal bruta de cierre para el local.",
+      "tipo": "float",
+      "dominio": [
+        1.05,
+        50.0
+      ],
+      "origen_tabla": "historical_matches.odd_home",
+      "disponible_prepartido": true
+    },
+    "odd_draw": {
+      "descripcion": "Cuota decimal bruta de cierre para el empate.",
+      "tipo": "float",
+      "dominio": [
+        1.05,
+        50.0
+      ],
+      "origen_tabla": "historical_matches.odd_draw",
+      "disponible_prepartido": true
+    },
+    "odd_away": {
+      "descripcion": "Cuota decimal bruta de cierre para el visitante.",
+      "tipo": "float",
+      "dominio": [
+        1.05,
+        50.0
+      ],
+      "origen_tabla": "historical_matches.odd_away",
+      "disponible_prepartido": true
+    },
+    "overround_S": {
+      "descripcion": "Suma bruta de inversas de las tres cuotas (margen comercial).",
+      "tipo": "float",
+      "dominio": [
+        0.85,
+        1.3
+      ],
+      "origen_tabla": "derivado: Σ 1/O_k",
+      "disponible_prepartido": true
+    },
+    "q_shin_1": {
+      "descripcion": "Probabilidad pura de victoria local tras de-vig de Shin.",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "desmarginar_shin([odd_home, odd_draw, odd_away]).p_local",
+      "disponible_prepartido": true
+    },
+    "q_shin_X": {
+      "descripcion": "Probabilidad pura de empate tras de-vig de Shin.",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "desmarginar_shin(...).p_empate",
+      "disponible_prepartido": true
+    },
+    "q_shin_2": {
+      "descripcion": "Probabilidad pura de victoria visitante tras de-vig de Shin.",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "desmarginar_shin(...).p_visitante",
+      "disponible_prepartido": true
+    },
+    "shin_z": {
+      "descripcion": "Proporción de apostadores informados resuelta por Shin.",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "desmarginar_shin(...).z_insider",
+      "disponible_prepartido": true
+    },
+    "q_prop_1": {
+      "descripcion": "Probabilidad local por de-vig proporcional clásico (1/O)/S.",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "derivado: (1/odd_home)/overround_S",
+      "disponible_prepartido": true
+    },
+    "q_prop_X": {
+      "descripcion": "Probabilidad de empate por de-vig proporcional clásico.",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "derivado: (1/odd_draw)/overround_S",
+      "disponible_prepartido": true
+    },
+    "q_prop_2": {
+      "descripcion": "Probabilidad visitante por de-vig proporcional clásico.",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "derivado: (1/odd_away)/overround_S",
+      "disponible_prepartido": true
+    },
+    "mkt_max_val": {
+      "descripcion": "Mayor probabilidad del vector de mercado (Shin).",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "derivado: orden descendente de q_shin_*",
+      "disponible_prepartido": true
+    },
+    "mkt_mid_val": {
+      "descripcion": "Segunda probabilidad del vector de mercado (Shin).",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "derivado: orden descendente de q_shin_*",
+      "disponible_prepartido": true
+    },
+    "mkt_low_val": {
+      "descripcion": "Menor probabilidad del vector de mercado (Shin).",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "derivado: orden descendente de q_shin_*",
+      "disponible_prepartido": true
+    },
+    "vertice_mkt_max": {
+      "descripcion": "Desenlace que ocupa Mkt_max.",
+      "tipo": "string",
+      "dominio": [
+        "1",
+        "X",
+        "2"
+      ],
+      "origen_tabla": "derivado: vértice de mkt_max_val",
+      "disponible_prepartido": true
+    },
+    "vertice_mkt_mid": {
+      "descripcion": "Desenlace que ocupa Mkt_mid.",
+      "tipo": "string",
+      "dominio": [
+        "1",
+        "X",
+        "2"
+      ],
+      "origen_tabla": "derivado: vértice de mkt_mid_val",
+      "disponible_prepartido": true
+    },
+    "vertice_mkt_low": {
+      "descripcion": "Desenlace que ocupa Mkt_low.",
+      "tipo": "string",
+      "dominio": [
+        "1",
+        "X",
+        "2"
+      ],
+      "origen_tabla": "derivado: vértice de mkt_low_val",
+      "disponible_prepartido": true
+    },
+    "tvd_qbe_vs_shin": {
+      "descripcion": "Variación total entre el símplex Q-BE y el de Shin.",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "derivado: 0.5 * Σ |p_k − q_k|",
+      "disponible_prepartido": true
+    },
+    "gap_max": {
+      "descripcion": "Diferencia P_max − Mkt_max; mide la ventaja de convicción Q-BE.",
+      "tipo": "float",
+      "dominio": [
+        -1.0,
+        1.0
+      ],
+      "origen_tabla": "derivado: p_max_val − mkt_max_val",
+      "disponible_prepartido": true
+    },
+    "discrepancia_favorito": {
+      "descripcion": "Verdadero si Q-BE y el mercado señalan favoritos distintos.",
+      "tipo": "boolean",
+      "dominio": [
+        false,
+        true
+      ],
+      "origen_tabla": "derivado: vertice_qbe_max ≠ vertice_mkt_max",
+      "disponible_prepartido": true
+    },
+    "entropia_shannon_qbe": {
+      "descripcion": "Entropía de Shannon del vector Q-BE (nats).",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0986
+      ],
+      "origen_tabla": "derivado: −Σ p_k ln p_k",
+      "disponible_prepartido": true
+    },
+    "entropia_shannon_mkt": {
+      "descripcion": "Entropía de Shannon del vector de mercado (nats).",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0986
+      ],
+      "origen_tabla": "derivado: −Σ q_k ln q_k",
+      "disponible_prepartido": true
+    },
+    "delta_alt_metros": {
+      "descripcion": "Diferencial de altitud del anfitrión (V29 causal, metros).",
+      "tipo": "float",
+      "dominio": [
+        -3000.0,
+        3000.0
+      ],
+      "origen_tabla": "historical_match_causal_vars.v29_local",
+      "disponible_prepartido": true
+    },
+    "delta_descanso_dias": {
+      "descripcion": "Diferencial de días de descanso del anfitrión (V30 causal).",
+      "tipo": "float",
+      "dominio": [
+        -90.0,
+        90.0
+      ],
+      "origen_tabla": "historical_match_causal_vars.v30_local",
+      "disponible_prepartido": true
+    },
+    "brier_qbe_3n": {
+      "descripcion": "Brier multiclase normalizado 3N del vector Q-BE en el partido.",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "brier_multiclase(p_qbe_*) / 3 [LN-QBE-100]",
+      "disponible_prepartido": false
+    },
+    "brier_mkt_3n": {
+      "descripcion": "Brier multiclase normalizado 3N del vector de Shin en el partido.",
+      "tipo": "float",
+      "dominio": [
+        0.0,
+        1.0
+      ],
+      "origen_tabla": "brier_multiclase(q_shin_*) / 3 [LN-QBE-100]",
+      "disponible_prepartido": false
+    },
+    "delta_brier": {
+      "descripcion": "Ventaja de Brier: positivo si Q-BE superó al mercado.",
+      "tipo": "float",
+      "dominio": [
+        -1.0,
+        1.0
+      ],
+      "origen_tabla": "derivado: brier_mkt_3n − brier_qbe_3n",
+      "disponible_prepartido": false
+    },
+    "acierto_pmax_qbe": {
+      "descripcion": "1 si el desenlace real coincidió con P_max de Q-BE.",
+      "tipo": "int",
+      "dominio": [
+        0,
+        1
+      ],
+      "origen_tabla": "derivado: resultado_real == vertice_qbe_max",
+      "disponible_prepartido": false
+    },
+    "acierto_pmid_qbe": {
+      "descripcion": "1 si el desenlace real coincidió con P_mid de Q-BE.",
+      "tipo": "int",
+      "dominio": [
+        0,
+        1
+      ],
+      "origen_tabla": "derivado: resultado_real == vertice_qbe_mid",
+      "disponible_prepartido": false
+    },
+    "acierto_cobertura_qbe": {
+      "descripcion": "1 si el desenlace real cayó en {P_max, P_mid} de Q-BE.",
+      "tipo": "int",
+      "dominio": [
+        0,
+        1
+      ],
+      "origen_tabla": "derivado: resultado_real ∈ {vertice_qbe_max, vertice_qbe_mid}",
+      "disponible_prepartido": false
+    },
+    "acierto_pmax_mkt": {
+      "descripcion": "1 si el desenlace real coincidió con Mkt_max.",
+      "tipo": "int",
+      "dominio": [
+        0,
+        1
+      ],
+      "origen_tabla": "derivado: resultado_real == vertice_mkt_max",
+      "disponible_prepartido": false
+    },
+    "acierto_cobertura_mkt": {
+      "descripcion": "1 si el desenlace real cayó en {Mkt_max, Mkt_mid}.",
+      "tipo": "int",
+      "dominio": [
+        0,
+        1
+      ],
+      "origen_tabla": "derivado: resultado_real ∈ {vertice_mkt_max, vertice_mkt_mid}",
+      "disponible_prepartido": false
+    }
+  }
+}

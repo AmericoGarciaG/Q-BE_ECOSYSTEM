@@ -53,6 +53,14 @@ _CANONICAL_ALIASES: Dict[str, str] = {
     "guadalajara chivas": "Guadalajara",
     "atlas": "Atlas FC",
     "atlas fc": "Atlas FC",
+    # [LN-QBE-012 · Fast-Track S50] Variantes de pantalla del consenso (Betway)
+    # y del habla local. Se alimenta SOLO el catálogo: la lógica del normalizador
+    # (exacta → ratio ≥ 0.78 → Levenshtein ≤ 2) permanece intacta.
+    "atlas de guadalajara": "Atlas FC",
+    "atlas guadalajara": "Atlas FC",
+    "atlas f c": "Atlas FC",
+    "los rojinegros": "Atlas FC",
+    "rojinegros": "Atlas FC",
     "tigres": "Tigres UANL",
     "tigres uanl": "Tigres UANL",
     "monterrey": "Rayados de Monterrey",

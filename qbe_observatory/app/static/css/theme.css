@@ -3537,6 +3537,27 @@ table.fintech-table {
 
 .dsp-chip-fuentes { color: var(--muted); }
 
+/* ── [REV.4] Lectura individual de la tarjeta: Rescate + Alpha ─────────────
+   docs/DESIGN.md §7.1 · §7.4.9. El color lo dicta el DTO: verde = la base
+   activa cubre/acierta, rojo = ruptura. El texto nunca va solo. */
+.mc-foot-lectura {
+    display: flex;
+    flex: 0 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.mc-foot-lectura .dsp-chip { padding: 0.12rem 0.45rem; }
+
+.mc-chip-alpha { font-weight: 700; }
+
+.mc-chip-rescate strong {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.02em;
+}
+
 @media (max-width: 1100px) {
     .dsp-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
@@ -3722,6 +3743,21 @@ table.fintech-table {
     gap: 14px;
 }
 
+/* [DES-QBE-078 · REV.4] Banda de 7 macro KPIs. */
+.grid-7-kpis {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 16px;
+}
+
+@media (max-width: 1400px) {
+    .grid-7-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+    .grid-7-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 .kpi-card {
     position: relative;
     display: flex;
@@ -3805,6 +3841,12 @@ table.fintech-table {
     min-width: 0;
 }
 
+/* [DES-QBE-078 · REV.4] La barra derecha hospeda 6 métricas: envuelve sin desbordar. */
+.jornada-bar-right {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
 .jornada-titulo {
     color: var(--text-primary);
     font-size: 0.78rem;
@@ -3851,6 +3893,25 @@ table.fintech-table {
     color: var(--text-muted);
     background: rgba(148, 163, 184, 0.12);
     border: 1px solid var(--border-color);
+}
+
+/* [DES-QBE-078 · REV.4] Chip de Diagnóstico de Vértice de Cobertura. */
+.badge-success {
+    color: var(--success);
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.badge-accent {
+    color: var(--accent-cyan);
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.badge-danger {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.35);
 }
 
 @media (max-width: 1100px) {

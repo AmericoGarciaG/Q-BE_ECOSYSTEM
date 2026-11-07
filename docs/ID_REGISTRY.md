@@ -303,7 +303,7 @@
 | `[ARCH-1.5.1]` §15.5 | ARCH | `docs/ARCH.md` | Esquema de `historical_sovereign_distributions` (Símplex Soberano P') | SELLADO |
 | `[DES-QBE-076]` | DISEÑO | `docs/DESIGN.md` | Tabla Comparativa de Sabiduría de las Masas (Observatorio) | SELLADO |
 | `[DES-QBE-077]` | DISEÑO | `docs/DESIGN.md` | Selector de Distribución en Visor de Backtesting | SELLADO |
-| `[DES-QBE-078]` | DISEÑO | `docs/DESIGN.md` | Vista Unificada de Desempeño y Coberturas Probabilísticas (`/desempeno`) · Mando Rector y Cobertura Bicolor | SELLADO |
+| `[DES-QBE-078]` | DISEÑO | `docs/DESIGN.md` | Vista Unificada de Desempeño y Coberturas Probabilísticas (`/desempeno`) · Distribución Base y Alpha Bidireccional | SELLADO |
 | `[ARCH-1.4.78]` | ARCH | `docs/ARCH.md` | Enrutador y Fachada de Desempeño Híbrido (`qbe_observatory`) · `/desempeno`, Redirect 302 y DTOs de Desempeño | SELLADO |
 
 ## PROTOCOLO DE ASIGNACIÓN
